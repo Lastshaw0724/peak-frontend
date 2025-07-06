@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { QrCode, NotebookPen, MapPin, History, LogOut, BookOpen } from 'lucide-react';
+import { QrCode, MapPin, History, LogOut, BookOpen } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +20,6 @@ const getInitials = (name: string) => {
 const navItems = [
     { href: '/qr', label: 'QR', icon: QrCode },
     { href: '/waiter/pos', label: 'Cartilla', icon: BookOpen },
-    { href: '/waiter/pos', label: 'Pedidos', icon: NotebookPen },
     { href: '/waiter/assign-table', label: 'Asignar Mesa', icon: MapPin },
     { href: '/waiter/active-orders', label: 'Pedidos en Curso', icon: History },
 ];
@@ -34,7 +33,7 @@ export function WaiterNavContent() {
     return (
         <div className="flex flex-col h-full bg-[#1C1C1C] text-white border-r border-zinc-700">
              <div className="p-6 flex flex-col items-center gap-4 border-b border-zinc-700">
-                <Link href="/waiter" className="flex flex-col items-center gap-4 text-center hover:opacity-90 transition-opacity">
+                <Link href="/waiter/pos" className="flex flex-col items-center gap-4 text-center hover:opacity-90 transition-opacity">
                     <Avatar className="h-24 w-24 border-4 border-zinc-600">
                         <AvatarImage src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${user.name}`} alt={user.name} />
                         <AvatarFallback className="bg-zinc-700 text-3xl font-bold">{getInitials(user.name)}</AvatarFallback>
@@ -52,7 +51,7 @@ export function WaiterNavContent() {
                         className={cn(
                             "w-full justify-start text-base h-12 font-semibold",
                             "hover:bg-zinc-800",
-                            pathname === item.href ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-transparent text-zinc-300"
+                            pathname.startsWith(item.href) ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-transparent text-zinc-300"
                         )}
                     >
                         <Link href={item.href}>
