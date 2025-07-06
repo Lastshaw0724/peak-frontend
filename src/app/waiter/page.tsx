@@ -1,6 +1,5 @@
 'use client';
-import { WaiterInterface } from '@/components/waiter/waiter-interface';
-import { AppHeader } from '@/components/header';
+import { WaiterDashboard } from '@/components/waiter/waiter-dashboard';
 import ProtectedRoute from '@/components/auth/protected-route';
 import { useSurvey } from '@/hooks/use-survey';
 import { useAuth } from '@/hooks/use-auth';
@@ -39,12 +38,7 @@ function WaiterPageContent() {
 
   }, [surveys, user, toast]);
 
-  return (
-    <div className="flex flex-col h-screen bg-background">
-      <AppHeader title="Point of Sale" />
-      <WaiterInterface />
-    </div>
-  );
+  return <WaiterDashboard />;
 }
 
 export default function WaiterPage() {
