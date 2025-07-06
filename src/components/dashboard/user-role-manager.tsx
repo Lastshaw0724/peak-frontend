@@ -64,7 +64,6 @@ export function UserRoleManager() {
                                                 <SelectValue placeholder="Seleccionar un rol" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="customer">Cliente</SelectItem>
                                                 <SelectItem value="waiter">Mesero</SelectItem>
                                                 <SelectItem value="cook">Cocinero</SelectItem>
                                             </SelectContent>
