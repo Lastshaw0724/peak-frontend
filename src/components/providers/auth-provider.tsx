@@ -27,35 +27,60 @@ const roleRedirects: Record<UserRole, string> = {
   cashier: '/waiter', // Cashiers can use the waiter interface
 };
 
+const USERS_STORAGE_KEY = 'gustogo-users';
+const USER_SESSION_KEY = 'gustogo-user';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Simulate session loading
+    // Simulate session and data loading from storage
     try {
-      const storedUser = sessionStorage.getItem('gustogo-user');
+      // Load all users from localStorage
+      const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
+      let allUsers: User[];
+      if (storedUsers) {
+        allUsers = JSON.parse(storedUsers);
+      } else {
+        // If nothing in localStorage, initialize with mock data and save it
+        allUsers = mockUsers;
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(mockUsers));
+      }
+      setUsers(allUsers);
+
+      // Load the currently logged-in user from sessionStorage
+      const storedUser = sessionStorage.getItem(USER_SESSION_KEY);
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error('Failed to parse user from sessionStorage', error);
-      sessionStorage.removeItem('gustogo-user');
+      console.error('Failed to initialize from storage', error);
+      // Fallback to mock users if storage is corrupted
+      setUsers(mockUsers);
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(mockUsers));
+      sessionStorage.removeItem(USER_SESSION_KEY);
     } finally {
       setIsLoading(false);
     }
   }, []);
+  
+  const persistUsers = (updatedUsers: User[]) => {
+    setUsers(updatedUsers);
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
+  }
 
   const login = (email: string, password: string) => {
+    // We use the 'users' state which is sourced from localStorage
     const foundUser = users.find((u) => u.email === email && u.password === password);
     if (foundUser) {
       const userToStore = { ...foundUser };
       delete userToStore.password; // Don't store password in session
       setUser(userToStore);
-      sessionStorage.setItem('gustogo-user', JSON.stringify(userToStore));
+      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userToStore));
       router.push(roleRedirects[foundUser.role]);
       toast({ title: 'Login Successful', description: `Welcome back, ${foundUser.name}!` });
     } else {
@@ -65,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    sessionStorage.removeItem('gustogo-user');
+    sessionStorage.removeItem(USER_SESSION_KEY);
     router.push('/login');
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
   };
@@ -75,24 +100,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast({ variant: 'destructive', title: 'Registration Failed', description: 'A user with this email already exists.' });
       return;
     }
-    const newUser: User = { id: String(users.length + 1), name, email, password, role: 'customer' };
-    setUsers([...users, newUser]);
+    const newUser: User = { id: `user-${Date.now()}`, name, email, password, role: 'customer' };
+    const updatedUsers = [...users, newUser];
+    persistUsers(updatedUsers);
     
     router.push('/login');
     toast({ title: 'Registration Successful', description: `Welcome! You can now log in to your account.` });
   };
 
   const updateUserRole = (userId: string, newRole: UserRole) => {
-      setUsers(prevUsers =>
-          prevUsers.map(u => (u.id === userId ? { ...u, role: newRole } : u))
-      );
+      const updatedUsers = users.map(u => (u.id === userId ? { ...u, role: newRole } : u))
+      persistUsers(updatedUsers);
+
+      // If the currently logged-in user is the one being updated, refresh their session data
+      if (user && user.id === userId) {
+        const updatedUserSessionData = updatedUsers.find(u => u.id === userId);
+        if (updatedUserSessionData) {
+            const userToStore = { ...updatedUserSessionData };
+            delete userToStore.password;
+            setUser(userToStore);
+            sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(userToStore));
+        }
+      }
   };
 
   return (
     <AuthContext.Provider value={{ user, users, login, logout, register, updateUserRole, isLoading }}>
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
-          <Skeleton className="w-64 h-32" />
+          <Skeleton className="w-full h-screen" />
         </div>
       ) : (
         children
