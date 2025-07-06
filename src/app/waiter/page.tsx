@@ -5,7 +5,7 @@ import ProtectedRoute from '@/components/auth/protected-route';
 import { useSurvey } from '@/hooks/use-survey';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 function WaiterPageContent() {
   const { user } = useAuth();
