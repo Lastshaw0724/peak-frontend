@@ -14,37 +14,32 @@ export function OrderSummary() {
   return (
     <div className="flex flex-col h-full bg-card border-l">
       <CardHeader>
-        <CardTitle className="font-headline text-3xl">Current Order</CardTitle>
+        <CardTitle className="font-headline text-3xl">Orden Actual</CardTitle>
       </CardHeader>
       <ScrollArea className="flex-grow">
         <CardContent>
           {currentOrder.length === 0 ? (
             <div className="text-center text-muted-foreground py-16">
-              <p>No items in order yet.</p>
-              <p className="text-sm">Add items from the menu to get started.</p>
+              <p>No hay artículos en la orden.</p>
+              <p className="text-sm">Añade artículos desde la cartilla.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {currentOrder.map((item, index) => (
-                <div key={`${item.id}-${item.customization}-${index}`} className="flex items-start justify-between gap-4">
+                <div key={`${item.id}-${index}`} className="flex items-start justify-between gap-4">
                   <div className="flex-grow">
                     <p className="font-semibold">{item.name}</p>
-                    {item.customization && (
-                      <p className="text-sm text-primary italic pl-2 border-l-2 border-primary/50">
-                        {item.customization}
-                      </p>
-                    )}
                     <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.id, item.quantity - 1, item.customization)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.id, item.quantity - 1)}>
                       <Minus className="h-4 w-4" />
                     </Button>
                     <span className="w-6 text-center">{item.quantity}</span>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.id, item.quantity + 1, item.customization)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.id, item.quantity + 1)}>
                       <Plus className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeItemFromOrder(item.id, item.customization)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeItemFromOrder(item.id)}>
                         <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -62,11 +57,11 @@ export function OrderSummary() {
             <span>${total.toFixed(2)}</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
-             <Button variant="outline" onClick={clearCurrentOrder}>
-              <Trash2 className="mr-2 h-4 w-4" /> Clear Order
+             <Button variant="destructive" onClick={clearCurrentOrder}>
+              <Trash2 className="mr-2 h-4 w-4" /> Cancelar
             </Button>
-            <Button onClick={submitOrder} className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Send className="mr-2 h-4 w-4" /> Send to Kitchen
+            <Button onClick={submitOrder} className="bg-purple-600 text-accent-foreground hover:bg-purple-700">
+              <Send className="mr-2 h-4 w-4" /> Confirmar
             </Button>
           </div>
         </CardFooter>

@@ -31,12 +31,6 @@ export function KitchenOrderCard({ order }: { order: Order }) {
             <p className="font-bold text-lg">
               {item.quantity}x {item.name}
             </p>
-            {item.customization && (
-              <div className="flex items-start gap-2 mt-1 pl-4 text-destructive border-l-4 border-destructive/50 bg-destructive/10 p-2 rounded-r-md">
-                 <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
-                <p className="italic font-medium">{item.customization}</p>
-              </div>
-            )}
             <Separator className="my-2"/>
           </div>
         ))}

@@ -7,9 +7,9 @@ import { useToast } from "@/hooks/use-toast";
 interface OrderContextType {
   currentOrder: OrderItem[];
   submittedOrders: Order[];
-  addItemToOrder: (item: MenuItem, quantity: number, customization?: string) => void;
-  removeItemFromOrder: (itemId: string, customization?: string) => void;
-  updateItemQuantity: (itemId: string, quantity: number, customization?: string) => void;
+  addItemToOrder: (item: MenuItem, quantity: number) => void;
+  removeItemFromOrder: (itemId: string) => void;
+  updateItemQuantity: (itemId: string, quantity: number) => void;
   submitOrder: () => void;
   updateOrderStatus: (orderId: string, status: 'preparing' | 'ready') => void;
   clearCurrentOrder: () => void;
@@ -22,10 +22,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [submittedOrders, setSubmittedOrders] = useState<Order[]>([]);
   const { toast } = useToast();
 
-  const addItemToOrder = (item: MenuItem, quantity: number, customization?: string) => {
+  const addItemToOrder = (item: MenuItem, quantity: number) => {
     setCurrentOrder((prevOrder) => {
       const existingItemIndex = prevOrder.findIndex(
-        (orderItem) => orderItem.id === item.id && orderItem.customization === (customization || undefined)
+        (orderItem) => orderItem.id === item.id
       );
 
       if (existingItemIndex > -1) {
@@ -36,22 +36,22 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         };
         return updatedOrder;
       } else {
-        return [...prevOrder, { ...item, quantity, customization }];
+        return [...prevOrder, { ...item, quantity }];
       }
     });
   };
 
-  const removeItemFromOrder = (itemId: string, customization?: string) => {
-      setCurrentOrder((prevOrder) => prevOrder.filter((item) => !(item.id === itemId && item.customization === customization)));
+  const removeItemFromOrder = (itemId: string) => {
+      setCurrentOrder((prevOrder) => prevOrder.filter((item) => item.id !== itemId));
   };
 
-  const updateItemQuantity = (itemId: string, quantity: number, customization?: string) => {
+  const updateItemQuantity = (itemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItemFromOrder(itemId, customization);
+      removeItemFromOrder(itemId);
     } else {
       setCurrentOrder((prevOrder) =>
         prevOrder.map((item) =>
-          item.id === itemId && item.customization === customization ? { ...item, quantity } : item
+          item.id === itemId ? { ...item, quantity } : item
         )
       );
     }

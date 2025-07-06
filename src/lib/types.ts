@@ -21,7 +21,6 @@ export interface MenuItem {
 
 export interface OrderItem extends MenuItem {
   quantity: number;
-  customization?: string;
 }
 
 export interface Order {
