@@ -31,3 +31,14 @@ export interface Order {
   timestamp: Date;
   status: 'new' | 'preparing' | 'ready';
 }
+
+export interface Survey {
+  id: string;
+  customerId: string;
+  customerName: string;
+  waiterId: string;
+  waiterName: string;
+  rating: number; // 1 to 5
+  comment?: string;
+  timestamp: Date;
+}

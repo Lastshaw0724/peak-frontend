@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import { LogOut, UserCircle, LayoutDashboard, Utensils, BookOpen, ChefHat, NotebookPen, QrCode, CircleDollarSign } from 'lucide-react';
+import { LogOut, UserCircle, LayoutDashboard, Utensils, BookOpen, ChefHat, NotebookPen, QrCode, CircleDollarSign, Star } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,6 +92,12 @@ export function AppHeader({ title }: { title: string }) {
                          <DropdownMenuItem onClick={() => navigate('/menu')}>
                             <BookOpen className="mr-2 h-4 w-4" />
                             <span>Customer Menu</span>
+                        </DropdownMenuItem>
+                    )}
+                     {user.role === 'customer' && (
+                        <DropdownMenuItem onClick={() => navigate('/survey')}>
+                            <Star className="mr-2 h-4 w-4" />
+                            <span>Rate Service</span>
                         </DropdownMenuItem>
                     )}
                     {(user.role === 'admin' || user.role === 'waiter') && (
