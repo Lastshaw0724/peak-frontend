@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Users } from 'lucide-react';
 
 export function UserRoleManager() {
     const { users, updateUserRole } = useAuth();
@@ -34,17 +35,21 @@ export function UserRoleManager() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>New User Approvals</CardTitle>
-                <CardDescription>Review new users and assign them a role to grant them access.</CardDescription>
+                <div className="flex items-center gap-4">
+                     <Users className="h-8 w-8 text-primary" />
+                    <CardTitle className="text-2xl font-headline">Empleados</CardTitle>
+                </div>
+                <CardDescription>Aprobar nuevos usuarios y asignarles un rol para concederles acceso.</CardDescription>
             </CardHeader>
             <CardContent>
+                <h3 className="text-xl font-headline mb-4">Aprobaciones de nuevos usuarios</h3>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
+                            <TableHead>Nombre</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead className="w-[200px]">Assign Role</TableHead>
-                            <TableHead className="w-[120px]">Action</TableHead>
+                            <TableHead className="w-[200px]">Asignar rol</TableHead>
+                            <TableHead className="w-[120px]">Acción</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -56,18 +61,18 @@ export function UserRoleManager() {
                                     <TableCell>
                                         <Select onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a role" />
+                                                <SelectValue placeholder="Seleccionar un rol" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="customer">Customer</SelectItem>
-                                                <SelectItem value="waiter">Waiter</SelectItem>
-                                                <SelectItem value="cook">Cook</SelectItem>
+                                                <SelectItem value="customer">Cliente</SelectItem>
+                                                <SelectItem value="waiter">Mesero</SelectItem>
+                                                <SelectItem value="cook">Cocinero</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </TableCell>
                                     <TableCell>
                                         <Button size="sm" onClick={() => handleSave(user.id)} disabled={!userRoles[user.id]}>
-                                            Approve User
+                                            Aprobar usuario
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -75,7 +80,7 @@ export function UserRoleManager() {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center h-24">
-                                    No new users awaiting approval.
+                                    No hay nuevos usuarios pendientes de aprobación.
                                 </TableCell>
                             </TableRow>
                         )}

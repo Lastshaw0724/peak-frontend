@@ -1,0 +1,28 @@
+
+'use client';
+
+import ProtectedRoute from '@/components/auth/protected-route';
+import { Sidebar } from '@/components/dashboard/sidebar';
+import { DashboardHeader } from '@/components/dashboard/header';
+
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="flex min-h-screen bg-background text-foreground">
+            <Sidebar />
+            <div className="flex flex-col flex-1">
+                <DashboardHeader />
+                <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                    {children}
+                </main>
+            </div>
+        </div>
+    );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <ProtectedRoute allowedRoles={['admin']}>
+            <DashboardLayoutContent>{children}</DashboardLayoutContent>
+        </ProtectedRoute>
+    );
+}
