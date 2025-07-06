@@ -1,7 +1,9 @@
+'use client';
 import { KitchenDisplay } from '@/components/kitchen/kitchen-display';
 import { AppHeader } from '@/components/header';
+import ProtectedRoute from '@/components/auth/protected-route';
 
-export default function KitchenPage() {
+function KitchenPageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <AppHeader title="Kitchen Display" />
@@ -10,4 +12,12 @@ export default function KitchenPage() {
       </main>
     </div>
   );
+}
+
+export default function KitchenPage() {
+    return (
+        <ProtectedRoute allowedRoles={['cook', 'admin']}>
+            <KitchenPageContent />
+        </ProtectedRoute>
+    )
 }

@@ -1,3 +1,13 @@
+export type UserRole = 'admin' | 'cook' | 'customer' | 'waiter';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  password?: string; // In a real app, this would be a hash
+}
+
 export interface MenuItem {
   id: string;
   name: string;

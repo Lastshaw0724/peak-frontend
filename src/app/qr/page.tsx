@@ -1,10 +1,13 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppHeader } from '@/components/header';
 import { Button } from '@/components/ui/button';
+import ProtectedRoute from '@/components/auth/protected-route';
 
-export default function QrCodePage() {
+
+function QrCodePageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <AppHeader title="Menu QR Code" />
@@ -38,4 +41,12 @@ export default function QrCodePage() {
       </main>
     </div>
   );
+}
+
+export default function QrCodePage() {
+    return (
+        <ProtectedRoute allowedRoles={['waiter', 'admin']}>
+            <QrCodePageContent />
+        </ProtectedRoute>
+    );
 }

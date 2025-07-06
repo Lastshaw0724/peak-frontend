@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { OrderProvider } from '@/components/providers/order-provider';
+import { AuthProvider } from '@/components/providers/auth-provider';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
@@ -21,10 +22,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen">
-        <OrderProvider>
-          {children}
-          <Toaster />
-        </OrderProvider>
+        <AuthProvider>
+          <OrderProvider>
+            {children}
+            <Toaster />
+          </OrderProvider>
+        </AuthProvider>
       </body>
     </html>
   );

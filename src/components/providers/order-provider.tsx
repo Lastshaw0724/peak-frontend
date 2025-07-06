@@ -8,8 +8,8 @@ interface OrderContextType {
   currentOrder: OrderItem[];
   submittedOrders: Order[];
   addItemToOrder: (item: MenuItem, quantity: number, customization?: string) => void;
-  removeItemFromOrder: (itemId: string) => void;
-  updateItemQuantity: (itemId: string, quantity: number) => void;
+  removeItemFromOrder: (itemId: string, customization?: string) => void;
+  updateItemQuantity: (itemId: string, quantity: number, customization?: string) => void;
   submitOrder: () => void;
   updateOrderStatus: (orderId: string, status: 'preparing' | 'ready') => void;
   clearCurrentOrder: () => void;
@@ -24,33 +24,35 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   const addItemToOrder = (item: MenuItem, quantity: number, customization?: string) => {
     setCurrentOrder((prevOrder) => {
-      const existingItem = prevOrder.find((orderItem) => orderItem.id === item.id && orderItem.customization === (customization || ''));
-      if (existingItem) {
-        return prevOrder.map((orderItem) =>
-          orderItem.id === item.id && orderItem.customization === (customization || '')
-            ? { ...orderItem, quantity: orderItem.quantity + quantity }
-            : orderItem
-        );
+      const existingItemIndex = prevOrder.findIndex(
+        (orderItem) => orderItem.id === item.id && orderItem.customization === (customization || undefined)
+      );
+
+      if (existingItemIndex > -1) {
+        const updatedOrder = [...prevOrder];
+        updatedOrder[existingItemIndex] = {
+          ...updatedOrder[existingItemIndex],
+          quantity: updatedOrder[existingItemIndex].quantity + quantity,
+        };
+        return updatedOrder;
       } else {
         return [...prevOrder, { ...item, quantity, customization }];
       }
     });
-    toast({
-      title: "Item Added",
-      description: `${item.name} has been added to the order.`,
-    });
   };
 
-  const removeItemFromOrder = (itemId: string) => {
-    setCurrentOrder((prevOrder) => prevOrder.filter((item) => item.id !== itemId));
+  const removeItemFromOrder = (itemId: string, customization?: string) => {
+      setCurrentOrder((prevOrder) => prevOrder.filter((item) => !(item.id === itemId && item.customization === customization)));
   };
 
-  const updateItemQuantity = (itemId: string, quantity: number) => {
+  const updateItemQuantity = (itemId: string, quantity: number, customization?: string) => {
     if (quantity <= 0) {
-      removeItemFromOrder(itemId);
+      removeItemFromOrder(itemId, customization);
     } else {
       setCurrentOrder((prevOrder) =>
-        prevOrder.map((item) => (item.id === itemId ? { ...item, quantity } : item))
+        prevOrder.map((item) =>
+          item.id === itemId && item.customization === customization ? { ...item, quantity } : item
+        )
       );
     }
   };
@@ -86,10 +88,6 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         order.id === orderId ? { ...order, status } : order
       )
     );
-     toast({
-      title: "Order Status Updated",
-      description: `Order ${orderId} is now ${status}.`,
-    });
   };
 
   const clearCurrentOrder = () => {

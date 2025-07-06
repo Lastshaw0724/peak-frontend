@@ -1,7 +1,9 @@
+'use client';
 import { AppHeader } from '@/components/header';
 import CustomerMenu from '@/components/menu/customer-menu';
+import ProtectedRoute from '@/components/auth/protected-route';
 
-export default function CustomerMenuPage() {
+function CustomerMenuPageContent() {
     return (
         <div className="bg-background min-h-screen">
             <AppHeader title="Our Menu" />
@@ -17,5 +19,13 @@ export default function CustomerMenuPage() {
                 <CustomerMenu />
             </main>
         </div>
+    );
+}
+
+export default function CustomerMenuPage() {
+    return (
+        <ProtectedRoute allowedRoles={['customer', 'waiter', 'admin']}>
+            <CustomerMenuPageContent />
+        </ProtectedRoute>
     );
 }
