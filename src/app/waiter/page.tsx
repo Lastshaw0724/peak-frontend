@@ -6,7 +6,7 @@ import ProtectedRoute from '@/components/auth/protected-route';
 function WaiterPageContent() {
   return (
     <div className="flex flex-col h-screen bg-background">
-      <AppHeader title="Waiter View" />
+      <AppHeader title="Point of Sale" />
       <WaiterInterface />
     </div>
   );
@@ -14,7 +14,7 @@ function WaiterPageContent() {
 
 export default function WaiterPage() {
     return (
-        <ProtectedRoute allowedRoles={['waiter', 'admin']}>
+        <ProtectedRoute allowedRoles={['waiter', 'admin', 'cashier']}>
             <WaiterPageContent />
         </ProtectedRoute>
     )

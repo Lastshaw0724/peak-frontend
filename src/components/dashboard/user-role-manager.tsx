@@ -1,24 +1,25 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import type { UserRole } from '@/lib/types';
+import type { User, UserRole } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export function UserRoleManager() {
-    const { users, updateUserRole } = useAuth();
+    const { user: currentUser, users, updateUserRole } = useAuth();
     const { toast } = useToast();
     const [userRoles, setUserRoles] = useState<Record<string, UserRole>>({});
 
-    if (!updateUserRole || !users) {
+    if (!updateUserRole || !users || !currentUser) {
         return <p>Loading user data...</p>;
     }
     
-    const pendingUsers = users.filter((u) => u.role === 'pending');
+    const manageableUsers = users.filter((u) => u.id !== currentUser.id);
 
     const handleRoleChange = (userId: string, role: UserRole) => {
         setUserRoles(prev => ({...prev, [userId]: role }));
@@ -28,8 +29,21 @@ export function UserRoleManager() {
         const newRole = userRoles[userId];
         if (newRole) {
             updateUserRole(userId, newRole);
-            toast({ title: 'Success', description: 'User role has been updated.' });
+            toast({ title: 'Rol Actualizado', description: 'El rol del usuario ha sido actualizado.' });
+            setUserRoles(prev => {
+                const newRoles = { ...prev };
+                delete newRoles[userId];
+                return newRoles;
+            });
         }
+    };
+
+    const roleDisplayNames: Record<string, string> = {
+      admin: 'Admin',
+      waiter: 'Mesero',
+      cook: 'Cocinero',
+      customer: 'Cliente',
+      cashier: 'Cajero',
     };
 
     return (
@@ -37,49 +51,63 @@ export function UserRoleManager() {
             <CardHeader>
                 <div className="flex items-center gap-4">
                      <Users className="h-8 w-8 text-primary" />
-                    <CardTitle className="text-2xl font-headline">Empleados</CardTitle>
+                    <CardTitle className="text-2xl font-headline">Gestión de Usuarios</CardTitle>
                 </div>
-                <CardDescription>Aprobar nuevos usuarios y asignarles un rol para concederles acceso.</CardDescription>
+                <CardDescription>Asigna roles a los usuarios registrados en el sistema. Los nuevos usuarios son 'Clientes' por defecto.</CardDescription>
             </CardHeader>
             <CardContent>
-                <h3 className="text-xl font-headline mb-4">Aprobaciones de nuevos usuarios</h3>
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>Nombre</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead className="w-[200px]">Asignar rol</TableHead>
-                            <TableHead className="w-[120px]">Acción</TableHead>
+                            <TableHead>Rol Actual</TableHead>
+                            <TableHead className="w-[200px]">Asignar Nuevo Rol</TableHead>
+                            <TableHead className="text-right">Acción</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {pendingUsers.length > 0 ? (
-                            pendingUsers.map(user => (
+                        {manageableUsers.length > 0 ? (
+                            manageableUsers.map(user => (
                                 <TableRow key={user.id}>
                                     <TableCell className="font-medium">{user.name}</TableCell>
                                     <TableCell>{user.email}</TableCell>
                                     <TableCell>
-                                        <Select onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}>
+                                        <Badge variant="secondary" className="capitalize">
+                                            {roleDisplayNames[user.role] || user.role}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Select 
+                                            value={userRoles[user.id] || user.role}
+                                            onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}
+                                        >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Seleccionar un rol" />
+                                                <SelectValue/>
                                             </SelectTrigger>
                                             <SelectContent>
+                                                <SelectItem value="customer">Cliente</SelectItem>
                                                 <SelectItem value="waiter">Mesero</SelectItem>
                                                 <SelectItem value="cook">Cocinero</SelectItem>
+                                                <SelectItem value="cashier">Cajero</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </TableCell>
-                                    <TableCell>
-                                        <Button size="sm" onClick={() => handleSave(user.id)} disabled={!userRoles[user.id]}>
-                                            Aprobar usuario
+                                    <TableCell className="text-right">
+                                        <Button 
+                                            size="sm" 
+                                            onClick={() => handleSave(user.id)} 
+                                            disabled={!userRoles[user.id] || userRoles[user.id] === user.role}
+                                        >
+                                            Guardar
                                         </Button>
                                     </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={4} className="text-center h-24">
-                                    No hay nuevos usuarios pendientes de aprobación.
+                                <TableCell colSpan={5} className="text-center h-24">
+                                    No hay otros usuarios registrados para gestionar.
                                 </TableCell>
                             </TableRow>
                         )}

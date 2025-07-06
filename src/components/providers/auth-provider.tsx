@@ -24,7 +24,7 @@ const roleRedirects: Record<UserRole, string> = {
   waiter: '/waiter',
   cook: '/kitchen',
   customer: '/menu',
-  pending: '/login', // Pending users stay on login page
+  cashier: '/waiter', // Cashiers can use the waiter interface
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -52,15 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (email: string, password: string) => {
     const foundUser = users.find((u) => u.email === email && u.password === password);
     if (foundUser) {
-      if (foundUser.role === 'pending') {
-        toast({
-          variant: 'destructive',
-          title: 'Login Failed',
-          description: 'Your account is still pending administrator approval.',
-        });
-        return;
-      }
-      
       const userToStore = { ...foundUser };
       delete userToStore.password; // Don't store password in session
       setUser(userToStore);
@@ -84,11 +75,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast({ variant: 'destructive', title: 'Registration Failed', description: 'A user with this email already exists.' });
       return;
     }
-    const newUser: User = { id: String(users.length + 1), name, email, password, role: 'pending' };
+    const newUser: User = { id: String(users.length + 1), name, email, password, role: 'customer' };
     setUsers([...users, newUser]);
     
     router.push('/login');
-    toast({ title: 'Registration Successful', description: `Your account is pending approval by an administrator.` });
+    toast({ title: 'Registration Successful', description: `Welcome! You can now log in to your account.` });
   };
 
   const updateUserRole = (userId: string, newRole: UserRole) => {

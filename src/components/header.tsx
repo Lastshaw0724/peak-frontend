@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import { LogOut, UserCircle, LayoutDashboard, Utensils, BookOpen, ChefHat, NotebookPen, QrCode } from 'lucide-react';
+import { LogOut, UserCircle, LayoutDashboard, Utensils, BookOpen, ChefHat, NotebookPen, QrCode, CircleDollarSign } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ export function AppHeader({ title }: { title: string }) {
   const router = useRouter();
 
   const getInitials = (name: string) => {
+    if(!name) return '';
     const names = name.split(' ');
     if (names.length > 1) {
         return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
@@ -73,6 +74,12 @@ export function AppHeader({ title }: { title: string }) {
                          <DropdownMenuItem onClick={() => navigate('/waiter')}>
                             <NotebookPen className="mr-2 h-4 w-4" />
                             <span>Waiter View</span>
+                        </DropdownMenuItem>
+                    )}
+                    {user.role === 'cashier' && (
+                         <DropdownMenuItem onClick={() => navigate('/waiter')}>
+                            <CircleDollarSign className="mr-2 h-4 w-4" />
+                            <span>Cashier View</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'cook' && (

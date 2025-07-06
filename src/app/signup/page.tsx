@@ -26,7 +26,7 @@ export default function SignupPage() {
         <CardHeader className="text-center">
           <Logo className="w-32 h-auto mx-auto mb-4" />
           <CardTitle className="font-headline text-3xl">Create an Account</CardTitle>
-          <CardDescription>Join GustoGo. Your account will require admin approval.</CardDescription>
+          <CardDescription>Join GustoGo to browse our menu and place orders.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSignup}>
           <CardContent className="space-y-4">
