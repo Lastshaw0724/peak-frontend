@@ -4,6 +4,7 @@ import { OrderProvider } from '@/components/providers/order-provider';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import { Toaster } from "@/components/ui/toaster"
 import { SurveyProvider } from '@/components/providers/survey-provider';
+import { TableProvider } from '@/components/providers/table-provider';
 
 export const metadata: Metadata = {
   title: 'GustoGo | Restaurant System',
@@ -25,10 +26,12 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen">
         <AuthProvider>
           <SurveyProvider>
-            <OrderProvider>
-              {children}
-              <Toaster />
-            </OrderProvider>
+            <TableProvider>
+              <OrderProvider>
+                {children}
+                <Toaster />
+              </OrderProvider>
+            </TableProvider>
           </SurveyProvider>
         </AuthProvider>
       </body>

@@ -1,61 +1,50 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTable } from '@/hooks/use-table';
+import type { Table, TableStatus } from '@/components/providers/table-provider';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-type TableStatus = 'available' | 'occupied' | 'reserved';
-
-interface Table {
-  id: string;
-  name: string;
-  status: TableStatus;
-}
-
-// All tables start as available
-const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
-  id: `t${i + 1}`,
-  name: `Mesa #${i + 1}`,
-  status: 'available',
-}));
-
 const statusColors: Record<TableStatus, string> = {
   available: 'bg-green-500',
   occupied: 'bg-red-500',
-  reserved: 'bg-yellow-500', // Kept for potential future use
+  reserved: 'bg-yellow-500',
 };
 
 export default function AssignTablePage() {
-  const [tables, setTables] = useState<Table[]>(initialTables);
+  const { tables, updateTableStatus } = useTable();
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const tablesPerPage = 8;
+  const router = useRouter();
 
   const totalPages = Math.ceil(tables.length / tablesPerPage);
   const currentTables = tables.slice(
     (currentPage - 1) * tablesPerPage,
     currentPage * tablesPerPage
   );
+  
+  const selectedTable = tables.find(t => t.id === selectedTableId);
 
   const handleSelectTable = (table: Table) => {
-    if (table.status === 'available') {
-      setSelectedTableId(table.id === selectedTableId ? null : table.id);
-    }
+    setSelectedTableId(table.id === selectedTableId ? null : table.id);
   };
 
   const handleAssignTable = () => {
     if (!selectedTableId) return;
-
-    setTables(prevTables =>
-      prevTables.map(table =>
-        table.id === selectedTableId ? { ...table, status: 'occupied' } : table
-      )
-    );
-    
-    setSelectedTableId(null); // Deselect after assigning
+    updateTableStatus(selectedTableId, 'occupied');
+    router.push('/waiter/pos');
   };
+  
+  const handleFreeTable = () => {
+      if (!selectedTableId) return;
+      updateTableStatus(selectedTableId, 'available');
+      setSelectedTableId(null);
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
@@ -72,13 +61,11 @@ export default function AssignTablePage() {
             <button
               key={table.id}
               onClick={() => handleSelectTable(table)}
-              disabled={table.status !== 'available'}
               className={cn(
                 "relative flex items-center justify-center aspect-square rounded-lg border-2 text-white font-bold text-xl transition-all",
                 "bg-zinc-800/80 border-zinc-700",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                selectedTableId === table.id && "border-blue-500 ring-2 ring-blue-500",
-                table.status === 'available' && "hover:bg-zinc-700"
+                "hover:bg-zinc-700",
+                selectedTableId === table.id && "border-blue-500 ring-2 ring-blue-500"
               )}
             >
               <span>{table.name}</span>
@@ -113,14 +100,23 @@ export default function AssignTablePage() {
             </Button>
           </div>
 
-          <div className="flex gap-4">
-            <Button variant="ghost" className="bg-zinc-700 hover:bg-zinc-600" onClick={() => setSelectedTableId(null)}>Cancelar</Button>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => setSelectedTableId(null)} className="bg-zinc-700 hover:bg-zinc-600">
+              Cancelar
+            </Button>
             <Button 
               className="bg-purple-600 hover:bg-purple-700 text-white"
-              disabled={!selectedTableId}
+              disabled={!selectedTable || selectedTable.status !== 'available'}
               onClick={handleAssignTable}
             >
-              Asignar
+              Asignar y tomar pedido
+            </Button>
+             <Button 
+              variant="destructive"
+              disabled={!selectedTable || selectedTable.status !== 'occupied'}
+              onClick={handleFreeTable}
+            >
+              Liberar Mesa
             </Button>
           </div>
         </div>
