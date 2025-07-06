@@ -14,42 +14,47 @@ interface Table {
   status: TableStatus;
 }
 
-const tablesData: Table[] = [
-  { id: 't1', name: 'Mesa #1', status: 'occupied' },
-  { id: 't2', name: 'Mesa #2', status: 'available' },
-  { id: 't3', name: 'Mesa #3', status: 'occupied' },
-  { id: 't4', name: 'Mesa #4', status: 'available' },
-  { id: 't5', name: 'Mesa #5', status: 'occupied' },
-  { id: 't6', name: 'Mesa #6', status: 'reserved' },
-  { id: 't7', name: 'Mesa #7', status: 'available' },
-  { id: 't8', name: 'Mesa #8', status: 'occupied' },
-  { id: 't9', name: 'Mesa #9', status: 'available' },
-  { id: 't10', name: 'Mesa #10', status: 'available' },
-  { id: 't11', name: 'Mesa #11', status: 'occupied' },
-  { id: 't12', name: 'Mesa #12', status: 'available' },
-];
+// All tables start as available
+const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
+  id: `t${i + 1}`,
+  name: `Mesa #${i + 1}`,
+  status: 'available',
+}));
 
 const statusColors: Record<TableStatus, string> = {
   available: 'bg-green-500',
   occupied: 'bg-red-500',
-  reserved: 'bg-yellow-500',
+  reserved: 'bg-yellow-500', // Kept for potential future use
 };
 
 export default function AssignTablePage() {
-  const [selectedTable, setSelectedTable] = useState<string | null>(null);
+  const [tables, setTables] = useState<Table[]>(initialTables);
+  const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const tablesPerPage = 8;
 
-  const totalPages = Math.ceil(tablesData.length / tablesPerPage);
-  const currentTables = tablesData.slice(
+  const totalPages = Math.ceil(tables.length / tablesPerPage);
+  const currentTables = tables.slice(
     (currentPage - 1) * tablesPerPage,
     currentPage * tablesPerPage
   );
 
   const handleSelectTable = (table: Table) => {
     if (table.status === 'available') {
-      setSelectedTable(table.id === selectedTable ? null : table.id);
+      setSelectedTableId(table.id === selectedTableId ? null : table.id);
     }
+  };
+
+  const handleAssignTable = () => {
+    if (!selectedTableId) return;
+
+    setTables(prevTables =>
+      prevTables.map(table =>
+        table.id === selectedTableId ? { ...table, status: 'occupied' } : table
+      )
+    );
+    
+    setSelectedTableId(null); // Deselect after assigning
   };
 
   return (
@@ -72,7 +77,7 @@ export default function AssignTablePage() {
                 "relative flex items-center justify-center aspect-square rounded-lg border-2 text-white font-bold text-xl transition-all",
                 "bg-zinc-800/80 border-zinc-700",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                selectedTable === table.id && "border-blue-500 ring-2 ring-blue-500",
+                selectedTableId === table.id && "border-blue-500 ring-2 ring-blue-500",
                 table.status === 'available' && "hover:bg-zinc-700"
               )}
             >
@@ -109,10 +114,11 @@ export default function AssignTablePage() {
           </div>
 
           <div className="flex gap-4">
-            <Button variant="ghost" className="bg-zinc-700 hover:bg-zinc-600">Cancelar</Button>
+            <Button variant="ghost" className="bg-zinc-700 hover:bg-zinc-600" onClick={() => setSelectedTableId(null)}>Cancelar</Button>
             <Button 
               className="bg-purple-600 hover:bg-purple-700 text-white"
-              disabled={!selectedTable}
+              disabled={!selectedTableId}
+              onClick={handleAssignTable}
             >
               Asignar
             </Button>
