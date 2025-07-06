@@ -9,9 +9,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface AuthContextType {
   user: User | null;
+  users: User[];
   login: (email: string, password: string) => void;
   logout: () => void;
-  register: (name: string, email: string, password: string, role: UserRole) => void;
+  register: (name: string, email: string, password: string) => void;
+  updateUserRole: (userId: string, newRole: UserRole) => void;
   isLoading: boolean;
 }
 
@@ -22,6 +24,7 @@ const roleRedirects: Record<UserRole, string> = {
   waiter: '/waiter',
   cook: '/kitchen',
   customer: '/menu',
+  pending: '/login', // Pending users stay on login page
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -49,6 +52,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (email: string, password: string) => {
     const foundUser = users.find((u) => u.email === email && u.password === password);
     if (foundUser) {
+      if (foundUser.role === 'pending') {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: 'Your account is still pending administrator approval.',
+        });
+        return;
+      }
+      
       const userToStore = { ...foundUser };
       delete userToStore.password; // Don't store password in session
       setUser(userToStore);
@@ -67,25 +79,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
   };
 
-  const register = (name: string, email: string, password: string, role: UserRole) => {
+  const register = (name: string, email: string, password: string) => {
     if (users.some((u) => u.email === email)) {
       toast({ variant: 'destructive', title: 'Registration Failed', description: 'A user with this email already exists.' });
       return;
     }
-    const newUser: User = { id: String(users.length + 1), name, email, password, role };
+    const newUser: User = { id: String(users.length + 1), name, email, password, role: 'pending' };
     setUsers([...users, newUser]);
     
-    // Log in the new user immediately
-    const userToStore = { ...newUser };
-    delete userToStore.password;
-    setUser(userToStore);
-    sessionStorage.setItem('gustogo-user', JSON.stringify(userToStore));
-    router.push(roleRedirects[newUser.role]);
-    toast({ title: 'Registration Successful', description: `Welcome, ${name}!` });
+    router.push('/login');
+    toast({ title: 'Registration Successful', description: `Your account is pending approval by an administrator.` });
+  };
+
+  const updateUserRole = (userId: string, newRole: UserRole) => {
+      setUsers(prevUsers =>
+          prevUsers.map(u => (u.id === userId ? { ...u, role: newRole } : u))
+      );
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, isLoading }}>
+    <AuthContext.Provider value={{ user, users, login, logout, register, updateUserRole, isLoading }}>
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <Skeleton className="w-64 h-32" />
