@@ -30,7 +30,8 @@ export function WaiterOrderCard({ order }: { order: Order }) {
             {currentStatus.label}
           </Badge>
         </div>
-        <CardDescription className="text-xs">{order.timestamp.toLocaleTimeString()}</CardDescription>
+        <CardDescription className="text-sm font-semibold pt-1">{order.tableName} - {order.customerName}</CardDescription>
+        <CardDescription className="text-xs pt-1">{order.timestamp.toLocaleTimeString()}</CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-2">
         {order.items.map((item, index) => (

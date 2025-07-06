@@ -10,7 +10,7 @@ interface OrderContextType {
   addItemToOrder: (item: MenuItem, quantity: number) => void;
   removeItemFromOrder: (itemId: string) => void;
   updateItemQuantity: (itemId: string, quantity: number) => void;
-  submitOrder: () => void;
+  submitOrder: (details: { customerName: string; paymentMethod: 'efectivo' | 'transferencia'; tableId: string; tableName: string; }) => void;
   updateOrderStatus: (orderId: string, status: 'preparing' | 'ready') => void;
   clearCurrentOrder: () => void;
 }
@@ -57,7 +57,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
-  const submitOrder = () => {
+  const submitOrder = (details: { customerName: string; paymentMethod: 'efectivo' | 'transferencia'; tableId: string; tableName: string; }) => {
     if (currentOrder.length === 0) {
       toast({
         variant: "destructive",
@@ -73,6 +73,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       total,
       timestamp: new Date(),
       status: 'new',
+      ...details
     };
     setSubmittedOrders((prev) => [newOrder, ...prev]);
     setCurrentOrder([]);

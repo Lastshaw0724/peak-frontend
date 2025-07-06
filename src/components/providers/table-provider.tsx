@@ -19,12 +19,15 @@ const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
 interface TableContextType {
   tables: Table[];
   updateTableStatus: (tableId: string, status: TableStatus) => void;
+  activeTable: Table | null;
+  setActiveTable: (table: Table | null) => void;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);
 
 export const TableProvider = ({ children }: { children: ReactNode }) => {
   const [tables, setTables] = useState<Table[]>(initialTables);
+  const [activeTable, setActiveTable] = useState<Table | null>(null);
 
   const updateTableStatus = (tableId: string, status: TableStatus) => {
     setTables((prevTables) =>
@@ -35,7 +38,7 @@ export const TableProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TableContext.Provider value={{ tables, updateTableStatus }}>
+    <TableContext.Provider value={{ tables, updateTableStatus, activeTable, setActiveTable }}>
       {children}
     </TableContext.Provider>
   );

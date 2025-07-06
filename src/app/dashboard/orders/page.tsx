@@ -31,8 +31,11 @@ export default function OrderHistoryPage() {
                         <TableRow>
                             <TableHead>ID Pedido</TableHead>
                             <TableHead>Fecha</TableHead>
+                            <TableHead>Mesa</TableHead>
+                            <TableHead>Cliente</TableHead>
                             <TableHead>Estado</TableHead>
                             <TableHead>Artículos</TableHead>
+                            <TableHead>Método de Pago</TableHead>
                             <TableHead className="text-right">Total</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -41,23 +44,26 @@ export default function OrderHistoryPage() {
                             <TableRow key={order.id}>
                                 <TableCell className="font-mono">#{order.id.slice(-6)}</TableCell>
                                 <TableCell>{order.timestamp.toLocaleString()}</TableCell>
+                                <TableCell>{order.tableName}</TableCell>
+                                <TableCell>{order.customerName}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
                                         {order.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <ul className="list-disc list-inside">
+                                    <ul className="list-disc list-inside text-xs">
                                         {order.items.map(item => (
                                             <li key={item.id}>{item.quantity}x {item.name}</li>
                                         ))}
                                     </ul>
                                 </TableCell>
+                                <TableCell className="capitalize">{order.paymentMethod}</TableCell>
                                 <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
                             </TableRow>
                         )) : (
                              <TableRow>
-                                <TableCell colSpan={5} className="text-center h-24">
+                                <TableCell colSpan={8} className="text-center h-24">
                                     Aún no hay pedidos registrados.
                                 </TableCell>
                             </TableRow>

@@ -25,6 +25,10 @@ export interface OrderItem extends MenuItem {
 
 export interface Order {
   id: string;
+  tableId: string;
+  tableName: string;
+  customerName: string;
+  paymentMethod: 'efectivo' | 'transferencia';
   items: OrderItem[];
   total: number;
   timestamp: Date;

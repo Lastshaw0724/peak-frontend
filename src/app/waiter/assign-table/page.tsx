@@ -16,7 +16,7 @@ const statusColors: Record<TableStatus, string> = {
 };
 
 export default function AssignTablePage() {
-  const { tables, updateTableStatus } = useTable();
+  const { tables, updateTableStatus, activeTable, setActiveTable } = useTable();
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const tablesPerPage = 8;
@@ -36,13 +36,20 @@ export default function AssignTablePage() {
 
   const handleAssignTable = () => {
     if (!selectedTableId) return;
+    const tableToAssign = tables.find(t => t.id === selectedTableId);
+    if (!tableToAssign) return;
+
     updateTableStatus(selectedTableId, 'occupied');
+    setActiveTable(tableToAssign);
     router.push('/waiter/pos');
   };
   
   const handleFreeTable = () => {
       if (!selectedTableId) return;
       updateTableStatus(selectedTableId, 'available');
+      if (activeTable?.id === selectedTableId) {
+        setActiveTable(null);
+      }
       setSelectedTableId(null);
   }
 

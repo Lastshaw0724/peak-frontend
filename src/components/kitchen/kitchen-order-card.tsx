@@ -20,9 +20,12 @@ export function KitchenOrderCard({ order }: { order: Order }) {
   return (
     <Card className={cn("transition-all duration-300 border-2", cardBorderColor[order.status])}>
       <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="font-headline text-xl">Order #{order.id.slice(-4)}</CardTitle>
-          <CardDescription>{order.timestamp.toLocaleTimeString()}</CardDescription>
+        <div className="flex justify-between items-start">
+            <div>
+                 <CardTitle className="font-headline text-xl">Orden #{order.id.slice(-4)}</CardTitle>
+                 <CardDescription className="font-semibold pt-1">{order.tableName}</CardDescription>
+            </div>
+            <CardDescription>{order.timestamp.toLocaleTimeString()}</CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
