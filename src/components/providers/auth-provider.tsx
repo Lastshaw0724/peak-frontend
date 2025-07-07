@@ -14,6 +14,7 @@ interface AuthContextType {
   logout: () => void;
   register: (name: string, email: string, password: string) => void;
   updateUserRole: (userId: string, newRole: UserRole) => void;
+  deleteUser: (userId: string) => void;
   isLoading: boolean;
 }
 
@@ -124,8 +125,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
   };
 
+  const deleteUser = (userId: string) => {
+      const updatedUsers = users.filter(u => u.id !== userId);
+      persistUsers(updatedUsers);
+      toast({ title: 'Usuario Eliminado', description: 'El usuario ha sido eliminado correctamente.' });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, users, login, logout, register, updateUserRole, isLoading }}>
+    <AuthContext.Provider value={{ user, users, login, logout, register, updateUserRole, deleteUser, isLoading }}>
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <Skeleton className="w-full h-screen" />

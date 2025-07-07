@@ -7,15 +7,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Users } from 'lucide-react';
+import { Users, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function UserRoleManager() {
-    const { user: currentUser, users, updateUserRole } = useAuth();
+    const { user: currentUser, users, updateUserRole, deleteUser } = useAuth();
     const { toast } = useToast();
     const [userRoles, setUserRoles] = useState<Record<string, UserRole>>({});
 
-    if (!updateUserRole || !users || !currentUser) {
+    if (!updateUserRole || !users || !currentUser || !deleteUser) {
         return <p>Loading user data...</p>;
     }
     
@@ -63,7 +74,7 @@ export function UserRoleManager() {
                             <TableHead>Email</TableHead>
                             <TableHead>Rol Actual</TableHead>
                             <TableHead className="w-[200px]">Asignar Nuevo Rol</TableHead>
-                            <TableHead className="text-right">Acción</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -94,13 +105,38 @@ export function UserRoleManager() {
                                         </Select>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <Button 
-                                            size="sm" 
-                                            onClick={() => handleSave(user.id)} 
-                                            disabled={!userRoles[user.id] || userRoles[user.id] === user.role}
-                                        >
-                                            Guardar
-                                        </Button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button 
+                                                size="sm" 
+                                                onClick={() => handleSave(user.id)} 
+                                                disabled={!userRoles[user.id] || userRoles[user.id] === user.role}
+                                            >
+                                                Guardar
+                                            </Button>
+                                             <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="icon" className="h-9 w-9">
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Eliminar usuario</span>
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente al usuario 
+                                                            <span className="font-semibold"> {user.name}</span> y sus datos del sistema.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => deleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))
