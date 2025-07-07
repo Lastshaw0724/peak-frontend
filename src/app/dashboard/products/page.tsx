@@ -1,9 +1,14 @@
 'use client'
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Package, PlusCircle, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import { menuData } from '@/lib/menu-data';
+import { useMenu } from '@/hooks/use-menu';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -13,7 +18,69 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Image from 'next/image';
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+    DialogClose,
+} from "@/components/ui/dialog"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import type { MenuItem } from '@/lib/types';
+
+const productSchema = z.object({
+    name: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
+    description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
+    price: z.coerce.number().positive("El precio debe ser un número positivo."),
+    category: z.enum(['Appetizers', 'Main Courses', 'Desserts', 'Drinks']),
+    image: z.string().url("Debe ser una URL de imagen válida."),
+});
+
+
 export default function ProductsPage() {
+    const { menu, addProduct } = useMenu();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const form = useForm<z.infer<typeof productSchema>>({
+        resolver: zodResolver(productSchema),
+        defaultValues: {
+            name: "",
+            description: "",
+            price: 0,
+            category: "Main Courses",
+            image: "",
+        },
+    });
+
+    function onSubmit(values: z.infer<typeof productSchema>) {
+        const newProductData: Omit<MenuItem, 'id'> = {
+            ...values,
+            dataAiHint: values.name.toLowerCase().split(' ').slice(0, 2).join(' '),
+        };
+        addProduct(newProductData);
+        form.reset();
+        setIsDialogOpen(false);
+    }
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-4">
@@ -24,10 +91,107 @@ export default function ProductsPage() {
                         <CardDescription>Gestiona los productos de tu menú.</CardDescription>
                     </div>
                 </div>
-                <Button>
-                    <PlusCircle className="mr-2" />
-                    Añadir Producto
-                </Button>
+                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button>
+                            <PlusCircle className="mr-2" />
+                            Añadir Producto
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Añadir Nuevo Producto</DialogTitle>
+                            <DialogDescription>
+                                Completa los detalles del nuevo producto para añadirlo al menú.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nombre</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Ej: Pizza Margherita" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Descripción</FormLabel>
+                                            <FormControl>
+                                                <Textarea placeholder="Describe el producto..." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                 <FormField
+                                    control={form.control}
+                                    name="price"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Precio</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" step="0.01" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="category"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Categoría</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Selecciona una categoría" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="Appetizers">Entradas</SelectItem>
+                                                    <SelectItem value="Main Courses">Platos Fuertes</SelectItem>
+                                                    <SelectItem value="Desserts">Postres</SelectItem>
+                                                    <SelectItem value="Drinks">Bebidas</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                 <FormField
+                                    control={form.control}
+                                    name="image"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>URL de la Imagen</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="https://placehold.co/600x400.png" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                      <Button type="button" variant="secondary">Cancelar</Button>
+                                    </DialogClose>
+                                    <Button type="submit">Guardar Producto</Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -41,7 +205,7 @@ export default function ProductsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {menuData.map((item) => (
+                        {menu.map((item) => (
                              <TableRow key={item.id}>
                                 <TableCell className="hidden sm:table-cell">
                                     <Image

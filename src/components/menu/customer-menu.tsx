@@ -1,10 +1,11 @@
-import { menuData } from '@/lib/menu-data';
+import { useMenu } from '@/hooks/use-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import type { MenuItem } from '@/lib/types';
 
 export default function CustomerMenu() {
-  const groupedMenu = menuData.reduce((acc, item) => {
+  const { menu } = useMenu();
+  const groupedMenu = menu.reduce((acc, item) => {
     (acc[item.category] = acc[item.category] || []).push(item);
     return acc;
   }, {} as Record<string, MenuItem[]>);

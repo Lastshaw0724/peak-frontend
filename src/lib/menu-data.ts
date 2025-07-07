@@ -1,6 +1,6 @@
 import type { MenuItem } from './types';
 
-export const menuData: MenuItem[] = [
+export const initialMenuData: MenuItem[] = [
   {
     id: 'app-01',
     name: 'Bruschetta al Pomodoro',

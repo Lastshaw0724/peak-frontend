@@ -1,11 +1,12 @@
 'use client';
-import { menuData } from '@/lib/menu-data';
+import { useMenu } from '@/hooks/use-menu';
 import { MenuItemCard } from './menu-item-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { MenuItem } from '@/lib/types';
 
 export function MenuDisplay() {
-  const categories = [...new Set(menuData.map(item => item.category))];
+  const { menu } = useMenu();
+  const categories = [...new Set(menu.map(item => item.category))];
   
   const categoryTranslations: Record<string, string> = {
       'Appetizers': 'Entradas',
@@ -17,7 +18,7 @@ export function MenuDisplay() {
   const categoryOrder = ['Appetizers', 'Main Courses', 'Desserts', 'Drinks'];
   const orderedCategories = categoryOrder.filter(c => categories.includes(c));
 
-  const groupedMenu = menuData.reduce((acc, item) => {
+  const groupedMenu = menu.reduce((acc, item) => {
     (acc[item.category] = acc[item.category] || []).push(item);
     return acc;
   }, {} as Record<string, MenuItem[]>);
@@ -25,7 +26,7 @@ export function MenuDisplay() {
   return (
     <div className="p-4 sm:p-6 text-white">
       <h2 className="text-4xl font-bold font-headline mb-6 text-center uppercase">Cartilla</h2>
-      <Tabs defaultValue={orderedCategories[0]} className="w-full">
+      <Tabs defaultValue={orderedCategories.length > 0 ? orderedCategories[0] : ''} className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-zinc-800 h-auto">
             {orderedCategories.map(category => (
                 <TabsTrigger key={category} value={category} className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-sm whitespace-normal">
