@@ -5,15 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import { History } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { cn } from '@/lib/utils';
+import type { OrderStatus } from '@/lib/types';
 
 
 export default function OrderHistoryPage() {
     const { submittedOrders } = useOrder();
 
-    const statusColors = {
+    const statusColors: Record<OrderStatus, string> = {
         new: 'bg-red-500/20 text-red-400 border-red-500/30',
         preparing: 'bg-primary/20 text-primary/80 border-primary/30',
         ready: 'bg-green-500/20 text-green-400 border-green-500/30',
+        delivered: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
     }
 
     return (

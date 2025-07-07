@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import type { OrderItem, Order, MenuItem } from '@/lib/types';
+import type { OrderItem, Order, MenuItem, OrderStatus } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderContextType {
@@ -11,7 +11,7 @@ interface OrderContextType {
   removeItemFromOrder: (itemId: string) => void;
   updateItemQuantity: (itemId: string, quantity: number) => void;
   submitOrder: (details: { customerName: string; paymentMethod: 'efectivo' | 'transferencia'; tableId: string; tableName: string; }) => void;
-  updateOrderStatus: (orderId: string, status: 'preparing' | 'ready') => void;
+  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   clearCurrentOrder: () => void;
 }
 
@@ -130,7 +130,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const updateOrderStatus = (orderId: string, status: 'preparing' | 'ready') => {
+  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
     const updatedOrders = submittedOrders.map((order) =>
         order.id === orderId ? { ...order, status } : order
     );

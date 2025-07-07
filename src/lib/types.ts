@@ -23,6 +23,8 @@ export interface OrderItem extends MenuItem {
   quantity: number;
 }
 
+export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered';
+
 export interface Order {
   id: string;
   tableId: string;
@@ -32,7 +34,7 @@ export interface Order {
   items: OrderItem[];
   total: number;
   timestamp: Date;
-  status: 'new' | 'preparing' | 'ready';
+  status: OrderStatus;
 }
 
 export interface Survey {
