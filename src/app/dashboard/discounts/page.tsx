@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Percent, PlusCircle } from 'lucide-react';
+import { Percent, PlusCircle, Trash2 } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -20,6 +20,17 @@ import {
     DialogFooter,
     DialogClose,
 } from "@/components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
     Form,
     FormControl,
@@ -83,6 +94,15 @@ export default function DiscountsPage() {
         setDiscounts(prev =>
             prev.map(d => (d.id === id ? { ...d, status: newStatus } : d))
         );
+    };
+
+    const handleDeleteDiscount = (id: string) => {
+        setDiscounts(prev => prev.filter(d => d.id !== id));
+        toast({
+            title: "Descuento Eliminado",
+            description: "El descuento ha sido eliminado correctamente.",
+            variant: "destructive",
+        });
     };
 
     return (
@@ -183,7 +203,7 @@ export default function DiscountsPage() {
                             <TableHead>Valor</TableHead>
                             <TableHead>Usos</TableHead>
                              <TableHead>Expira</TableHead>
-                            <TableHead className="text-right">Activo</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -195,11 +215,35 @@ export default function DiscountsPage() {
                                 <TableCell>{discount.used}</TableCell>
                                 <TableCell>{discount.expires}</TableCell>
                                 <TableCell className="text-right">
-                                    <Switch
-                                        checked={discount.status}
-                                        onCheckedChange={(checked) => handleStatusChange(discount.id, checked)}
-                                        aria-label={`Activate discount ${discount.name}`}
-                                    />
+                                    <div className="flex justify-end items-center gap-2">
+                                        <Switch
+                                            checked={discount.status}
+                                            onCheckedChange={(checked) => handleStatusChange(discount.id, checked)}
+                                            aria-label={`Activate discount ${discount.name}`}
+                                        />
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" size="icon" className="h-9 w-9">
+                                                    <Trash2 className="h-4 w-4" />
+                                                    <span className="sr-only">Eliminar descuento</span>
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el descuento "{discount.name}".
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleDeleteDiscount(discount.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                        Sí, eliminar
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
                                 </TableCell>
                              </TableRow>
                         ))}
