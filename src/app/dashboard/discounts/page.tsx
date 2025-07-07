@@ -40,15 +40,8 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast";
+import { useDiscount } from '@/hooks/use-discount';
 
-
-const initialDiscounts = [
-  { id: 'dsc-1', name: 'Martes Loco', code: 'MARTES20', value: '20%', status: true, used: 45, expires: '31/12/2024' },
-  { id: 'dsc-2', name: 'Combo Pareja', code: 'AMOR10', value: '$10.00', status: true, used: 120, expires: 'N/A' },
-  { id: 'dsc-3', name: 'Descuento de Verano', code: 'VERANO15', value: '15%', status: false, used: 210, expires: '30/08/2024' },
-  { id: 'dsc-4', name: 'Primera Compra', code: 'NUEVO', value: '25%', status: true, used: 88, expires: 'N/A' },
-];
 
 const discountSchema = z.object({
     name: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
@@ -59,9 +52,8 @@ const discountSchema = z.object({
 
 
 export default function DiscountsPage() {
-    const [discounts, setDiscounts] = useState(initialDiscounts);
+    const { discounts, addDiscount, updateDiscountStatus, deleteDiscount } = useDiscount();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const { toast } = useToast();
 
     const form = useForm<z.infer<typeof discountSchema>>({
         resolver: zodResolver(discountSchema),
@@ -74,36 +66,14 @@ export default function DiscountsPage() {
     });
 
     function onSubmit(values: z.infer<typeof discountSchema>) {
-        const newDiscount = {
-            id: `dsc-${Date.now()}`,
+        const newDiscountData = {
             ...values,
             expires: values.expires || 'N/A',
-            status: true,
-            used: 0,
         };
-        setDiscounts(prev => [...prev, newDiscount]);
-        toast({
-            title: "Descuento Creado",
-            description: `El descuento "${newDiscount.name}" ha sido añadido.`
-        });
+        addDiscount(newDiscountData);
         form.reset();
         setIsDialogOpen(false);
     }
-
-    const handleStatusChange = (id: string, newStatus: boolean) => {
-        setDiscounts(prev =>
-            prev.map(d => (d.id === id ? { ...d, status: newStatus } : d))
-        );
-    };
-
-    const handleDeleteDiscount = (id: string) => {
-        setDiscounts(prev => prev.filter(d => d.id !== id));
-        toast({
-            title: "Descuento Eliminado",
-            description: "El descuento ha sido eliminado correctamente.",
-            variant: "destructive",
-        });
-    };
 
     return (
         <Card>
@@ -218,7 +188,7 @@ export default function DiscountsPage() {
                                     <div className="flex justify-end items-center gap-2">
                                         <Switch
                                             checked={discount.status}
-                                            onCheckedChange={(checked) => handleStatusChange(discount.id, checked)}
+                                            onCheckedChange={(checked) => updateDiscountStatus(discount.id, checked)}
                                             aria-label={`Activate discount ${discount.name}`}
                                         />
                                         <AlertDialog>
@@ -237,7 +207,7 @@ export default function DiscountsPage() {
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleDeleteDiscount(discount.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                    <AlertDialogAction onClick={() => deleteDiscount(discount.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                                                         Sí, eliminar
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>

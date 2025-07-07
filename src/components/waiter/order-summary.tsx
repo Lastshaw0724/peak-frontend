@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
 import { useToast } from '@/hooks/use-toast';
+import { useDiscount } from '@/hooks/use-discount';
+import type { Discount } from '@/lib/types';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,22 +15,50 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Plus, Minus, Trash2, Send } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Minus, Trash2, Send, TicketPercent } from 'lucide-react';
 
 export function OrderSummary() {
   const { currentOrder, updateItemQuantity, removeItemFromOrder, submitOrder, clearCurrentOrder } = useOrder();
   const { activeTable, setActiveTable } = useTable();
+  const { discounts } = useDiscount();
   const { toast } = useToast();
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo');
+  const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);
 
-  const total = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const availableDiscounts = discounts.filter(d => d.status);
+  
+  const subtotal = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  let discountAmount = 0;
+  if (selectedDiscount) {
+    if (selectedDiscount.value.includes('%')) {
+      const percentage = parseFloat(selectedDiscount.value.replace('%', '')) / 100;
+      discountAmount = subtotal * percentage;
+    } else {
+      discountAmount = parseFloat(selectedDiscount.value.replace(/[^0-9.]/g, ''));
+    }
+  }
+  discountAmount = Math.min(subtotal, discountAmount);
+  
+  const total = subtotal - discountAmount;
 
   const handleClearOrder = () => {
     clearCurrentOrder();
     setActiveTable(null);
+    setSelectedDiscount(null);
+  };
+
+  const handleDiscountChange = (discountCode: string) => {
+    if (discountCode === "none") {
+        setSelectedDiscount(null);
+        return;
+    }
+    const discount = availableDiscounts.find(d => d.code === discountCode) || null;
+    setSelectedDiscount(discount);
   };
 
   const handleSubmit = () => {
@@ -45,11 +76,13 @@ export function OrderSummary() {
         paymentMethod,
         tableId: activeTable.id,
         tableName: activeTable.name,
+        appliedDiscount: selectedDiscount,
     });
     
     setActiveTable(null);
     setIsCheckoutOpen(false);
     setCustomerName('');
+    setSelectedDiscount(null);
   };
 
   return (
@@ -98,6 +131,33 @@ export function OrderSummary() {
       {currentOrder.length > 0 && (
         <>
           <CardFooter className="flex-col !items-stretch gap-4 p-6 border-t">
+            <div className="space-y-2">
+                <div className="flex justify-between items-center text-md">
+                    <span className="text-muted-foreground">Subtotal:</span>
+                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Label htmlFor="discount-select" className="text-muted-foreground flex-shrink-0">Descuento:</Label>
+                    <Select onValueChange={handleDiscountChange} defaultValue="none">
+                        <SelectTrigger id="discount-select" className="h-9">
+                            <SelectValue placeholder="Aplicar descuento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                             <SelectItem value="none">Ninguno</SelectItem>
+                            {availableDiscounts.map(d => (
+                                <SelectItem key={d.id} value={d.code}>{d.name} ({d.value})</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                {selectedDiscount && (
+                    <div className="flex justify-between items-center text-md text-destructive">
+                        <span>{selectedDiscount.name} ({selectedDiscount.code})</span>
+                        <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                )}
+            </div>
+
             <Separator />
             <div className="flex justify-between items-center text-xl font-bold">
               <span>Total:</span>

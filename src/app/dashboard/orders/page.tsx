@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { History } from 'lucide-react';
+import { History, TicketPercent } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { cn } from '@/lib/utils';
 import type { OrderStatus } from '@/lib/types';
@@ -47,7 +47,8 @@ export default function OrderHistoryPage() {
                             <TableHead>Cliente</TableHead>
                             <TableHead>Estado</TableHead>
                             <TableHead>Artículos</TableHead>
-                            <TableHead>Método de Pago</TableHead>
+                            <TableHead>Pago</TableHead>
+                            <TableHead>Descuento</TableHead>
                             <TableHead className="text-right">Total</TableHead>
                             <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
@@ -72,6 +73,16 @@ export default function OrderHistoryPage() {
                                     </ul>
                                 </TableCell>
                                 <TableCell className="capitalize">{order.paymentMethod}</TableCell>
+                                <TableCell>
+                                    {order.discountCode ? (
+                                        <Badge variant="secondary" className="flex items-center gap-1">
+                                            <TicketPercent className="h-3 w-3" />
+                                            {order.discountCode} (-${order.discountAmount.toFixed(2)})
+                                        </Badge>
+                                    ) : (
+                                        'N/A'
+                                    )}
+                                </TableCell>
                                 <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">
                                     {order.status === 'delivered' && (
@@ -83,7 +94,7 @@ export default function OrderHistoryPage() {
                             </TableRow>
                         )) : (
                              <TableRow>
-                                <TableCell colSpan={9} className="text-center h-24">
+                                <TableCell colSpan={10} className="text-center h-24">
                                     Aún no hay pedidos registrados.
                                 </TableCell>
                             </TableRow>

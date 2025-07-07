@@ -25,6 +25,16 @@ export interface OrderItem extends MenuItem {
 
 export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered' | 'paid';
 
+export interface Discount {
+    id: string;
+    name: string;
+    code: string;
+    value: string; // e.g., '20%' or '$10.00'
+    status: boolean;
+    used: number;
+    expires: string;
+}
+
 export interface Order {
   id: string;
   tableId: string;
@@ -32,6 +42,9 @@ export interface Order {
   customerName: string;
   paymentMethod: 'efectivo' | 'transferencia';
   items: OrderItem[];
+  subtotal: number;
+  discountCode?: string;
+  discountAmount: number;
   total: number;
   timestamp: Date;
   status: OrderStatus;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import type { OrderItem, Order, MenuItem, OrderStatus } from '@/lib/types';
+import type { OrderItem, Order, MenuItem, OrderStatus, Discount } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
 interface OrderContextType {
@@ -10,7 +10,13 @@ interface OrderContextType {
   addItemToOrder: (item: MenuItem, quantity: number) => void;
   removeItemFromOrder: (itemId: string) => void;
   updateItemQuantity: (itemId: string, quantity: number) => void;
-  submitOrder: (details: { customerName: string; paymentMethod: 'efectivo' | 'transferencia'; tableId: string; tableName: string; }) => void;
+  submitOrder: (details: { 
+    customerName: string; 
+    paymentMethod: 'efectivo' | 'transferencia'; 
+    tableId: string; 
+    tableName: string; 
+    appliedDiscount: Discount | null;
+  }) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   clearCurrentOrder: () => void;
 }
@@ -104,7 +110,13 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     }
   };
   
-  const submitOrder = (details: { customerName: string; paymentMethod: 'efectivo' | 'transferencia'; tableId: string; tableName: string; }) => {
+  const submitOrder = (details: { 
+    customerName: string; 
+    paymentMethod: 'efectivo' | 'transferencia'; 
+    tableId: string; 
+    tableName: string;
+    appliedDiscount: Discount | null;
+  }) => {
     if (currentOrder.length === 0) {
       toast({
         variant: "destructive",
@@ -113,15 +125,36 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       });
       return;
     }
-    const total = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    
+    const { appliedDiscount, ...restDetails } = details;
+
+    const subtotal = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    let discountAmount = 0;
+    if (appliedDiscount) {
+      if (appliedDiscount.value.includes('%')) {
+        const percentage = parseFloat(appliedDiscount.value.replace('%', '')) / 100;
+        discountAmount = subtotal * percentage;
+      } else {
+        discountAmount = parseFloat(appliedDiscount.value.replace(/[^0-9.]/g, ''));
+      }
+    }
+    discountAmount = Math.min(subtotal, discountAmount);
+
+    const total = subtotal - discountAmount;
+    
     const newOrder: Order = {
       id: `ORD-${Date.now()}`,
       items: currentOrder,
+      subtotal,
+      discountCode: appliedDiscount?.code,
+      discountAmount,
       total,
       timestamp: new Date(),
       status: 'new',
-      ...details
+      ...restDetails
     };
+
     persistOrders([newOrder, ...submittedOrders]);
     setCurrentOrder([]);
     toast({
