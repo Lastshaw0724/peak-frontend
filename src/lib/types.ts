@@ -23,7 +23,7 @@ export interface OrderItem extends MenuItem {
   quantity: number;
 }
 
-export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered';
+export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered' | 'paid';
 
 export interface Order {
   id: string;

@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { History } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { cn } from '@/lib/utils';
@@ -9,14 +10,23 @@ import type { OrderStatus } from '@/lib/types';
 
 
 export default function OrderHistoryPage() {
-    const { submittedOrders } = useOrder();
+    const { submittedOrders, updateOrderStatus } = useOrder();
 
     const statusColors: Record<OrderStatus, string> = {
         new: 'bg-red-500/20 text-red-400 border-red-500/30',
         preparing: 'bg-primary/20 text-primary/80 border-primary/30',
         ready: 'bg-green-500/20 text-green-400 border-green-500/30',
         delivered: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    }
+        paid: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+    };
+    
+    const statusDisplayNames: Record<OrderStatus, string> = {
+        new: 'Nuevo',
+        preparing: 'Preparando',
+        ready: 'Listo',
+        delivered: 'Entregado',
+        paid: 'Pagado',
+    };
 
     return (
         <Card>
@@ -39,6 +49,7 @@ export default function OrderHistoryPage() {
                             <TableHead>Artículos</TableHead>
                             <TableHead>Método de Pago</TableHead>
                             <TableHead className="text-right">Total</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -50,7 +61,7 @@ export default function OrderHistoryPage() {
                                 <TableCell>{order.customerName}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                                        {order.status}
+                                        {statusDisplayNames[order.status] || order.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
@@ -62,10 +73,17 @@ export default function OrderHistoryPage() {
                                 </TableCell>
                                 <TableCell className="capitalize">{order.paymentMethod}</TableCell>
                                 <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">
+                                    {order.status === 'delivered' && (
+                                        <Button size="sm" onClick={() => updateOrderStatus(order.id, 'paid')} className="bg-purple-600 hover:bg-purple-700">
+                                            Marcar como Pagado
+                                        </Button>
+                                    )}
+                                </TableCell>
                             </TableRow>
                         )) : (
                              <TableRow>
-                                <TableCell colSpan={8} className="text-center h-24">
+                                <TableCell colSpan={9} className="text-center h-24">
                                     Aún no hay pedidos registrados.
                                 </TableCell>
                             </TableRow>
