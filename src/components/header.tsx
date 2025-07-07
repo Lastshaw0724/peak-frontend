@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import { LogOut, UserCircle, LayoutDashboard, Utensils, BookOpen, ChefHat, NotebookPen, QrCode, CircleDollarSign, Star } from 'lucide-react';
+import { LogOut, UserCircle, LayoutDashboard, Utensils, BookOpen, ChefHat, NotebookPen, QrCode, CircleDollarSign, Star, History } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,9 +77,9 @@ export function AppHeader({ title }: { title: string }) {
                         </DropdownMenuItem>
                     )}
                     {user.role === 'cashier' && (
-                         <DropdownMenuItem onClick={() => navigate('/waiter')}>
-                            <CircleDollarSign className="mr-2 h-4 w-4" />
-                            <span>Cashier View</span>
+                         <DropdownMenuItem onClick={() => navigate('/dashboard/orders')}>
+                            <History className="mr-2 h-4 w-4" />
+                            <span>Historial Pedidos</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'cook' && (

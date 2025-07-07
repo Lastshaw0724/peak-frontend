@@ -24,7 +24,7 @@ const roleRedirects: Record<UserRole, string> = {
   waiter: '/waiter',
   cook: '/kitchen',
   customer: '/menu',
-  cashier: '/waiter', // Cashiers can use the waiter interface
+  cashier: '/dashboard/orders',
 };
 
 const USERS_STORAGE_KEY = 'gustogo-users';

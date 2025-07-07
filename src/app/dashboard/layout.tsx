@@ -21,7 +21,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['admin', 'cashier']}>
             <DashboardLayoutContent>{children}</DashboardLayoutContent>
         </ProtectedRoute>
     );

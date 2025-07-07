@@ -54,7 +54,7 @@ function WaiterLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function WaiterLayout({ children }: { children: React.ReactNode }) {
     return (
-        <ProtectedRoute allowedRoles={['waiter', 'admin', 'cashier']}>
+        <ProtectedRoute allowedRoles={['waiter', 'admin']}>
             <WaiterLayoutContent>{children}</WaiterLayoutContent>
         </ProtectedRoute>
     );

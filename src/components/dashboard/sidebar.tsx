@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Users, Package, History, Settings, Warehouse, Percent } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Logo } from '../logo';
+import type { UserRole } from '@/lib/types';
 
 const getInitials = (name: string) => {
     if (!name) return '';
@@ -17,13 +18,13 @@ const getInitials = (name: string) => {
     return name.substring(0, 2).toUpperCase();
 }
 
-const navItems = [
-    { href: '/dashboard/employees', label: 'Empleados', icon: Users },
-    { href: '/dashboard/products', label: 'Productos', icon: Package },
-    { href: '/dashboard/orders', label: 'Historial Pedidos', icon: History },
-    { href: '/dashboard/preferences', label: 'Preferencias', icon: Settings },
-    { href: '/dashboard/inventory', label: 'Inventario', icon: Warehouse },
-    { href: '/dashboard/discounts', label: 'Descuentos', icon: Percent },
+const navItems: { href: string; label: string; icon: React.ElementType; roles: UserRole[] }[] = [
+    { href: '/dashboard/employees', label: 'Empleados', icon: Users, roles: ['admin'] },
+    { href: '/dashboard/products', label: 'Productos', icon: Package, roles: ['admin'] },
+    { href: '/dashboard/orders', label: 'Historial Pedidos', icon: History, roles: ['admin', 'cashier'] },
+    { href: '/dashboard/preferences', label: 'Preferencias', icon: Settings, roles: ['admin'] },
+    { href: '/dashboard/inventory', label: 'Inventario', icon: Warehouse, roles: ['admin'] },
+    { href: '/dashboard/discounts', label: 'Descuentos', icon: Percent, roles: ['admin'] },
 ];
 
 export function NavContent() {
@@ -31,6 +32,8 @@ export function NavContent() {
     const { user } = useAuth();
     
     if(!user) return null;
+
+    const visibleNavItems = navItems.filter(item => item.roles.includes(user.role));
 
     return (
         <div className="flex flex-col h-full bg-card text-card-foreground">
@@ -45,7 +48,7 @@ export function NavContent() {
                 <h2 className="text-xl font-semibold">{user.name}</h2>
             </div>
             <nav className="flex-1 px-4 py-6 space-y-2">
-                {navItems.map((item) => (
+                {visibleNavItems.map((item) => (
                     <Button
                         key={item.label}
                         asChild

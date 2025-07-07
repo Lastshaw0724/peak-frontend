@@ -9,4 +9,5 @@ export const mockUsers: User[] = [
   { id: '4', email: 'customer@gustogo.com', password: 'password', name: 'Anton Ego', role: 'customer' },
   { id: '5', email: 'pending@gustogo.com', password: 'password', name: 'New Customer', role: 'customer' },
   { id: '6', email: 'ossa71924@gmail.com', password: '12345', name: 'Admin Ossa', role: 'admin' },
+  { id: '7', email: 'cashier@gustogo.com', password: 'password', name: 'Mona Lisa', role: 'cashier' },
 ];
