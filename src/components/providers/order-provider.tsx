@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import type { OrderItem, Order, MenuItem } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,11 +16,58 @@ interface OrderContextType {
 }
 
 export const OrderContext = createContext<OrderContextType | undefined>(undefined);
+const ORDERS_STORAGE_KEY = 'gustogo-orders';
+
 
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [currentOrder, setCurrentOrder] = useState<OrderItem[]>([]);
   const [submittedOrders, setSubmittedOrders] = useState<Order[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    try {
+      const storedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
+      if (storedOrders) {
+        const parsedOrders = JSON.parse(storedOrders).map((order: Order) => ({
+          ...order,
+          timestamp: new Date(order.timestamp),
+        }));
+        setSubmittedOrders(parsedOrders);
+      }
+    } catch (error) {
+      console.error("Failed to load orders from localStorage", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === ORDERS_STORAGE_KEY && event.newValue) {
+        try {
+            const parsedOrders = JSON.parse(event.newValue).map((order: Order) => ({
+                ...order,
+                timestamp: new Date(order.timestamp),
+            }));
+            setSubmittedOrders(parsedOrders);
+        } catch (error) {
+            console.error("Failed to parse orders from storage event", error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const persistOrders = (orders: Order[]) => {
+      setSubmittedOrders(orders);
+      try {
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+      } catch (error) {
+        console.error("Failed to save orders to localStorage", error);
+      }
+  }
 
   const addItemToOrder = (item: MenuItem, quantity: number) => {
     setCurrentOrder((prevOrder) => {
@@ -75,7 +122,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       status: 'new',
       ...details
     };
-    setSubmittedOrders((prev) => [newOrder, ...prev]);
+    persistOrders([newOrder, ...submittedOrders]);
     setCurrentOrder([]);
     toast({
       title: "Order Submitted!",
@@ -84,11 +131,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateOrderStatus = (orderId: string, status: 'preparing' | 'ready') => {
-    setSubmittedOrders((prevOrders) =>
-      prevOrders.map((order) =>
+    const updatedOrders = submittedOrders.map((order) =>
         order.id === orderId ? { ...order, status } : order
-      )
     );
+    persistOrders(updatedOrders);
   };
 
   const clearCurrentOrder = () => {
