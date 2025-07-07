@@ -9,6 +9,7 @@ const roleRedirects = {
   waiter: '/waiter',
   cook: '/kitchen',
   customer: '/menu',
+  cashier: '/dashboard/orders',
 };
 
 export default function Home() {
