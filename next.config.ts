@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'carulla.vtexassets.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
