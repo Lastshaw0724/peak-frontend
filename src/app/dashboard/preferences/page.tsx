@@ -1,21 +1,37 @@
+
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Save, BarChart as BarChartIcon } from 'lucide-react';
+import { Settings, Save, BarChart as BarChartIcon, Bell } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart"
 import type { OrderItem } from '@/lib/types';
+import { usePreferences } from '@/hooks/use-preferences';
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function PreferencesPage() {
     const { submittedOrders } = useOrder();
+    const { lowStockThreshold, setLowStockThreshold } = usePreferences();
+    const { toast } = useToast();
+
+    const [localThreshold, setLocalThreshold] = useState(lowStockThreshold);
+
+    useEffect(() => {
+        setLocalThreshold(lowStockThreshold);
+    }, [lowStockThreshold]);
+
+    const handleSaveChanges = () => {
+        setLowStockThreshold(localThreshold);
+        toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados." });
+    };
 
     const popularProducts = useMemo(() => {
         if (!submittedOrders || submittedOrders.length === 0) {
@@ -59,11 +75,12 @@ export default function PreferencesPage() {
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="general">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="appearance">Apariencia</TabsTrigger>
                         <TabsTrigger value="taxes">Impuestos</TabsTrigger>
                         <TabsTrigger value="products">Productos</TabsTrigger>
+                        <TabsTrigger value="stock">Stock</TabsTrigger>
                     </TabsList>
                     <TabsContent value="general" className="mt-6">
                         <div className="space-y-6 max-w-2xl">
@@ -153,9 +170,31 @@ export default function PreferencesPage() {
                             )}
                        </div>
                     </TabsContent>
+                    <TabsContent value="stock" className="mt-6">
+                       <div className="space-y-6 max-w-2xl">
+                           <h3 className="text-xl font-semibold flex items-center gap-2">
+                                <Bell className="h-5 w-5 text-primary" />
+                                Notificaciones de Stock
+                           </h3>
+                            <div className="space-y-2 p-4 border rounded-lg">
+                                <Label htmlFor="stock-threshold">Alertar cuando el stock sea menor a:</Label>
+                                <Input 
+                                    id="stock-threshold" 
+                                    type="number"
+                                    value={localThreshold}
+                                    onChange={(e) => setLocalThreshold(Number(e.target.value))}
+                                    className="max-w-[100px]"
+                                    placeholder="Ej: 20"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Recibirás una notificación cuando un insumo baje de este número de unidades.
+                                </p>
+                            </div>
+                        </div>
+                    </TabsContent>
                 </Tabs>
                 <div className="mt-8 flex justify-end">
-                    <Button>
+                    <Button onClick={handleSaveChanges}>
                         <Save className="mr-2"/>
                         Guardar Cambios
                     </Button>

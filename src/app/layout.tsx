@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { OrderProvider } from '@/components/providers/order-provider';
@@ -7,6 +8,7 @@ import { SurveyProvider } from '@/components/providers/survey-provider';
 import { TableProvider } from '@/components/providers/table-provider';
 import { MenuProvider } from '@/components/providers/menu-provider';
 import { DiscountProvider } from '@/components/providers/discount-provider';
+import { PreferencesProvider } from '@/components/providers/preferences-provider';
 
 export const metadata: Metadata = {
   title: 'GustoGo | Restaurant System',
@@ -27,18 +29,20 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen">
         <AuthProvider>
-          <SurveyProvider>
-            <TableProvider>
-              <MenuProvider>
-                <DiscountProvider>
-                  <OrderProvider>
-                    {children}
-                    <Toaster />
-                  </OrderProvider>
-                </DiscountProvider>
-              </MenuProvider>
-            </TableProvider>
-          </SurveyProvider>
+          <PreferencesProvider>
+            <SurveyProvider>
+              <TableProvider>
+                <MenuProvider>
+                  <DiscountProvider>
+                    <OrderProvider>
+                      {children}
+                      <Toaster />
+                    </OrderProvider>
+                  </DiscountProvider>
+                </MenuProvider>
+              </TableProvider>
+            </SurveyProvider>
+          </PreferencesProvider>
         </AuthProvider>
       </body>
     </html>
