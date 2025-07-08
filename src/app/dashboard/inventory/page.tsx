@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Warehouse, PlusCircle } from 'lucide-react';
+import { Warehouse, PlusCircle, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { usePreferences } from '@/hooks/use-preferences';
 
@@ -67,7 +67,14 @@ export default function InventoryPage() {
                     <TableBody>
                         {inventoryData.map(item => (
                             <TableRow key={item.id} className={item.stock < lowStockThreshold ? 'bg-destructive/10' : ''}>
-                                <TableCell className="font-medium">{item.name}</TableCell>
+                                <TableCell className="font-medium">
+                                    <div className="flex items-center gap-2">
+                                        {item.stock < lowStockThreshold && (
+                                            <AlertCircle className="h-5 w-5 text-destructive" />
+                                        )}
+                                        {item.name}
+                                    </div>
+                                </TableCell>
                                 <TableCell>{item.category}</TableCell>
                                 <TableCell className="text-muted-foreground">{item.supplier}</TableCell>
                                 <TableCell>
