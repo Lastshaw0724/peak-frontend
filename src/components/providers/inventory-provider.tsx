@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
@@ -8,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 interface InventoryContextType {
   inventory: InventoryItem[];
   addInventoryItem: (item: Omit<InventoryItem, 'id'>) => void;
+  updateInventoryItem: (id: string, data: Omit<InventoryItem, 'id'>) => void;
+  deleteInventoryItem: (id: string) => void;
 }
 
 export const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
@@ -54,8 +57,30 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const updateInventoryItem = (id: string, data: Omit<InventoryItem, 'id'>) => {
+      const updatedInventory = inventory.map(item => item.id === id ? { id, ...data } : item);
+      persistInventory(updatedInventory);
+      toast({
+          title: "Insumo Actualizado",
+          description: `El insumo "${data.name}" ha sido actualizado.`,
+      });
+  };
+
+  const deleteInventoryItem = (id: string) => {
+      const itemToDelete = inventory.find(item => item.id === id);
+      const updatedInventory = inventory.filter(item => item.id !== id);
+      persistInventory(updatedInventory);
+      if (itemToDelete) {
+          toast({
+              title: "Insumo Eliminado",
+              description: `El insumo "${itemToDelete.name}" ha sido eliminado.`,
+              variant: "destructive",
+          });
+      }
+  };
+
   return (
-    <InventoryContext.Provider value={{ inventory, addInventoryItem }}>
+    <InventoryContext.Provider value={{ inventory, addInventoryItem, updateInventoryItem, deleteInventoryItem }}>
       {children}
     </InventoryContext.Provider>
   );

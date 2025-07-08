@@ -1,3 +1,4 @@
+
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Warehouse, PlusCircle, AlertCircle } from 'lucide-react';
+import { Warehouse, PlusCircle, AlertCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useInventory } from '@/hooks/use-inventory';
@@ -17,10 +18,20 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
     DialogFooter,
     DialogClose,
 } from "@/components/ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
     Form,
     FormControl,
@@ -30,6 +41,8 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import type { InventoryItem } from '@/lib/types';
+
 
 const inventorySchema = z.object({
     name: z.string().min(3, "El nombre es requerido."),
@@ -45,9 +58,12 @@ const inventorySchema = z.object({
 export default function InventoryPage() {
     const { lowStockThreshold } = usePreferences();
     const { toast } = useToast();
-    const { inventory, addInventoryItem } = useInventory();
+    const { inventory, addInventoryItem, updateInventoryItem, deleteInventoryItem } = useInventory();
     const notifiedItemsRef = useRef(new Set<string>());
+    
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
+    const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
     const form = useForm<z.infer<typeof inventorySchema>>({
         resolver: zodResolver(inventorySchema),
@@ -61,10 +77,27 @@ export default function InventoryPage() {
     });
 
     function onSubmit(values: z.infer<typeof inventorySchema>) {
-        addInventoryItem(values);
+        if (dialogMode === 'add') {
+            addInventoryItem(values);
+        } else if (selectedItem) {
+            updateInventoryItem(selectedItem.id, values);
+        }
         form.reset();
         setIsDialogOpen(false);
+        setSelectedItem(null);
     }
+    
+    const handleOpenDialog = (mode: 'add' | 'edit', item?: InventoryItem) => {
+        setDialogMode(mode);
+        if (mode === 'edit' && item) {
+            setSelectedItem(item);
+            form.reset(item);
+        } else {
+            setSelectedItem(null);
+            form.reset({ name: "", category: "", supplier: "", stock: 0, maxStock: 100 });
+        }
+        setIsDialogOpen(true);
+    };
 
     useEffect(() => {
         inventory.forEach(item => {
@@ -90,70 +123,29 @@ export default function InventoryPage() {
                         <CardDescription>Supervisa y gestiona el stock de tus insumos.</CardDescription>
                     </div>
                 </div>
-                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                         <Button>
-                            <PlusCircle className="mr-2" />
-                            Añadir Insumo
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Añadir Nuevo Insumo</DialogTitle>
-                            <DialogDescription>
-                                Completa los detalles para añadir un nuevo insumo al inventario.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nombre del Insumo</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Ej: Tomates Frescos" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="category"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Categoría</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Ej: Vegetales" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                               <FormField
-                                    control={form.control}
-                                    name="supplier"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Proveedor</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Ej: Proveedor Local" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <div className="grid grid-cols-2 gap-4">
+                <div>
+                     <Button onClick={() => handleOpenDialog('add')}>
+                        <PlusCircle className="mr-2" />
+                        Añadir Insumo
+                    </Button>
+                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>{dialogMode === 'add' ? 'Añadir Nuevo Insumo' : 'Editar Insumo'}</DialogTitle>
+                                <DialogDescription>
+                                    {dialogMode === 'add' ? 'Completa los detalles para añadir un nuevo insumo al inventario.' : 'Modifica los detalles del insumo.'}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                     <FormField
                                         control={form.control}
-                                        name="stock"
+                                        name="name"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Stock Actual</FormLabel>
+                                                <FormLabel>Nombre del Insumo</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" {...field} />
+                                                    <Input placeholder="Ej: Tomates Frescos" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -161,28 +153,69 @@ export default function InventoryPage() {
                                     />
                                     <FormField
                                         control={form.control}
-                                        name="maxStock"
+                                        name="category"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Stock Máximo</FormLabel>
+                                                <FormLabel>Categoría</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" {...field} />
+                                                    <Input placeholder="Ej: Vegetales" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="secondary" onClick={() => form.reset()}>Cancelar</Button>
-                                    </DialogClose>
-                                    <Button type="submit">Guardar Insumo</Button>
-                                </DialogFooter>
-                            </form>
-                        </Form>
-                    </DialogContent>
-                </Dialog>
+                                <FormField
+                                        control={form.control}
+                                        name="supplier"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Proveedor</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Ej: Proveedor Local" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="stock"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Stock Actual</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="number" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="maxStock"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Stock Máximo</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="number" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button type="button" variant="secondary" onClick={() => { form.reset(); setSelectedItem(null); }}>Cancelar</Button>
+                                        </DialogClose>
+                                        <Button type="submit">Guardar Cambios</Button>
+                                    </DialogFooter>
+                                </form>
+                            </Form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -215,7 +248,33 @@ export default function InventoryPage() {
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="outline" size="sm">Ajustar</Button>
+                                     <div className="flex justify-end items-center gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => handleOpenDialog('edit', item)}>
+                                            Ajustar
+                                        </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" size="icon" className="h-9 w-9">
+                                                    <Trash2 className="h-4 w-4" />
+                                                    <span className="sr-only">Eliminar insumo</span>
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el insumo "{item.name}".
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => deleteInventoryItem(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                        Sí, eliminar
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
