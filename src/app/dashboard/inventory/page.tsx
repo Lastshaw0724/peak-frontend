@@ -36,7 +36,7 @@ export default function InventoryPage() {
                 notifiedItemsRef.current.add(item.id);
             }
         });
-    }, [inventoryData, lowStockThreshold, toast]);
+    }, [lowStockThreshold, toast]);
 
     return (
         <Card>
@@ -87,4 +87,3 @@ export default function InventoryPage() {
         </Card>
     );
 }
-
