@@ -15,31 +15,38 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "
 import type { OrderItem } from '@/lib/types';
 import { usePreferences } from '@/hooks/use-preferences';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 export default function PreferencesPage() {
     const { submittedOrders } = useOrder();
-    const { lowStockThreshold, setLowStockThreshold } = usePreferences();
+    const prefs = usePreferences();
     const { toast } = useToast();
 
-    const [localThreshold, setLocalThreshold] = useState(lowStockThreshold);
+    const [localPrefs, setLocalPrefs] = useState(prefs);
 
     useEffect(() => {
-        setLocalThreshold(lowStockThreshold);
-    }, [lowStockThreshold]);
+        if (!prefs.isLoading) {
+            setLocalPrefs(prefs);
+        }
+    }, [prefs]);
 
     const handleSaveChanges = () => {
-        setLowStockThreshold(localThreshold);
+        prefs.setRestaurantName(localPrefs.restaurantName);
+        prefs.setAddress(localPrefs.address);
+        prefs.setPhone(localPrefs.phone);
+        prefs.setDarkMode(localPrefs.darkMode);
+        prefs.setPublicMenu(localPrefs.publicMenu);
+        prefs.setTaxRate(localPrefs.taxRate);
+        prefs.setTaxIncluded(localPrefs.taxIncluded);
+        prefs.setLowStockThreshold(localPrefs.lowStockThreshold);
+
         toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados." });
     };
 
     const popularProducts = useMemo(() => {
-        if (!submittedOrders || submittedOrders.length === 0) {
-            return [];
-        }
-
+        if (!submittedOrders || submittedOrders.length === 0) return [];
         const productCounts: { [key: string]: { name: string, count: number } } = {};
-
         submittedOrders.forEach(order => {
             order.items.forEach((item: OrderItem) => {
                 if (productCounts[item.id]) {
@@ -49,20 +56,27 @@ export default function PreferencesPage() {
                 }
             });
         });
-
-        return Object.values(productCounts)
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 5) // Top 5 products
-            .reverse(); // Bar chart looks better with smallest at bottom for vertical layout
+        return Object.values(productCounts).sort((a, b) => b.count - a.count).slice(0, 5).reverse();
     }, [submittedOrders]);
 
     const chartConfig = {
-      count: {
-        label: "Ventas",
-        color: "hsl(var(--primary))",
-      },
+      count: { label: "Ventas", color: "hsl(var(--primary))" },
     } satisfies ChartConfig;
 
+    if (prefs.isLoading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-10 w-1/2" />
+                    <Skeleton className="h-5 w-3/4 mt-2" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-12 w-full mb-6" />
+                    <Skeleton className="h-96 w-full" />
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <Card>
@@ -86,15 +100,15 @@ export default function PreferencesPage() {
                         <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
                                 <Label htmlFor="restaurant-name">Nombre del Restaurante</Label>
-                                <Input id="restaurant-name" defaultValue="GustoGo" />
+                                <Input id="restaurant-name" value={localPrefs.restaurantName} onChange={(e) => setLocalPrefs({...localPrefs, restaurantName: e.target.value})} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="address">Dirección</Label>
-                                <Input id="address" defaultValue="123 Calle Ficticia, Ciudad, País" />
+                                <Input id="address" value={localPrefs.address} onChange={(e) => setLocalPrefs({...localPrefs, address: e.target.value})} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="phone">Teléfono de Contacto</Label>
-                                <Input id="phone" type="tel" defaultValue="+1 (555) 123-4567" />
+                                <Input id="phone" type="tel" value={localPrefs.phone} onChange={(e) => setLocalPrefs({...localPrefs, phone: e.target.value})} />
                             </div>
                         </div>
                     </TabsContent>
@@ -107,7 +121,7 @@ export default function PreferencesPage() {
                                         Activar el tema oscuro en toda la aplicación.
                                     </p>
                                 </div>
-                                <Switch id="dark-mode" defaultChecked={true} />
+                                <Switch id="dark-mode" checked={localPrefs.darkMode} onCheckedChange={(checked) => setLocalPrefs({...localPrefs, darkMode: checked})} />
                             </div>
                              <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
@@ -116,7 +130,7 @@ export default function PreferencesPage() {
                                         Permitir que cualquiera vea el menú sin iniciar sesión.
                                     </p>
                                 </div>
-                                <Switch id="public-menu" defaultChecked={false} />
+                                <Switch id="public-menu" checked={localPrefs.publicMenu} onCheckedChange={(checked) => setLocalPrefs({...localPrefs, publicMenu: checked})} />
                             </div>
                         </div>
                     </TabsContent>
@@ -124,10 +138,10 @@ export default function PreferencesPage() {
                        <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
                                 <Label htmlFor="tax-rate">Tasa de Impuesto General (%)</Label>
-                                <Input id="tax-rate" type="number" defaultValue="7" />
+                                <Input id="tax-rate" type="number" value={localPrefs.taxRate} onChange={(e) => setLocalPrefs({...localPrefs, taxRate: Number(e.target.value)})} />
                             </div>
                             <div className="flex items-center space-x-2">
-                                <Switch id="tax-included" defaultChecked={true}/>
+                                <Switch id="tax-included" checked={localPrefs.taxIncluded} onCheckedChange={(checked) => setLocalPrefs({...localPrefs, taxIncluded: checked})}/>
                                 <Label htmlFor="tax-included">¿Los precios del menú ya incluyen impuestos?</Label>
                             </div>
                         </div>
@@ -181,8 +195,8 @@ export default function PreferencesPage() {
                                 <Input 
                                     id="stock-threshold" 
                                     type="number"
-                                    value={localThreshold}
-                                    onChange={(e) => setLocalThreshold(Number(e.target.value))}
+                                    value={localPrefs.lowStockThreshold}
+                                    onChange={(e) => setLocalPrefs({...localPrefs, lowStockThreshold: Number(e.target.value)})}
                                     className="max-w-[100px]"
                                     placeholder="Ej: 20"
                                 />
