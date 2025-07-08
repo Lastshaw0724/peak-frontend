@@ -5,18 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { AppHeader } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import ProtectedRoute from '@/components/auth/protected-route';
+import { ArrowLeft } from 'lucide-react';
 
 
 function QrCodePageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <AppHeader title="Menu QR Code" />
+      <AppHeader title="Código QR del Menú" />
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-4xl">Scan to View Our Menu</CardTitle>
+            <CardTitle className="font-headline text-4xl">Escanea para Ver Nuestro Menú</CardTitle>
             <CardDescription className="text-lg">
-              Point your phone's camera at the code below.
+              Apunta la cámara de tu teléfono al código de abajo.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-6">
@@ -30,10 +31,10 @@ function QrCodePageContent() {
                     priority
                 />
             </div>
-            <p className="text-muted-foreground">Having trouble scanning?</p>
-            <Button asChild>
-                <Link href="/menu">
-                    Click Here to View Menu
+            <Button asChild className="w-full max-w-xs mt-2">
+                <Link href="/waiter">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Regresar a la Interfaz
                 </Link>
             </Button>
           </CardContent>
