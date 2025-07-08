@@ -35,6 +35,15 @@ export interface Discount {
     expires: string;
 }
 
+export interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  stock: number;
+  maxStock: number;
+  supplier: string;
+}
+
 export interface Order {
   id: string;
   tableId: string;

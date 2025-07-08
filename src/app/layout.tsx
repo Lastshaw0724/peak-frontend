@@ -9,6 +9,7 @@ import { TableProvider } from '@/components/providers/table-provider';
 import { MenuProvider } from '@/components/providers/menu-provider';
 import { DiscountProvider } from '@/components/providers/discount-provider';
 import { PreferencesProvider } from '@/components/providers/preferences-provider';
+import { InventoryProvider } from '@/components/providers/inventory-provider';
 
 export const metadata: Metadata = {
   title: 'GustoGo | Restaurant System',
@@ -34,10 +35,12 @@ export default function RootLayout({
               <TableProvider>
                 <MenuProvider>
                   <DiscountProvider>
-                    <OrderProvider>
-                      {children}
-                      <Toaster />
-                    </OrderProvider>
+                    <InventoryProvider>
+                      <OrderProvider>
+                        {children}
+                        <Toaster />
+                      </OrderProvider>
+                    </InventoryProvider>
                   </DiscountProvider>
                 </MenuProvider>
               </TableProvider>
