@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
@@ -16,6 +17,7 @@ interface AuthContextType {
   updateUserRole: (userId: string, newRole: UserRole) => void;
   deleteUser: (userId: string) => void;
   addUser: (data: { name: string; email: string; password: string; role: UserRole }) => void;
+  updateUserPassword: (userId: string, newPassword: string) => void;
   isLoading: boolean;
 }
 
@@ -147,8 +149,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast({ title: 'Usuario Eliminado', description: 'El usuario ha sido eliminado correctamente.' });
   };
 
+  const updateUserPassword = (userId: string, newPassword: string) => {
+    const userToUpdate = users.find(u => u.id === userId);
+    if (userToUpdate) {
+        const updatedUsers = users.map(u => 
+            u.id === userId ? { ...u, password: newPassword } : u
+        );
+        persistUsers(updatedUsers);
+        toast({ title: 'Contraseña Actualizada', description: `La contraseña para ${userToUpdate.name} ha sido cambiada.` });
+    } else {
+        toast({ title: 'Error', description: 'No se pudo encontrar el usuario para actualizar.', variant: 'destructive' });
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, users, login, logout, register, addUser, updateUserRole, deleteUser, isLoading }}>
+    <AuthContext.Provider value={{ user, users, login, logout, register, addUser, updateUserRole, deleteUser, updateUserPassword, isLoading }}>
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <Skeleton className="w-full h-screen" />

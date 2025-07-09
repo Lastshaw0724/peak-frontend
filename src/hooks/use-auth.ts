@@ -14,6 +14,7 @@ interface AuthHookType {
   updateUserRole: (userId: string, newRole: UserRole) => void;
   deleteUser: (userId: string) => void;
   addUser: (data: { name: string; email: string; password: string; role: UserRole }) => void;
+  updateUserPassword: (userId: string, newPassword: string) => void;
   isLoading: boolean;
 }
 
