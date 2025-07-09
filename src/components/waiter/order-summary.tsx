@@ -20,7 +20,7 @@ import { Plus, Minus, Trash2, Send, TicketPercent } from 'lucide-react';
 
 export function OrderSummary() {
   const { currentOrder, updateItemQuantity, removeItemFromOrder, submitOrder, clearCurrentOrder, currentOrderDetails } = useOrder();
-  const { activeTable, setActiveTable } = useTable();
+  const { activeTable, setActiveTable, updateTableStatus } = useTable();
   const { discounts } = useDiscount();
   const { toast } = useToast();
 
@@ -55,6 +55,9 @@ export function OrderSummary() {
   const total = subtotal - discountAmount;
 
   const handleClearOrder = () => {
+    if (activeTable) {
+        updateTableStatus(activeTable.id, 'available');
+    }
     clearCurrentOrder();
     setActiveTable(null);
     setSelectedDiscount(null);
