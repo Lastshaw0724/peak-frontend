@@ -1,17 +1,23 @@
 
 'use client';
 
+import { useState } from 'react';
 import type { Order } from '@/lib/types';
 import { useOrder } from '@/hooks/use-order';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { AlertCircle } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function KitchenOrderCard({ order }: { order: Order }) {
-  const { updateOrderStatus } = useOrder();
+  const { startPreparingOrder, updateOrderStatus } = useOrder();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [prepTime, setPrepTime] = useState<number>(15);
   
   const cardBorderColor = {
     new: 'border-destructive',
@@ -31,6 +37,13 @@ export function KitchenOrderCard({ order }: { order: Order }) {
 
   const currentStatus = statusConfig[order.status];
 
+  const handleStartPreparing = () => {
+    if (prepTime > 0) {
+      startPreparingOrder(order.id, prepTime);
+      setIsDialogOpen(false);
+    }
+  };
+
   return (
     <Card className={cn("transition-all duration-300 border-2", cardBorderColor[order.status])}>
       <CardHeader>
@@ -39,13 +52,19 @@ export function KitchenOrderCard({ order }: { order: Order }) {
                  <CardTitle className="font-headline text-xl">Orden #{order.id.slice(-6)}</CardTitle>
                  <CardDescription className="font-semibold pt-1">{order.tableName}</CardDescription>
             </div>
-             <div className="text-right">
+             <div className="text-right space-y-1">
                 {currentStatus && (
                     <Badge variant="outline" className={cn("capitalize", currentStatus.className)}>
                         {currentStatus.label}
                     </Badge>
                 )}
                 <CardDescription className="mt-1">{order.timestamp.toLocaleTimeString()}</CardDescription>
+                {order.status === 'preparing' && order.preparationTime && (
+                    <div className="flex items-center justify-end gap-1 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4"/>
+                        <span>{order.preparationTime} min</span>
+                    </div>
+                )}
             </div>
         </div>
       </CardHeader>
@@ -62,7 +81,36 @@ export function KitchenOrderCard({ order }: { order: Order }) {
       {order.status !== 'ready' && (
         <CardFooter className="flex justify-end gap-2">
           {order.status === 'new' && (
-            <Button onClick={() => updateOrderStatus(order.id, 'preparing')}>Start Preparing</Button>
+            <>
+              <Button onClick={() => setIsDialogOpen(true)}>Start Preparing</Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Establecer Tiempo de Preparación</DialogTitle>
+                        <DialogDescription>
+                            Ingresa el tiempo estimado en minutos para preparar el pedido #{order.id.slice(-6)}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="prep-time">Tiempo de Preparación (minutos)</Label>
+                            <Input
+                                id="prep-time"
+                                type="number"
+                                value={prepTime}
+                                onChange={(e) => setPrepTime(Number(e.target.value))}
+                                min="1"
+                                className="text-lg"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                        <Button onClick={handleStartPreparing}>Confirmar e Iniciar</Button>
+                    </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </>
           )}
           {order.status === 'preparing' && (
             <Button className="bg-green-600 hover:bg-green-700" onClick={() => updateOrderStatus(order.id, 'ready')}>Mark as Ready</Button>

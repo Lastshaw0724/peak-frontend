@@ -23,6 +23,7 @@ interface OrderContextType {
     appliedDiscount: Discount | null;
   }) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+  startPreparingOrder: (orderId: string, preparationTime: number) => void;
   clearCurrentOrder: () => void;
   deleteOrder: (orderId: string) => void;
   loadOrderForEdit: (orderId: string) => Order | undefined;
@@ -179,6 +180,17 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     persistOrders(updatedOrders);
   };
 
+  const startPreparingOrder = (orderId: string, preparationTime: number) => {
+    const updatedOrders = submittedOrders.map((order) =>
+      order.id === orderId ? { ...order, status: 'preparing', preparationTime } : order
+    );
+    persistOrders(updatedOrders);
+    toast({
+      title: "Pedido en preparación",
+      description: `El pedido #${orderId.slice(-6)} ha comenzado. Tiempo estimado: ${preparationTime} min.`,
+    });
+  };
+
   const clearCurrentOrder = () => {
     setCurrentOrder([]);
     setCurrentOrderDetails(null);
@@ -235,6 +247,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         updateItemQuantity,
         submitOrder,
         updateOrderStatus,
+        startPreparingOrder,
         clearCurrentOrder,
         deleteOrder,
         loadOrderForEdit,

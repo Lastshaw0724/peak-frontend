@@ -20,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
-import { CheckCheck, Pencil, Trash2 } from 'lucide-react';
+import { CheckCheck, Pencil, Trash2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function WaiterOrderCard({ order }: { order: Order }) {
@@ -29,14 +29,14 @@ export function WaiterOrderCard({ order }: { order: Order }) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const statusConfig = {
+  const statusConfig: Record<string, { label: string, className: string }> = {
     new: { label: 'Nuevo', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
     preparing: { label: 'Preparando', className: 'bg-primary/20 text-primary/80 border-primary/30' },
     ready: { label: 'Listo', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
     delivered: { label: 'Entregado', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
   };
 
-  const cardBorderColor = {
+  const cardBorderColor: Record<string, string> = {
     new: 'border-red-500',
     preparing: 'border-primary',
     ready: 'border-green-600',
@@ -61,14 +61,26 @@ export function WaiterOrderCard({ order }: { order: Order }) {
   return (
     <Card className={cn("transition-all duration-300 border-2 bg-zinc-800/80 border-zinc-700 flex flex-col", cardBorderColor[order.status])}>
       <CardHeader className="p-4">
-        <div className="flex justify-between items-center">
-          <CardTitle className="font-headline text-lg">Orden #{order.id.slice(-6)}</CardTitle>
-          <Badge variant="outline" className={cn("capitalize", currentStatus.className)}>
-            {currentStatus.label}
-          </Badge>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="font-headline text-lg">Orden #{order.id.slice(-6)}</CardTitle>
+            <CardDescription className="text-sm font-semibold pt-1">{order.tableName} - {order.customerName}</CardDescription>
+            <CardDescription className="text-xs pt-1">{order.timestamp.toLocaleTimeString()}</CardDescription>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            {currentStatus &&
+                <Badge variant="outline" className={cn("capitalize", currentStatus.className)}>
+                    {currentStatus.label}
+                </Badge>
+            }
+            {order.status === 'preparing' && order.preparationTime && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    <span>{order.preparationTime} min</span>
+                </Badge>
+            )}
+          </div>
         </div>
-        <CardDescription className="text-sm font-semibold pt-1">{order.tableName} - {order.customerName}</CardDescription>
-        <CardDescription className="text-xs pt-1">{order.timestamp.toLocaleTimeString()}</CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-2 flex-grow">
         {order.items.map((item, index) => (

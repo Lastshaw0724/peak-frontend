@@ -57,6 +57,7 @@ export interface Order {
   total: number;
   timestamp: Date;
   status: OrderStatus;
+  preparationTime?: number;
 }
 
 export interface Survey {
