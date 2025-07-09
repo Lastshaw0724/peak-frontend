@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
 import { useToast } from '@/hooks/use-toast';
@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Minus, Trash2, Send, TicketPercent } from 'lucide-react';
 
 export function OrderSummary() {
-  const { currentOrder, updateItemQuantity, removeItemFromOrder, submitOrder, clearCurrentOrder } = useOrder();
+  const { currentOrder, updateItemQuantity, removeItemFromOrder, submitOrder, clearCurrentOrder, currentOrderDetails } = useOrder();
   const { activeTable, setActiveTable } = useTable();
   const { discounts } = useDiscount();
   const { toast } = useToast();
@@ -28,6 +28,14 @@ export function OrderSummary() {
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo');
   const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);
+
+  useEffect(() => {
+    if (currentOrderDetails?.customerName) {
+        setCustomerName(currentOrderDetails.customerName);
+    } else {
+        setCustomerName('');
+    }
+  }, [currentOrderDetails]);
 
   const availableDiscounts = discounts.filter(d => d.status);
   
@@ -81,7 +89,6 @@ export function OrderSummary() {
     
     setActiveTable(null);
     setIsCheckoutOpen(false);
-    setCustomerName('');
     setSelectedDiscount(null);
   };
 

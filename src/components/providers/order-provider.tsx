@@ -4,9 +4,14 @@ import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import type { OrderItem, Order, MenuItem, OrderStatus, Discount } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
+type CurrentOrderDetails = {
+    customerName: string;
+} | null;
+
 interface OrderContextType {
   currentOrder: OrderItem[];
   submittedOrders: Order[];
+  currentOrderDetails: CurrentOrderDetails;
   addItemToOrder: (item: MenuItem, quantity: number) => void;
   removeItemFromOrder: (itemId: string) => void;
   updateItemQuantity: (itemId: string, quantity: number) => void;
@@ -30,6 +35,7 @@ const ORDERS_STORAGE_KEY = 'gustogo-orders';
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [currentOrder, setCurrentOrder] = useState<OrderItem[]>([]);
   const [submittedOrders, setSubmittedOrders] = useState<Order[]>([]);
+  const [currentOrderDetails, setCurrentOrderDetails] = useState<CurrentOrderDetails>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -159,6 +165,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
     persistOrders([newOrder, ...submittedOrders]);
     setCurrentOrder([]);
+    setCurrentOrderDetails(null);
     toast({
       title: "Order Submitted!",
       description: "The order has been sent to the kitchen.",
@@ -174,6 +181,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCurrentOrder = () => {
     setCurrentOrder([]);
+    setCurrentOrderDetails(null);
   };
 
   const deleteOrder = (orderId: string) => {
@@ -205,6 +213,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     persistOrders(remainingOrders);
     
     setCurrentOrder(orderToEdit.items);
+    setCurrentOrderDetails({ customerName: orderToEdit.customerName });
     
     toast({
         title: "Modificando Pedido",
@@ -220,6 +229,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       value={{
         currentOrder,
         submittedOrders,
+        currentOrderDetails,
         addItemToOrder,
         removeItemFromOrder,
         updateItemQuantity,
