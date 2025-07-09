@@ -1,6 +1,6 @@
 
 'use client'
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -30,6 +30,17 @@ import {
     DialogClose,
 } from "@/components/ui/dialog"
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
     Form,
     FormControl,
     FormField,
@@ -58,8 +69,11 @@ const productSchema = z.object({
 
 
 export default function ProductsPage() {
-    const { menu, addProduct } = useMenu();
+    const { menu, addProduct, updateProduct, deleteProduct } = useMenu();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
+    const [selectedProduct, setSelectedProduct] = useState<MenuItem | null>(null);
+
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [sortBy, setSortBy] = useState('default');
 
@@ -73,6 +87,13 @@ export default function ProductsPage() {
             image: "",
         },
     });
+    
+    useEffect(() => {
+        if (!isDialogOpen) {
+            form.reset();
+            setSelectedProduct(null);
+        }
+    }, [isDialogOpen, form]);
 
     const displayedMenu = useMemo(() => {
         let filteredProducts = [...menu];
@@ -83,20 +104,40 @@ export default function ProductsPage() {
 
         if (sortBy === 'name-asc') {
             filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortBy === 'price-asc') {
+            filteredProducts.sort((a, b) => a.price - b.price);
+        } else if (sortBy === 'price-desc') {
+            filteredProducts.sort((a, b) => b.price - a.price);
         }
         
         return filteredProducts;
     }, [menu, categoryFilter, sortBy]);
 
     function onSubmit(values: z.infer<typeof productSchema>) {
-        const newProductData: Omit<MenuItem, 'id'> = {
+        const productData = {
             ...values,
             dataAiHint: values.name.toLowerCase().split(' ').slice(0, 2).join(' '),
         };
-        addProduct(newProductData);
-        form.reset();
+
+        if (dialogMode === 'add') {
+            addProduct(productData);
+        } else if (selectedProduct) {
+            updateProduct(selectedProduct.id, productData);
+        }
+        
         setIsDialogOpen(false);
     }
+
+    const handleOpenDialog = (mode: 'add' | 'edit', product?: MenuItem) => {
+        setDialogMode(mode);
+        if (mode === 'edit' && product) {
+            setSelectedProduct(product);
+            form.reset(product);
+        } else {
+            form.reset({ name: "", description: "", price: 0, category: "Main Courses", image: "" });
+        }
+        setIsDialogOpen(true);
+    };
 
     return (
         <Card>
@@ -129,21 +170,26 @@ export default function ProductsPage() {
                         <SelectContent>
                             <SelectItem value="default">Por defecto</SelectItem>
                             <SelectItem value="name-asc">Nombre (A - Z)</SelectItem>
+                            <SelectItem value="price-asc">Precio (Bajo a Alto)</SelectItem>
+                            <SelectItem value="price-desc">Precio (Alto a Bajo)</SelectItem>
                         </SelectContent>
                     </Select>
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="w-full sm:w-auto">
+                            <Button className="w-full sm:w-auto" onClick={() => handleOpenDialog('add')}>
                                 <PlusCircle className="mr-2" />
                                 Añadir Producto
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
-                                <DialogTitle>Añadir Nuevo Producto</DialogTitle>
+                                <DialogTitle>{dialogMode === 'add' ? 'Añadir Nuevo Producto' : 'Editar Producto'}</DialogTitle>
                                 <DialogDescription>
-                                    Completa los detalles del nuevo producto para añadirlo al menú.
+                                    {dialogMode === 'add' 
+                                        ? 'Completa los detalles para añadirlo al menú.'
+                                        : `Modificando el producto: ${selectedProduct?.name}`
+                                    }
                                 </DialogDescription>
                             </DialogHeader>
                             <Form {...form}>
@@ -243,7 +289,7 @@ export default function ProductsPage() {
                             <TableHead>Nombre</TableHead>
                             <TableHead>Categoría</TableHead>
                             <TableHead className="text-right">Precio</TableHead>
-                            <TableHead>Acciones</TableHead>
+                            <TableHead className="text-center">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -264,7 +310,7 @@ export default function ProductsPage() {
                                     <Badge variant="outline">{item.category}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                                <TableCell>
+                                <TableCell className="text-center">
                                      <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                         <Button
@@ -277,14 +323,32 @@ export default function ProductsPage() {
                                         </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={() => handleOpenDialog('edit', item)}>
                                                 <Pencil className="mr-2" />
                                                 Editar
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive">
-                                                <Trash2 className="mr-2" />
-                                                Eliminar
-                                            </DropdownMenuItem>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                                        <Trash2 className="mr-2" />
+                                                        Eliminar
+                                                    </DropdownMenuItem>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el producto "{item.name}".
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => deleteProduct(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

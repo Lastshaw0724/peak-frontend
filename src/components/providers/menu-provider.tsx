@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 interface MenuContextType {
   menu: MenuItem[];
   addProduct: (product: Omit<MenuItem, 'id'>) => void;
+  updateProduct: (id: string, productData: Omit<MenuItem, 'id'>) => void;
+  deleteProduct: (id: string) => void;
 }
 
 export const MenuContext = createContext<MenuContextType | undefined>(undefined);
@@ -55,8 +57,30 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const updateProduct = (id: string, productData: Omit<MenuItem, 'id'>) => {
+    const updatedMenu = menu.map(item => item.id === id ? { ...item, ...productData } : item);
+    persistMenu(updatedMenu);
+    toast({
+        title: "Producto Actualizado",
+        description: `El producto "${productData.name}" ha sido actualizado.`,
+    });
+  };
+
+  const deleteProduct = (id: string) => {
+      const productToDelete = menu.find(item => item.id === id);
+      const updatedMenu = menu.filter(item => item.id !== id);
+      persistMenu(updatedMenu);
+      if (productToDelete) {
+          toast({
+              title: "Producto Eliminado",
+              description: `El producto "${productToDelete.name}" ha sido eliminado.`,
+              variant: "destructive",
+          });
+      }
+  };
+
   return (
-    <MenuContext.Provider value={{ menu, addProduct }}>
+    <MenuContext.Provider value={{ menu, addProduct, updateProduct, deleteProduct }}>
       {children}
     </MenuContext.Provider>
   );
