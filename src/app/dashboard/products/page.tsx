@@ -288,18 +288,18 @@ export default function ProductsPage() {
                                     />
 
                                     <div className="space-y-4 rounded-lg border p-4">
-                                        <FormLabel className="text-base font-semibold">Extras del Producto</FormLabel>
-                                        <div className="space-y-2">
+                                        <h3 className="text-base font-semibold">Extras del Producto</h3>
+                                        <div className="space-y-3">
                                             {fields.map((field, index) => (
-                                                <div key={field.id} className="flex items-start gap-2 p-2 bg-muted/50 rounded-md">
+                                                <div key={field.id} className="flex items-end gap-2 rounded-md border bg-muted/50 p-3">
                                                     <FormField
                                                         control={form.control}
                                                         name={`extras.${index}.name`}
                                                         render={({ field }) => (
                                                             <FormItem className="flex-grow">
-                                                                <FormLabel className="sr-only">Nombre del extra</FormLabel>
+                                                                <FormLabel>Nombre del extra</FormLabel>
                                                                 <FormControl>
-                                                                    <Input placeholder="Nombre del extra (ej: Queso Extra)" {...field} />
+                                                                    <Input placeholder="Ej: Queso Extra" {...field} />
                                                                 </FormControl>
                                                                 <FormMessage className="text-xs" />
                                                             </FormItem>
@@ -309,16 +309,16 @@ export default function ProductsPage() {
                                                         control={form.control}
                                                         name={`extras.${index}.price`}
                                                         render={({ field }) => (
-                                                            <FormItem className="w-32">
-                                                                <FormLabel className="sr-only">Precio del extra</FormLabel>
+                                                            <FormItem className="w-28">
+                                                                <FormLabel>Precio</FormLabel>
                                                                 <FormControl>
-                                                                    <Input type="number" step="0.01" placeholder="Precio" {...field} />
+                                                                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
                                                                 </FormControl>
                                                                 <FormMessage className="text-xs" />
                                                             </FormItem>
                                                         )}
                                                     />
-                                                    <Button type="button" variant="destructive" size="icon" className="h-10 w-10 flex-shrink-0" onClick={() => remove(index)}>
+                                                    <Button type="button" variant="ghost" size="icon" className="h-10 w-10 flex-shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => remove(index)}>
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>
@@ -328,7 +328,8 @@ export default function ProductsPage() {
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => append({ name: '', price: 0.00 })}
+                                            onClick={() => append({ name: '', price: 0 })}
+                                            className="w-full"
                                         >
                                             <PlusCircle className="mr-2" />
                                             Añadir Extra
