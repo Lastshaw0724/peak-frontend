@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Trash2 } from 'lucide-react';
+import { Users, Trash2, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -20,14 +20,61 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+    DialogClose,
+} from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+
+const employeeSchema = z.object({
+    name: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres." }),
+    email: z.string().email({ message: "Por favor, introduce un email válido." }),
+    password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres." }),
+    role: z.enum(['customer', 'waiter', 'cook', 'cashier'], { required_error: "Debes seleccionar un rol." }),
+});
 
 export function UserRoleManager() {
-    const { user: currentUser, users, updateUserRole, deleteUser } = useAuth();
+    const { user: currentUser, users, updateUserRole, deleteUser, addUser } = useAuth();
     const { toast } = useToast();
     const [userRoles, setUserRoles] = useState<Record<string, UserRole>>({});
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    if (!updateUserRole || !users || !currentUser || !deleteUser) {
+    const form = useForm<z.infer<typeof employeeSchema>>({
+        resolver: zodResolver(employeeSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            password: "",
+            role: "waiter",
+        },
+    });
+
+    if (!updateUserRole || !users || !currentUser || !deleteUser || !addUser) {
         return <p>Loading user data...</p>;
+    }
+    
+    function onEmployeeSubmit(values: z.infer<typeof employeeSchema>) {
+        addUser(values);
+        form.reset();
+        setIsDialogOpen(false);
     }
     
     const manageableUsers = users.filter((u) => u.id !== currentUser.id);
@@ -59,12 +106,102 @@ export function UserRoleManager() {
 
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                      <Users className="h-8 w-8 text-primary" />
-                    <CardTitle className="text-2xl font-headline">Gestión de Usuarios</CardTitle>
+                     <div>
+                        <CardTitle className="text-2xl font-headline">Gestión de Usuarios</CardTitle>
+                        <CardDescription>Asigna roles y añade nuevos empleados al sistema.</CardDescription>
+                     </div>
                 </div>
-                <CardDescription>Asigna roles a los usuarios registrados en el sistema. Los nuevos usuarios son 'Clientes' por defecto.</CardDescription>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button>
+                            <PlusCircle className="mr-2" />
+                            Añadir Empleado
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Añadir Nuevo Empleado</DialogTitle>
+                            <DialogDescription>
+                                Completa los datos para registrar un nuevo miembro del equipo.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onEmployeeSubmit)} className="space-y-4">
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nombre Completo</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Ej: Juan Pérez" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input type="email" placeholder="ejemplo@correo.com" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Contraseña Temporal</FormLabel>
+                                            <FormControl>
+                                                <Input type="password" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="role"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Rol</FormLabel>
+                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Selecciona un rol" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="waiter">Mesero</SelectItem>
+                                                    <SelectItem value="cook">Cocinero</SelectItem>
+                                                    <SelectItem value="cashier">Cajero</SelectItem>
+                                                    <SelectItem value="customer">Cliente</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="secondary">Cancelar</Button>
+                                    </DialogClose>
+                                    <Button type="submit">Crear Empleado</Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
             </CardHeader>
             <CardContent>
                 <Table>

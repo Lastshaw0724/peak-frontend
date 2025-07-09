@@ -15,6 +15,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => void;
   updateUserRole: (userId: string, newRole: UserRole) => void;
   deleteUser: (userId: string) => void;
+  addUser: (data: { name: string; email: string; password: string; role: UserRole }) => void;
   isLoading: boolean;
 }
 
@@ -109,6 +110,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast({ title: 'Registration Successful', description: `Welcome! You can now log in to your account.` });
   };
 
+  const addUser = (data: { name: string; email: string; password: string; role: UserRole }) => {
+    if (users.some((u) => u.email === data.email)) {
+      toast({ variant: 'destructive', title: 'Creación Fallida', description: 'Un usuario con este email ya existe.' });
+      return;
+    }
+    const newUser: User = { 
+        id: `user-${Date.now()}`, 
+        ...data,
+    };
+    const updatedUsers = [...users, newUser];
+    persistUsers(updatedUsers);
+    
+    toast({ title: 'Usuario Creado', description: `El usuario ${data.name} ha sido creado exitosamente.` });
+  };
+
   const updateUserRole = (userId: string, newRole: UserRole) => {
       const updatedUsers = users.map(u => (u.id === userId ? { ...u, role: newRole } : u))
       persistUsers(updatedUsers);
@@ -132,7 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, users, login, logout, register, updateUserRole, deleteUser, isLoading }}>
+    <AuthContext.Provider value={{ user, users, login, logout, register, addUser, updateUserRole, deleteUser, isLoading }}>
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <Skeleton className="w-full h-screen" />
