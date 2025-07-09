@@ -84,17 +84,16 @@ export default function PreferencesPage() {
             <CardHeader className="flex flex-row items-center gap-4">
                 <Settings className="h-8 w-8 text-primary" />
                  <div>
-                    <CardTitle className="text-2xl font-headline">Preferencias y Reportes</CardTitle>
-                    <CardDescription>Configura los ajustes y revisa los reportes de tu restaurante.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">Preferencias del Sistema</CardTitle>
+                    <CardDescription>Configura los ajustes generales y notificaciones de tu restaurante.</CardDescription>
                 </div>
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="general">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="appearance">Apariencia</TabsTrigger>
                         <TabsTrigger value="taxes">Impuestos</TabsTrigger>
-                        <TabsTrigger value="products">Productos</TabsTrigger>
                         <TabsTrigger value="stock">Stock</TabsTrigger>
                     </TabsList>
                     <TabsContent value="general" className="mt-6">
@@ -150,44 +149,6 @@ export default function PreferencesPage() {
                                 <Label htmlFor="tax-included">¿Los precios del menú ya incluyen impuestos?</Label>
                             </div>
                         </div>
-                    </TabsContent>
-                     <TabsContent value="products" className="mt-6">
-                       <div className="space-y-6 max-w-2xl">
-                           <h3 className="text-xl font-semibold flex items-center gap-2">
-                                <BarChartIcon className="h-5 w-5 text-primary" />
-                                Top 5 Productos Más Vendidos
-                           </h3>
-                            {popularProducts.length > 0 ? (
-                               <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-                                  <BarChart accessibilityLayer data={popularProducts} layout="vertical" margin={{ left: 120 }}>
-                                    <CartesianGrid horizontal={false} />
-                                    <YAxis
-                                      dataKey="name"
-                                      type="category"
-                                      tickLine={false}
-                                      tickMargin={10}
-                                      axisLine={false}
-                                      width={120}
-                                      className="text-muted-foreground text-xs"
-                                    />
-                                    <XAxis dataKey="count" type="number" hide />
-                                    <ChartTooltip
-                                      cursor={false}
-                                      content={<ChartTooltipContent indicator="dot" />}
-                                    />
-                                    <Bar dataKey="count" fill="var(--color-count)" radius={4}>
-                                        <LabelList dataKey="count" position="right" offset={8} className="fill-foreground" fontSize={12} />
-                                    </Bar>
-                                  </BarChart>
-                                </ChartContainer>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border rounded-lg">
-                                    <BarChartIcon className="w-16 h-16 mb-4" />
-                                    <p>No hay suficientes datos de pedidos para mostrar este reporte.</p>
-                                    <p className="text-sm">Realiza algunas ventas para empezar a ver las estadísticas.</p>
-                                </div>
-                            )}
-                       </div>
                     </TabsContent>
                     <TabsContent value="stock" className="mt-6">
                        <div className="space-y-6 max-w-2xl">

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Users, Package, History, Settings, Warehouse, Percent } from 'lucide-react';
+import { Users, Package, History, Settings, Warehouse, Percent, AreaChart } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Logo } from '../logo';
 import type { UserRole } from '@/lib/types';
@@ -22,9 +22,10 @@ const navItems: { href: string; label: string; icon: React.ElementType; roles: U
     { href: '/dashboard/employees', label: 'Empleados', icon: Users, roles: ['admin'] },
     { href: '/dashboard/products', label: 'Productos', icon: Package, roles: ['admin'] },
     { href: '/dashboard/orders', label: 'Historial Pedidos', icon: History, roles: ['admin', 'cashier'] },
-    { href: '/dashboard/preferences', label: 'Preferencias', icon: Settings, roles: ['admin'] },
+    { href: '/dashboard/reports', label: 'Reportes', icon: AreaChart, roles: ['admin'] },
     { href: '/dashboard/inventory', label: 'Inventario', icon: Warehouse, roles: ['admin'] },
     { href: '/dashboard/discounts', label: 'Descuentos', icon: Percent, roles: ['admin'] },
+    { href: '/dashboard/preferences', label: 'Preferencias', icon: Settings, roles: ['admin'] },
 ];
 
 export function NavContent() {
