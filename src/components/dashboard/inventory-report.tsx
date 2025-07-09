@@ -8,7 +8,7 @@ import { usePreferences } from '@/hooks/use-preferences';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AreaChart, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import { CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MenuItem } from '@/lib/types';
 
@@ -95,15 +95,12 @@ export function InventoryReport() {
 
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center gap-4">
-                 <AreaChart className="h-8 w-8 text-primary" />
-                 <div>
-                    <CardTitle className="text-2xl font-headline">Reporte de Inventario de Productos</CardTitle>
-                    <CardDescription>Revisa el estado de los insumos necesarios para cada producto del menú.</CardDescription>
-                 </div>
+        <div>
+            <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-xl font-headline">Disponibilidad de Productos</CardTitle>
+                <CardDescription>Revisa el estado de los insumos necesarios para cada producto del menú.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -135,7 +132,6 @@ export function InventoryReport() {
                     </TableBody>
                 </Table>
             </CardContent>
-        </Card>
+        </div>
     );
 }
-
