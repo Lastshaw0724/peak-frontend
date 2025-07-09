@@ -97,7 +97,7 @@ export function InventoryReport() {
     return (
         <div>
             <CardHeader className="p-0 mb-4">
-                <CardTitle className="text-xl font-headline">Disponibilidad de Productos</CardTitle>
+                <CardTitle className="text-xl font-headline">Disponibilidad de Productos por Insumos</CardTitle>
                 <CardDescription>Revisa el estado de los insumos necesarios para cada producto del menú.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
