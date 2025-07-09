@@ -9,6 +9,7 @@ export interface Preferences {
   darkMode: boolean;
   publicMenu: boolean;
   restaurantName: string;
+  websiteUrl: string;
   address: string;
   phone: string;
   taxRate: number;
@@ -21,6 +22,7 @@ interface PreferencesContextType extends Preferences {
   setDarkMode: (enabled: boolean) => void;
   setPublicMenu: (enabled: boolean) => void;
   setRestaurantName: (name: string) => void;
+  setWebsiteUrl: (url: string) => void;
   setAddress: (address: string) => void;
   setPhone: (phone: string) => void;
   setTaxRate: (rate: number) => void;
@@ -38,6 +40,7 @@ const defaultPreferences: Preferences = {
   darkMode: true,
   publicMenu: false,
   restaurantName: 'GustoGo',
+  websiteUrl: 'https://example.com',
   address: '123 Calle Ficticia, Ciudad, País',
   phone: '+1 (555) 123-4567',
   taxRate: 7,
@@ -90,6 +93,7 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
     setDarkMode: (enabled: boolean) => updatePreference('darkMode', enabled),
     setPublicMenu: (enabled: boolean) => updatePreference('publicMenu', enabled),
     setRestaurantName: (name: string) => updatePreference('restaurantName', name),
+    setWebsiteUrl: (url: string) => updatePreference('websiteUrl', url),
     setAddress: (address: string) => updatePreference('address', address),
     setPhone: (phone: string) => updatePreference('phone', phone),
     setTaxRate: (rate: number) => updatePreference('taxRate', rate),

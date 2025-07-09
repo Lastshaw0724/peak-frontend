@@ -33,6 +33,7 @@ export default function PreferencesPage() {
 
     const handleSaveChanges = () => {
         prefs.setRestaurantName(localPrefs.restaurantName);
+        prefs.setWebsiteUrl(localPrefs.websiteUrl);
         prefs.setAddress(localPrefs.address);
         prefs.setPhone(localPrefs.phone);
         prefs.setDarkMode(localPrefs.darkMode);
@@ -103,6 +104,10 @@ export default function PreferencesPage() {
                                 <Input id="restaurant-name" value={localPrefs.restaurantName} onChange={(e) => setLocalPrefs({...localPrefs, restaurantName: e.target.value})} />
                             </div>
                              <div className="space-y-2">
+                                <Label htmlFor="website-url">Sitio Web / Enlace</Label>
+                                <Input id="website-url" type="url" placeholder="https://ejemplo.com" value={localPrefs.websiteUrl} onChange={(e) => setLocalPrefs({...localPrefs, websiteUrl: e.target.value})} />
+                            </div>
+                             <div className="space-y-2">
                                 <Label htmlFor="address">Dirección</Label>
                                 <Input id="address" value={localPrefs.address} onChange={(e) => setLocalPrefs({...localPrefs, address: e.target.value})} />
                             </div>
@@ -154,7 +159,7 @@ export default function PreferencesPage() {
                            </h3>
                             {popularProducts.length > 0 ? (
                                <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-                                  <BarChart accessibilityLayer data={popularProducts} layout="vertical" margin={{ left: 10 }}>
+                                  <BarChart accessibilityLayer data={popularProducts} layout="vertical" margin={{ left: 120 }}>
                                     <CartesianGrid horizontal={false} />
                                     <YAxis
                                       dataKey="name"
