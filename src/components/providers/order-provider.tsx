@@ -47,8 +47,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const parsedOrders = JSON.parse(storedOrders).map((order: Order) => ({
           ...order,
           timestamp: new Date(order.timestamp),
-          items: order.items.map(item => ({
+          items: order.items.map((item, index) => ({
             ...item,
+            orderItemId: item.orderItemId || `oitem-${order.id}-${index}`,
             selectedExtras: item.selectedExtras || [],
           }))
         }));
@@ -66,8 +67,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
             const parsedOrders = JSON.parse(event.newValue).map((order: Order) => ({
                 ...order,
                 timestamp: new Date(order.timestamp),
-                items: order.items.map(item => ({
+                items: order.items.map((item, index) => ({
                   ...item,
+                  orderItemId: item.orderItemId || `oitem-${order.id}-${index}`,
                   selectedExtras: item.selectedExtras || [],
                 }))
             }));
