@@ -59,6 +59,8 @@ export interface Order {
   tableId: string;
   tableName: string;
   customerName: string;
+  waiterId: string;
+  waiterName: string;
   paymentMethod: 'efectivo' | 'transferencia';
   items: OrderItem[];
   subtotal: number;

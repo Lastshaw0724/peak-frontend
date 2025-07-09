@@ -6,6 +6,7 @@ import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
 import { useToast } from '@/hooks/use-toast';
 import { useDiscount } from '@/hooks/use-discount';
+import { useAuth } from '@/hooks/use-auth';
 import type { Discount } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ export function OrderSummary() {
   const { currentOrder, updateItemQuantity, removeItemFromOrder, submitOrder, clearCurrentOrder, currentOrderDetails } = useOrder();
   const { activeTable, setActiveTable, updateTableStatus } = useTable();
   const { discounts } = useDiscount();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -86,6 +88,10 @@ export function OrderSummary() {
         toast({ title: 'Campo requerido', description: 'Por favor, introduce el nombre del cliente.', variant: 'destructive' });
         return;
     }
+    if (!user) {
+        toast({ title: 'Error de Autenticación', description: 'No se pudo identificar al mesero.', variant: 'destructive' });
+        return;
+    }
 
     submitOrder({
         customerName: customerName.trim(),
@@ -93,6 +99,8 @@ export function OrderSummary() {
         tableId: activeTable.id,
         tableName: activeTable.name,
         appliedDiscount: selectedDiscount,
+        waiterId: user.id,
+        waiterName: user.name,
     });
     
     setActiveTable(null);

@@ -1,19 +1,39 @@
 
 'use client';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { History, TicketPercent } from 'lucide-react';
+import { History, TicketPercent, Users } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
+import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import type { Order, OrderStatus } from '@/lib/types';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 
 export default function OrderHistoryPage() {
     const { submittedOrders, updateOrderStatus } = useOrder();
     const { updateTableStatus } = useTable();
+    const { users } = useAuth();
+    const [waiterFilter, setWaiterFilter] = useState('all');
+
+    const waiters = useMemo(() => users.filter(user => user.role === 'waiter'), [users]);
+
+    const filteredOrders = useMemo(() => {
+        if (waiterFilter === 'all') {
+            return submittedOrders;
+        }
+        return submittedOrders.filter(order => order.waiterId === waiterFilter);
+    }, [submittedOrders, waiterFilter]);
 
     const statusColors: Record<OrderStatus, string> = {
         new: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -38,11 +58,29 @@ export default function OrderHistoryPage() {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center gap-4">
-                <History className="h-8 w-8 text-primary" />
-                <div>
-                    <CardTitle className="text-2xl font-headline">Historial de Pedidos</CardTitle>
-                    <CardDescription>Revisa todos los pedidos realizados en el restaurante.</CardDescription>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <History className="h-8 w-8 text-primary" />
+                    <div>
+                        <CardTitle className="text-2xl font-headline">Historial de Pedidos</CardTitle>
+                        <CardDescription>Revisa todos los pedidos realizados en el restaurante.</CardDescription>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Users className="h-5 w-5 text-muted-foreground" />
+                    <Select value={waiterFilter} onValueChange={setWaiterFilter}>
+                        <SelectTrigger className="w-full sm:w-[220px]">
+                            <SelectValue placeholder="Filtrar por mesero" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos los Pedidos</SelectItem>
+                            {waiters.map(waiter => (
+                                <SelectItem key={waiter.id} value={waiter.id}>
+                                    {waiter.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </CardHeader>
             <CardContent>
@@ -52,6 +90,7 @@ export default function OrderHistoryPage() {
                             <TableHead>ID Pedido</TableHead>
                             <TableHead>Fecha</TableHead>
                             <TableHead>Mesa</TableHead>
+                            <TableHead>Mesero</TableHead>
                             <TableHead>Cliente</TableHead>
                             <TableHead>Estado</TableHead>
                             <TableHead>Artículos</TableHead>
@@ -62,11 +101,12 @@ export default function OrderHistoryPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {submittedOrders.length > 0 ? submittedOrders.map(order => (
+                        {filteredOrders.length > 0 ? filteredOrders.map(order => (
                             <TableRow key={order.id}>
                                 <TableCell className="font-mono">#{order.id.slice(-6)}</TableCell>
                                 <TableCell>{order.timestamp.toLocaleString()}</TableCell>
                                 <TableCell>{order.tableName}</TableCell>
+                                <TableCell>{order.waiterName}</TableCell>
                                 <TableCell>{order.customerName}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
@@ -109,8 +149,8 @@ export default function OrderHistoryPage() {
                             </TableRow>
                         )) : (
                              <TableRow>
-                                <TableCell colSpan={10} className="text-center h-24">
-                                    Aún no hay pedidos registrados.
+                                <TableCell colSpan={11} className="text-center h-24">
+                                    Aún no hay pedidos que coincidan con el filtro seleccionado.
                                 </TableCell>
                             </TableRow>
                         )}

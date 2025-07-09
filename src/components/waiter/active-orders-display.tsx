@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useOrder } from '@/hooks/use-order';
@@ -21,7 +22,8 @@ export function ActiveOrdersDisplay() {
     }
     return activeOrders.filter(order =>
       order.id.slice(-6).toLowerCase().includes(term) ||
-      order.customerName.toLowerCase().includes(term)
+      order.customerName.toLowerCase().includes(term) ||
+      order.waiterName.toLowerCase().includes(term)
     );
   }, [activeOrders, searchTerm]);
 
@@ -35,7 +37,7 @@ export function ActiveOrdersDisplay() {
         <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
             <Input
-                placeholder="Buscar por ID de pedido o nombre de cliente..."
+                placeholder="Buscar por ID, cliente o mesero..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full max-w-md pl-10 bg-zinc-800 border-zinc-700 placeholder:text-zinc-400 text-white"

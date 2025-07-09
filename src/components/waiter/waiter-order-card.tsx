@@ -23,10 +23,12 @@ import {
 import { cn } from '@/lib/utils';
 import { CheckCheck, Pencil, Trash2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 export function WaiterOrderCard({ order }: { order: Order }) {
   const { updateOrderStatus, deleteOrder, loadOrderForEdit } = useOrder();
   const { tables, setActiveTable } = useTable();
+  const { user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -47,6 +49,16 @@ export function WaiterOrderCard({ order }: { order: Order }) {
   const currentStatus = statusConfig[order.status];
 
   const handleModify = () => {
+    // A waiter can only modify their own orders
+    if (user && user.id !== order.waiterId) {
+      toast({
+        variant: 'destructive',
+        title: 'Acción no permitida',
+        description: 'Solo puedes modificar tus propios pedidos.',
+      });
+      return;
+    }
+
     const orderData = loadOrderForEdit(order.id);
     if (orderData) {
         const tableForOrder = tables.find(t => t.id === orderData.tableId);
@@ -59,6 +71,8 @@ export function WaiterOrderCard({ order }: { order: Order }) {
     }
   };
 
+  const isMyOrder = user && user.id === order.waiterId;
+
   return (
     <Card className={cn("transition-all duration-300 border-2 bg-zinc-800/80 border-zinc-700 flex flex-col", cardBorderColor[order.status])}>
       <CardHeader className="p-4">
@@ -66,7 +80,7 @@ export function WaiterOrderCard({ order }: { order: Order }) {
           <div>
             <CardTitle className="font-headline text-lg">Orden #{order.id.slice(-6)}</CardTitle>
             <CardDescription className="text-sm font-semibold pt-1">{order.tableName} - {order.customerName}</CardDescription>
-            <CardDescription className="text-xs pt-1">{order.timestamp.toLocaleTimeString()}</CardDescription>
+            <CardDescription className="text-xs pt-1">{order.timestamp.toLocaleTimeString()} por {order.waiterName}</CardDescription>
           </div>
           <div className="flex flex-col items-end gap-1">
             {currentStatus &&
@@ -103,13 +117,13 @@ export function WaiterOrderCard({ order }: { order: Order }) {
         <CardFooter className="p-4 pt-0 flex gap-2">
             {order.status === 'new' && (
                 <>
-                    <Button variant="outline" className="w-full border-zinc-600 hover:bg-zinc-700" onClick={handleModify}>
+                    <Button variant="outline" className="w-full border-zinc-600 hover:bg-zinc-700" onClick={handleModify} disabled={!isMyOrder}>
                         <Pencil className="mr-2 h-4 w-4" />
                         Modificar
                     </Button>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="destructive" className="w-full">
+                            <Button variant="destructive" className="w-full" disabled={!isMyOrder}>
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Cancelar
                             </Button>

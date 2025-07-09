@@ -22,6 +22,8 @@ interface OrderContextType {
     tableId: string; 
     tableName: string; 
     appliedDiscount: Discount | null;
+    waiterId: string;
+    waiterName: string;
   }) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   startPreparingOrder: (orderId: string, preparationTime: number) => void;
@@ -146,6 +148,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     tableId: string; 
     tableName: string;
     appliedDiscount: Discount | null;
+    waiterId: string;
+    waiterName: string;
   }) => {
     if (currentOrder.length === 0) {
       toast({
