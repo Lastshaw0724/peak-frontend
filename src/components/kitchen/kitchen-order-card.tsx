@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Order } from '@/lib/types';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export function KitchenOrderCard({ order }: { order: Order }) {
   const { updateOrderStatus } = useOrder();
@@ -15,7 +17,19 @@ export function KitchenOrderCard({ order }: { order: Order }) {
     new: 'border-destructive',
     preparing: 'border-primary',
     ready: 'border-green-600',
+    delivered: 'border-transparent',
+    paid: 'border-transparent'
   };
+
+  const statusConfig = {
+    new: { label: 'Nuevo', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
+    preparing: { label: 'Preparando', className: 'bg-primary/20 text-primary/80 border-primary/30' },
+    ready: { label: 'Listo', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    delivered: { label: 'Entregado', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+    paid: { label: 'Pagado', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+  };
+
+  const currentStatus = statusConfig[order.status];
 
   return (
     <Card className={cn("transition-all duration-300 border-2", cardBorderColor[order.status])}>
@@ -25,7 +39,14 @@ export function KitchenOrderCard({ order }: { order: Order }) {
                  <CardTitle className="font-headline text-xl">Orden #{order.id.slice(-6)}</CardTitle>
                  <CardDescription className="font-semibold pt-1">{order.tableName}</CardDescription>
             </div>
-            <CardDescription>{order.timestamp.toLocaleTimeString()}</CardDescription>
+             <div className="text-right">
+                {currentStatus && (
+                    <Badge variant="outline" className={cn("capitalize", currentStatus.className)}>
+                        {currentStatus.label}
+                    </Badge>
+                )}
+                <CardDescription className="mt-1">{order.timestamp.toLocaleTimeString()}</CardDescription>
+            </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
