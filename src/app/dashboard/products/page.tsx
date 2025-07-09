@@ -57,6 +57,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { ScrollArea } from '@/components/ui/scroll-area';
 import type { MenuItem } from '@/lib/types';
 
 
@@ -210,133 +211,136 @@ export default function ProductsPage() {
                                 </DialogDescription>
                             </DialogHeader>
                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nombre</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Ej: Pizza Margherita" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="description"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Descripción</FormLabel>
-                                                <FormControl>
-                                                    <Textarea placeholder="Describe el producto..." {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="price"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Precio</FormLabel>
-                                                <FormControl>
-                                                    <Input type="number" step="0.01" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="category"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Categoría</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Selecciona una categoría" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="Appetizers">Entradas</SelectItem>
-                                                        <SelectItem value="Main Courses">Platos Fuertes</SelectItem>
-                                                        <SelectItem value="Desserts">Postres</SelectItem>
-                                                        <SelectItem value="Drinks">Bebidas</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="image"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>URL de la Imagen</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="https://placehold.co/600x400.png" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                <form onSubmit={form.handleSubmit(onSubmit)}>
+                                    <ScrollArea className="max-h-[60vh] pr-6">
+                                        <div className="space-y-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="name"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Nombre</FormLabel>
+                                                        <FormControl>
+                                                            <Input placeholder="Ej: Pizza Margherita" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="description"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Descripción</FormLabel>
+                                                        <FormControl>
+                                                            <Textarea placeholder="Describe el producto..." {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="price"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Precio</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="number" step="0.01" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="category"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Categoría</FormLabel>
+                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Selecciona una categoría" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="Appetizers">Entradas</SelectItem>
+                                                                <SelectItem value="Main Courses">Platos Fuertes</SelectItem>
+                                                                <SelectItem value="Desserts">Postres</SelectItem>
+                                                                <SelectItem value="Drinks">Bebidas</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="image"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>URL de la Imagen</FormLabel>
+                                                        <FormControl>
+                                                            <Input placeholder="https://placehold.co/600x400.png" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
 
-                                    <div className="space-y-4 rounded-lg border p-4">
-                                        <h3 className="text-base font-semibold">Extras del Producto</h3>
-                                        <div className="space-y-3">
-                                            {fields.map((field, index) => (
-                                                <div key={field.id} className="flex items-end gap-2 rounded-md border bg-muted/50 p-3">
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`extras.${index}.name`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="flex-grow">
-                                                                <FormLabel>Nombre del extra</FormLabel>
-                                                                <FormControl>
-                                                                    <Input placeholder="Ej: Queso Extra" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage className="text-xs" />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <FormField
-                                                        control={form.control}
-                                                        name={`extras.${index}.price`}
-                                                        render={({ field }) => (
-                                                            <FormItem className="w-28">
-                                                                <FormLabel>Precio</FormLabel>
-                                                                <FormControl>
-                                                                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                                                                </FormControl>
-                                                                <FormMessage className="text-xs" />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <Button type="button" variant="ghost" size="icon" className="h-10 w-10 flex-shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => remove(index)}>
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                            <div className="space-y-4 rounded-lg border p-4">
+                                                <h3 className="text-base font-semibold">Extras del Producto</h3>
+                                                <div className="space-y-3">
+                                                    {fields.map((field, index) => (
+                                                        <div key={field.id} className="flex items-end gap-2 rounded-md border bg-muted/50 p-3">
+                                                            <FormField
+                                                                control={form.control}
+                                                                name={`extras.${index}.name`}
+                                                                render={({ field }) => (
+                                                                    <FormItem className="flex-grow">
+                                                                        <FormLabel>Nombre del extra</FormLabel>
+                                                                        <FormControl>
+                                                                            <Input placeholder="Ej: Queso Extra" {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage className="text-xs" />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <FormField
+                                                                control={form.control}
+                                                                name={`extras.${index}.price`}
+                                                                render={({ field }) => (
+                                                                    <FormItem className="w-28">
+                                                                        <FormLabel>Precio</FormLabel>
+                                                                        <FormControl>
+                                                                            <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                                                                        </FormControl>
+                                                                        <FormMessage className="text-xs" />
+                                                                    </FormItem>
+                                                                )}
+                                                            />
+                                                            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 flex-shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => remove(index)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => append({ name: '', price: 0 })}
+                                                    className="w-full"
+                                                >
+                                                    <PlusCircle className="mr-2" />
+                                                    Añadir Extra
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => append({ name: '', price: 0 })}
-                                            className="w-full"
-                                        >
-                                            <PlusCircle className="mr-2" />
-                                            Añadir Extra
-                                        </Button>
-                                    </div>
-
-                                    <DialogFooter>
+                                    </ScrollArea>
+                                    <DialogFooter className="pt-6">
                                         <DialogClose asChild>
                                         <Button type="button" variant="secondary">Cancelar</Button>
                                         </DialogClose>
