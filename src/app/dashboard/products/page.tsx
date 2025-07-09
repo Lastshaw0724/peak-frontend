@@ -1,7 +1,7 @@
 
 'use client'
 import { useState, useMemo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
@@ -59,12 +59,20 @@ import {
 } from "@/components/ui/select"
 import type { MenuItem } from '@/lib/types';
 
+
+const extraSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1, "El nombre del extra es requerido."),
+    price: z.coerce.number().min(0, "El precio no puede ser negativo."),
+});
+
 const productSchema = z.object({
     name: z.string().min(3, "El nombre debe tener al menos 3 caracteres."),
     description: z.string().min(10, "La descripción debe tener al menos 10 caracteres."),
     price: z.coerce.number().positive("El precio debe ser un número positivo."),
     category: z.enum(['Appetizers', 'Main Courses', 'Desserts', 'Drinks']),
     image: z.string().url("Debe ser una URL de imagen válida."),
+    extras: z.array(extraSchema).optional(),
 });
 
 
@@ -85,7 +93,13 @@ export default function ProductsPage() {
             price: 0,
             category: "Main Courses",
             image: "",
+            extras: [],
         },
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "extras",
     });
     
     useEffect(() => {
@@ -132,9 +146,12 @@ export default function ProductsPage() {
         setDialogMode(mode);
         if (mode === 'edit' && product) {
             setSelectedProduct(product);
-            form.reset(product);
+            form.reset({
+                ...product,
+                extras: product.extras || [],
+            });
         } else {
-            form.reset({ name: "", description: "", price: 0, category: "Main Courses", image: "" });
+            form.reset({ name: "", description: "", price: 0, category: "Main Courses", image: "", extras: [] });
         }
         setIsDialogOpen(true);
     };
@@ -182,7 +199,7 @@ export default function ProductsPage() {
                                 Añadir Producto
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-xl">
                             <DialogHeader>
                                 <DialogTitle>{dialogMode === 'add' ? 'Añadir Nuevo Producto' : 'Editar Producto'}</DialogTitle>
                                 <DialogDescription>
@@ -269,6 +286,55 @@ export default function ProductsPage() {
                                             </FormItem>
                                         )}
                                     />
+
+                                    <div className="space-y-4 rounded-lg border p-4">
+                                        <FormLabel className="text-base font-semibold">Extras del Producto</FormLabel>
+                                        <div className="space-y-2">
+                                            {fields.map((field, index) => (
+                                                <div key={field.id} className="flex items-start gap-2 p-2 bg-muted/50 rounded-md">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`extras.${index}.name`}
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex-grow">
+                                                                <FormLabel className="sr-only">Nombre del extra</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="Nombre del extra (ej: Queso Extra)" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage className="text-xs" />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`extras.${index}.price`}
+                                                        render={({ field }) => (
+                                                            <FormItem className="w-32">
+                                                                <FormLabel className="sr-only">Precio del extra</FormLabel>
+                                                                <FormControl>
+                                                                    <Input type="number" step="0.01" placeholder="Precio" {...field} />
+                                                                </FormControl>
+                                                                <FormMessage className="text-xs" />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <Button type="button" variant="destructive" size="icon" className="h-10 w-10 flex-shrink-0" onClick={() => remove(index)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => append({ name: '', price: 0.00 })}
+                                        >
+                                            <PlusCircle className="mr-2" />
+                                            Añadir Extra
+                                        </Button>
+                                    </div>
+
                                     <DialogFooter>
                                         <DialogClose asChild>
                                         <Button type="button" variant="secondary">Cancelar</Button>
@@ -288,6 +354,7 @@ export default function ProductsPage() {
                             <TableHead className="hidden w-[100px] sm:table-cell">Imagen</TableHead>
                             <TableHead>Nombre</TableHead>
                             <TableHead>Categoría</TableHead>
+                            <TableHead>Extras</TableHead>
                             <TableHead className="text-right">Precio</TableHead>
                             <TableHead className="text-center">Acciones</TableHead>
                         </TableRow>
@@ -308,6 +375,17 @@ export default function ProductsPage() {
                                 <TableCell className="font-medium">{item.name}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline">{item.category}</Badge>
+                                </TableCell>
+                                 <TableCell>
+                                    {item.extras && item.extras.length > 0 ? (
+                                        <div className="flex flex-wrap gap-1">
+                                            {item.extras.map(extra => (
+                                                <Badge key={extra.id} variant="secondary">{extra.name}</Badge>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className="text-muted-foreground text-xs">N/A</span>
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
                                 <TableCell className="text-center">

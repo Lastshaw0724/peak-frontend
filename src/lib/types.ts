@@ -1,3 +1,4 @@
+
 export type UserRole = 'admin' | 'cook' | 'customer' | 'waiter' | 'cashier';
 
 export interface User {
@@ -6,6 +7,12 @@ export interface User {
   name: string;
   role: UserRole;
   password?: string; // In a real app, this would be a hash
+}
+
+export interface Extra {
+  id: string;
+  name: string;
+  price: number;
 }
 
 export interface MenuItem {
@@ -17,6 +24,7 @@ export interface MenuItem {
   image: string;
   dataAiHint?: string;
   allergens?: string[];
+  extras?: Extra[];
 }
 
 export interface OrderItem extends MenuItem {

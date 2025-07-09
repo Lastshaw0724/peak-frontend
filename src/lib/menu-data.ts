@@ -1,3 +1,4 @@
+
 import type { MenuItem } from './types';
 
 export const initialMenuData: MenuItem[] = [
@@ -49,6 +50,11 @@ export const initialMenuData: MenuItem[] = [
     image: 'https://placehold.co/600x400.png',
     dataAiHint: 'margherita pizza',
     allergens: ['Gluten', 'Dairy'],
+    extras: [
+      { id: 'extra-1', name: 'Extra Mozzarella', price: 2.50 },
+      { id: 'extra-2', name: 'Pepperoni', price: 3.00 },
+      { id: 'extra-3', name: 'Mushrooms', price: 1.75 },
+    ]
   },
   {
     id: 'main-03',

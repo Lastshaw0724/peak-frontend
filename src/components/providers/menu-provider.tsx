@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import type { MenuItem } from '@/lib/types';
+import type { MenuItem, Extra } from '@/lib/types';
 import { initialMenuData } from '@/lib/menu-data';
 import { useToast } from "@/hooks/use-toast";
 
@@ -44,10 +45,16 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const addProduct = (productData: Omit<MenuItem, 'id'>) => {
+    const dataFromForm = productData as Omit<MenuItem, 'id'> & { extras?: ({ name: string, price: number })[] };
+
     const newProduct: MenuItem = {
-      ...productData,
+      ...dataFromForm,
       id: `prod-${Date.now()}`,
-      dataAiHint: productData.name.toLowerCase().split(' ').slice(0, 2).join(' '),
+      dataAiHint: dataFromForm.dataAiHint || dataFromForm.name.toLowerCase().split(' ').slice(0, 2).join(' '),
+      extras: dataFromForm.extras?.map(extra => ({
+        ...extra,
+        id: `extra-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      })),
     };
     const updatedMenu = [...menu, newProduct];
     persistMenu(updatedMenu);
@@ -58,7 +65,22 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateProduct = (id: string, productData: Omit<MenuItem, 'id'>) => {
-    const updatedMenu = menu.map(item => item.id === id ? { ...item, ...productData } : item);
+    const dataFromForm = productData as Omit<MenuItem, 'id'> & { extras?: ({ id?: string, name: string, price: number })[] };
+
+    const updatedMenu = menu.map(item => {
+        if (item.id === id) {
+            const updatedProduct = { ...item, ...dataFromForm };
+            if (updatedProduct.extras) {
+                updatedProduct.extras = updatedProduct.extras.map(extra => ({
+                    ...extra,
+                    id: extra.id || `extra-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+                })) as Extra[];
+            }
+            return updatedProduct;
+        }
+        return item;
+    });
+
     persistMenu(updatedMenu);
     toast({
         title: "Producto Actualizado",
