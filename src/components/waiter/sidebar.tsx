@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { QrCode, MapPin, History, LogOut, BookOpen } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
+import { useOrder } from '@/hooks/use-order';
 
 const getInitials = (name: string) => {
     if (!name) return '';
@@ -27,6 +28,9 @@ const navItems = [
 export function WaiterNavContent() {
     const pathname = usePathname();
     const { user, logout } = useAuth();
+    const { submittedOrders } = useOrder();
+
+    const hasReadyOrders = submittedOrders.some(order => order.status === 'ready');
     
     if(!user) return null;
 
@@ -57,6 +61,9 @@ export function WaiterNavContent() {
                         <Link href={item.href}>
                             <item.icon className="mr-4 h-5 w-5" />
                             {item.label}
+                            {item.label === 'Pedidos en Curso' && hasReadyOrders && (
+                                <span className="ml-auto h-3 w-3 rounded-full bg-green-400 animate-pulse"></span>
+                            )}
                         </Link>
                     </Button>
                 ))}
