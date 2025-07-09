@@ -1,6 +1,6 @@
 
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -41,6 +41,13 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import type { InventoryItem } from '@/lib/types';
 
 
@@ -65,6 +72,9 @@ export default function InventoryPage() {
     const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [sortBy, setSortBy] = useState('default');
+
     const form = useForm<z.infer<typeof inventorySchema>>({
         resolver: zodResolver(inventorySchema),
         defaultValues: {
@@ -75,6 +85,31 @@ export default function InventoryPage() {
             maxStock: 100,
         },
     });
+
+    const categories = useMemo(() => ['all', ...new Set(inventory.map(item => item.category))], [inventory]);
+
+    const displayedInventory = useMemo(() => {
+        let filteredItems = [...inventory];
+
+        if (categoryFilter !== 'all') {
+            filteredItems = filteredItems.filter(item => item.category === categoryFilter);
+        }
+
+        switch (sortBy) {
+            case 'stock-asc':
+                filteredItems.sort((a, b) => (a.stock / a.maxStock) - (b.stock / b.maxStock));
+                break;
+            case 'stock-desc':
+                filteredItems.sort((a, b) => (b.stock / b.maxStock) - (a.stock / a.maxStock));
+                break;
+            default:
+                // No specific sorting, maintain original order
+                break;
+        }
+
+        return filteredItems;
+    }, [inventory, categoryFilter, sortBy]);
+
 
     function onSubmit(values: z.infer<typeof inventorySchema>) {
         if (dialogMode === 'add') {
@@ -115,7 +150,7 @@ export default function InventoryPage() {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                  <div className="flex items-center gap-4">
                     <Warehouse className="h-8 w-8 text-primary" />
                     <div>
@@ -123,8 +158,32 @@ export default function InventoryPage() {
                         <CardDescription>Supervisa y gestiona el stock de tus insumos.</CardDescription>
                     </div>
                 </div>
-                <div>
-                     <Button onClick={() => handleOpenDialog('add')}>
+                <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                     <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Filtrar por categoría" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {categories.map(category => (
+                                 <SelectItem key={category} value={category}>
+                                    {category === 'all' ? 'Todas las Categorías' : category}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                     <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Ordenar por" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="default">Por defecto</SelectItem>
+                            <SelectItem value="stock-asc">Nivel de Stock (Bajo a Alto)</SelectItem>
+                            <SelectItem value="stock-desc">Nivel de Stock (Alto a Bajo)</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                     <Button onClick={() => handleOpenDialog('add')} className="w-full sm:w-auto">
                         <PlusCircle className="mr-2" />
                         Añadir Insumo
                     </Button>
@@ -229,7 +288,7 @@ export default function InventoryPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {inventory.map(item => (
+                        {displayedInventory.map(item => (
                             <TableRow key={item.id} className={item.stock < lowStockThreshold ? 'bg-destructive/10' : ''}>
                                 <TableCell className="font-medium">
                                     <div className="flex items-center gap-2">
