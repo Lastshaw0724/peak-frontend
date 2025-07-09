@@ -32,7 +32,7 @@ export function WaiterOrderCard({ order }: { order: Order }) {
     <Card className={cn("transition-all duration-300 border-2 bg-zinc-800/80 border-zinc-700 flex flex-col", cardBorderColor[order.status])}>
       <CardHeader className="p-4">
         <div className="flex justify-between items-center">
-          <CardTitle className="font-headline text-lg">Orden #{order.id.slice(-4)}</CardTitle>
+          <CardTitle className="font-headline text-lg">Orden #{order.id.slice(-6)}</CardTitle>
           <Badge variant="outline" className={cn("capitalize", currentStatus.className)}>
             {currentStatus.label}
           </Badge>

@@ -22,7 +22,7 @@ export function KitchenOrderCard({ order }: { order: Order }) {
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>
-                 <CardTitle className="font-headline text-xl">Orden #{order.id.slice(-4)}</CardTitle>
+                 <CardTitle className="font-headline text-xl">Orden #{order.id.slice(-6)}</CardTitle>
                  <CardDescription className="font-semibold pt-1">{order.tableName}</CardDescription>
             </div>
             <CardDescription>{order.timestamp.toLocaleTimeString()}</CardDescription>
