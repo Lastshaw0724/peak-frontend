@@ -1,4 +1,5 @@
 
+
 export type UserRole = 'admin' | 'cook' | 'customer' | 'waiter' | 'cashier';
 
 export interface User {
@@ -34,6 +35,7 @@ export interface OrderItem extends MenuItem {
 }
 
 export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered' | 'paid';
+export type InvoiceOption = 'none' | 'print' | 'email';
 
 export interface Discount {
     id: string;
@@ -70,6 +72,7 @@ export interface Order {
   timestamp: Date;
   status: OrderStatus;
   preparationTime?: number;
+  invoiceOption: InvoiceOption;
 }
 
 export interface Survey {

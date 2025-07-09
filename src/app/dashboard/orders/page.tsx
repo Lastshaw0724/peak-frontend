@@ -1,16 +1,17 @@
 
+
 'use client';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { History, TicketPercent, Users, ListFilter, Calendar as CalendarIcon, MoreHorizontal, Printer, Send } from 'lucide-react';
+import { History, TicketPercent, ListFilter, Calendar as CalendarIcon, MoreHorizontal, Printer, Send, Ban } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
-import type { Order, OrderStatus } from '@/lib/types';
+import type { Order, OrderStatus, InvoiceOption } from '@/lib/types';
 import {
     Select,
     SelectContent,
@@ -66,6 +67,12 @@ export default function OrderHistoryPage() {
         ready: 'Listo',
         delivered: 'Entregado',
         paid: 'Pagado',
+    };
+
+    const invoiceOptionConfig: Record<InvoiceOption, { text: string, icon: React.ElementType, className: string }> = {
+        none: { text: 'No Requerida', icon: Ban, className: 'text-muted-foreground' },
+        print: { text: 'Imprimir', icon: Printer, className: 'text-blue-500' },
+        email: { text: 'Enviar', icon: Send, className: 'text-green-500' },
     };
 
     const handleMarkAsPaid = (order: Order) => {
@@ -158,12 +165,15 @@ export default function OrderHistoryPage() {
                             <TableHead>Artículos</TableHead>
                             <TableHead>Pago</TableHead>
                             <TableHead>Descuento</TableHead>
+                            <TableHead>Factura</TableHead>
                             <TableHead className="text-right">Total</TableHead>
                             <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredOrders.length > 0 ? filteredOrders.map(order => (
+                        {filteredOrders.length > 0 ? filteredOrders.map(order => {
+                            const invoiceConfig = invoiceOptionConfig[order.invoiceOption || 'none'];
+                            return (
                             <TableRow key={order.id}>
                                 <TableCell className="font-mono">#{order.id.slice(-6)}</TableCell>
                                 <TableCell>{order.timestamp.toLocaleString()}</TableCell>
@@ -200,6 +210,12 @@ export default function OrderHistoryPage() {
                                         'N/A'
                                     )}
                                 </TableCell>
+                                <TableCell>
+                                    <div className={cn("flex items-center gap-1.5 text-xs font-medium", invoiceConfig.className)}>
+                                       <invoiceConfig.icon className="h-3.5 w-3.5" />
+                                       <span>{invoiceConfig.text}</span>
+                                    </div>
+                                </TableCell>
                                 <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">
                                     {order.status === 'delivered' && (
@@ -207,7 +223,7 @@ export default function OrderHistoryPage() {
                                             Marcar como Pagado
                                         </Button>
                                     )}
-                                     {order.status === 'paid' && (
+                                     {order.status === 'paid' && (order.invoiceOption === 'print' || order.invoiceOption === 'email') && (
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="icon">
@@ -215,22 +231,26 @@ export default function OrderHistoryPage() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onSelect={() => handlePrintInvoice(order.id)}>
-                                                    <Printer className="mr-2 h-4 w-4" />
-                                                    Imprimir Factura
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onSelect={() => handleSendInvoice(order.id)}>
-                                                    <Send className="mr-2 h-4 w-4" />
-                                                    Enviar Factura
-                                                </DropdownMenuItem>
+                                                {order.invoiceOption === 'print' && (
+                                                    <DropdownMenuItem onSelect={() => handlePrintInvoice(order.id)}>
+                                                        <Printer className="mr-2 h-4 w-4" />
+                                                        Imprimir Factura
+                                                    </DropdownMenuItem>
+                                                )}
+                                                {order.invoiceOption === 'email' && (
+                                                    <DropdownMenuItem onSelect={() => handleSendInvoice(order.id)}>
+                                                        <Send className="mr-2 h-4 w-4" />
+                                                        Enviar Factura
+                                                    </DropdownMenuItem>
+                                                )}
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     )}
                                 </TableCell>
                             </TableRow>
-                        )) : (
+                        )}) : (
                              <TableRow>
-                                <TableCell colSpan={11} className="text-center h-24">
+                                <TableCell colSpan={12} className="text-center h-24">
                                     Aún no hay pedidos que coincidan con el filtro seleccionado.
                                 </TableCell>
                             </TableRow>

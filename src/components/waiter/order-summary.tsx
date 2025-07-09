@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { useTable } from '@/hooks/use-table';
 import { useToast } from '@/hooks/use-toast';
 import { useDiscount } from '@/hooks/use-discount';
 import { useAuth } from '@/hooks/use-auth';
-import type { Discount } from '@/lib/types';
+import type { Discount, InvoiceOption } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -18,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Minus, Trash2, Send, TicketPercent } from 'lucide-react';
+import { Plus, Minus, Trash2, Send, TicketPercent, Printer, Mail, Ban } from 'lucide-react';
 
 export function OrderSummary() {
   const { currentOrder, updateItemQuantity, removeItemFromOrder, submitOrder, clearCurrentOrder, currentOrderDetails } = useOrder();
@@ -30,6 +31,7 @@ export function OrderSummary() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo');
+  const [invoiceOption, setInvoiceOption] = useState<InvoiceOption>('none');
   const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);
 
   useEffect(() => {
@@ -101,6 +103,7 @@ export function OrderSummary() {
         appliedDiscount: selectedDiscount,
         waiterId: user.id,
         waiterName: user.name,
+        invoiceOption,
     });
     
     setActiveTable(null);
@@ -208,14 +211,14 @@ export function OrderSummary() {
                     <DialogTitle>Finalizar Pedido</DialogTitle>
                     <DialogDescription>Completa los detalles para enviar el pedido a la cocina.</DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">Nombre</Label>
-                        <Input id="name" placeholder="Nombre del cliente" className="col-span-3" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                <div className="grid gap-6 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name">Nombre Cliente</Label>
+                        <Input id="name" placeholder="Nombre del cliente" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
                     </div>
-                    <div className="grid grid-cols-4 items-start gap-4">
-                        <Label className="text-right pt-2">Pago</Label>
-                        <RadioGroup defaultValue="efectivo" className="col-span-3" value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'efectivo' | 'transferencia')}>
+                    <div className="space-y-2">
+                        <Label>Método de Pago</Label>
+                        <RadioGroup defaultValue="efectivo" value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'efectivo' | 'transferencia')} className="flex gap-4 pt-1">
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="efectivo" id="r1" />
                                 <Label htmlFor="r1">Efectivo</Label>
@@ -223,6 +226,23 @@ export function OrderSummary() {
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="transferencia" id="r2" />
                                 <Label htmlFor="r2">Transferencia</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Opciones de Factura</Label>
+                        <RadioGroup defaultValue="none" value={invoiceOption} onValueChange={(v) => setInvoiceOption(v as InvoiceOption)} className="space-y-1 pt-1">
+                             <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="none" id="f0" />
+                                <Label htmlFor="f0" className="font-normal flex items-center gap-2"><Ban className="h-4 w-4 text-muted-foreground"/>No Requerida</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="print" id="f1" />
+                                <Label htmlFor="f1" className="font-normal flex items-center gap-2"><Printer className="h-4 w-4 text-muted-foreground"/>Imprimir en Caja</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="email" id="f2" />
+                                <Label htmlFor="f2" className="font-normal flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>Enviar por Correo</Label>
                             </div>
                         </RadioGroup>
                     </div>

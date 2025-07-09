@@ -1,8 +1,9 @@
 
+
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import type { OrderItem, Order, MenuItem, OrderStatus, Discount, Extra } from '@/lib/types';
+import type { OrderItem, Order, MenuItem, OrderStatus, Discount, Extra, InvoiceOption } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
 type CurrentOrderDetails = {
@@ -24,6 +25,7 @@ interface OrderContextType {
     appliedDiscount: Discount | null;
     waiterId: string;
     waiterName: string;
+    invoiceOption: InvoiceOption;
   }) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   startPreparingOrder: (orderId: string, preparationTime: number) => void;
@@ -49,6 +51,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const parsedOrders = JSON.parse(storedOrders).map((order: Order) => ({
           ...order,
           timestamp: new Date(order.timestamp),
+          invoiceOption: order.invoiceOption || 'none', // Fallback for old orders
           items: order.items.map((item, index) => ({
             ...item,
             orderItemId: item.orderItemId || `oitem-${order.id}-${index}`,
@@ -69,6 +72,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
             const parsedOrders = JSON.parse(event.newValue).map((order: Order) => ({
                 ...order,
                 timestamp: new Date(order.timestamp),
+                invoiceOption: order.invoiceOption || 'none', // Fallback for old orders
                 items: order.items.map((item, index) => ({
                   ...item,
                   orderItemId: item.orderItemId || `oitem-${order.id}-${index}`,
@@ -150,6 +154,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     appliedDiscount: Discount | null;
     waiterId: string;
     waiterName: string;
+    invoiceOption: InvoiceOption;
   }) => {
     if (currentOrder.length === 0) {
       toast({
