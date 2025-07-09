@@ -21,23 +21,23 @@ export function MenuDisplay() {
   const [searchTerm, setSearchTerm] = useState('');
   
   const filteredMenu = useMemo(() => {
-    if (!searchTerm.trim()) return menu;
+    if (!searchTerm.trim()) return [];
     return menu.filter(item => 
         item.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
     );
   }, [menu, searchTerm]);
   
   const groupedMenu = useMemo(() => {
-      return filteredMenu.reduce((acc, item) => {
+      return menu.reduce((acc, item) => {
         (acc[item.category] = acc[item.category] || []).push(item);
         return acc;
       }, {} as Record<string, MenuItem[]>);
-  }, [filteredMenu]);
+  }, [menu]);
 
   const orderedCategories = useMemo(() => {
-      const availableCategories = new Set(filteredMenu.map(item => item.category));
+      const availableCategories = new Set(menu.map(item => item.category));
       return categoryOrder.filter(c => availableCategories.has(c));
-  }, [filteredMenu]);
+  }, [menu]);
 
 
   return (
@@ -55,8 +55,29 @@ export function MenuDisplay() {
         </div>
       </div>
       
-      {filteredMenu.length > 0 && orderedCategories.length > 0 ? (
-        <Tabs defaultValue={orderedCategories[0]} className="w-full">
+      {searchTerm.trim() ? (
+        // --- Search Results View ---
+        <div>
+          {filteredMenu.length > 0 ? (
+            <>
+              <h3 className="text-2xl font-headline mb-4">Resultados de la búsqueda ({filteredMenu.length})</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                {filteredMenu.map((item) => (
+                  <MenuItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-zinc-400 py-16">
+              <Search className="w-16 h-16 mx-auto mb-4 text-zinc-500" />
+              <h3 className="text-xl font-semibold">No se encontraron productos</h3>
+              <p>Tu búsqueda para "{searchTerm}" no arrojó resultados.</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        // --- Browsing View with Tabs ---
+        <Tabs defaultValue={orderedCategories.length > 0 ? orderedCategories[0] : ""} className="w-full">
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-zinc-800 h-auto">
                 {orderedCategories.map(category => (
                     <TabsTrigger key={category} value={category} className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-sm whitespace-normal">
@@ -66,7 +87,6 @@ export function MenuDisplay() {
             </TabsList>
             {orderedCategories.map(category => (
                 <TabsContent key={category} value={category} className="mt-6">
-                    <h3 className="text-2xl font-headline mb-4">{categoryTranslations[category] || category}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                         {(groupedMenu[category] || []).map((item) => (
                             <MenuItemCard key={item.id} item={item} />
@@ -75,12 +95,6 @@ export function MenuDisplay() {
                 </TabsContent>
             ))}
         </Tabs>
-      ) : (
-        <div className="text-center text-zinc-400 py-16">
-            <Search className="w-16 h-16 mx-auto mb-4 text-zinc-500" />
-            <h3 className="text-xl font-semibold">No se encontraron productos</h3>
-            <p>Intenta con otra búsqueda o limpia el campo.</p>
-        </div>
       )}
     </div>
   );
