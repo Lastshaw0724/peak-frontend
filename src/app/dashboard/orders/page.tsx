@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { History, TicketPercent, Users, ListFilter, Calendar as CalendarIcon } from 'lucide-react';
+import { History, TicketPercent, Users, ListFilter, Calendar as CalendarIcon, MoreHorizontal, Printer, Send } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
 import { useAuth } from '@/hooks/use-auth';
@@ -21,12 +21,20 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format, isSameDay } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function OrderHistoryPage() {
     const { submittedOrders, updateOrderStatus } = useOrder();
     const { updateTableStatus } = useTable();
     const { users } = useAuth();
+    const { toast } = useToast();
     
     const [waiterFilter, setWaiterFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
@@ -63,7 +71,18 @@ export default function OrderHistoryPage() {
     const handleMarkAsPaid = (order: Order) => {
         updateOrderStatus(order.id, 'paid');
         updateTableStatus(order.tableId, 'available');
-    }
+    };
+
+    const handlePrintInvoice = (orderId: string) => {
+        toast({ title: 'Imprimiendo Factura', description: `La factura para el pedido #${orderId.slice(-6)} se está generando.` });
+        // In a real app, this would trigger a print dialog.
+    };
+
+    const handleSendInvoice = (orderId: string) => {
+        toast({ title: 'Factura Enviada', description: `La factura para el pedido #${orderId.slice(-6)} ha sido enviada por correo.` });
+        // In a real app, this would trigger an email flow.
+    };
+
 
     return (
         <Card>
@@ -158,8 +177,8 @@ export default function OrderHistoryPage() {
                                 </TableCell>
                                 <TableCell>
                                     <ul className="list-disc list-inside text-xs">
-                                        {order.items.map(item => (
-                                            <li key={item.orderItemId}>
+                                        {order.items.map((item, index) => (
+                                            <li key={`${item.orderItemId}-${index}`}>
                                                 {item.quantity}x {item.name}
                                                 {item.selectedExtras && item.selectedExtras.length > 0 && (
                                                     <span className="text-muted-foreground">
@@ -187,6 +206,25 @@ export default function OrderHistoryPage() {
                                         <Button size="sm" onClick={() => handleMarkAsPaid(order)} className="bg-purple-600 hover:bg-purple-700">
                                             Marcar como Pagado
                                         </Button>
+                                    )}
+                                     {order.status === 'paid' && (
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onSelect={() => handlePrintInvoice(order.id)}>
+                                                    <Printer className="mr-2 h-4 w-4" />
+                                                    Imprimir Factura
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onSelect={() => handleSendInvoice(order.id)}>
+                                                    <Send className="mr-2 h-4 w-4" />
+                                                    Enviar Factura
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     )}
                                 </TableCell>
                             </TableRow>
