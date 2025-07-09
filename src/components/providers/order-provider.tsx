@@ -19,6 +19,8 @@ interface OrderContextType {
   }) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   clearCurrentOrder: () => void;
+  deleteOrder: (orderId: string) => void;
+  loadOrderForEdit: (orderId: string) => Order | undefined;
 }
 
 export const OrderContext = createContext<OrderContextType | undefined>(undefined);
@@ -174,6 +176,45 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     setCurrentOrder([]);
   };
 
+  const deleteOrder = (orderId: string) => {
+    const orderToDelete = submittedOrders.find(o => o.id === orderId);
+    if (orderToDelete) {
+        const updatedOrders = submittedOrders.filter(o => o.id !== orderId);
+        persistOrders(updatedOrders);
+        toast({
+            title: "Pedido Cancelado",
+            description: `El pedido #${orderId.slice(-6)} ha sido eliminado.`,
+            variant: 'destructive'
+        });
+    }
+  };
+
+  const loadOrderForEdit = (orderId: string): Order | undefined => {
+    const orderToEdit = submittedOrders.find(o => o.id === orderId);
+    
+    if (!orderToEdit) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No se pudo encontrar el pedido para modificar.",
+        });
+        return undefined;
+    }
+
+    const remainingOrders = submittedOrders.filter(o => o.id !== orderId);
+    persistOrders(remainingOrders);
+    
+    setCurrentOrder(orderToEdit.items);
+    
+    toast({
+        title: "Modificando Pedido",
+        description: `Se ha cargado el pedido #${orderId.slice(-6)}. Realiza los cambios y vuelve a finalizar el pedido.`,
+    });
+
+    return orderToEdit;
+  };
+
+
   return (
     <OrderContext.Provider
       value={{
@@ -185,6 +226,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         submitOrder,
         updateOrderStatus,
         clearCurrentOrder,
+        deleteOrder,
+        loadOrderForEdit,
       }}
     >
       {children}

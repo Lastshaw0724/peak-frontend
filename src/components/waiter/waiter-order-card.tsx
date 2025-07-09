@@ -2,15 +2,32 @@
 
 import type { Order } from '@/lib/types';
 import { useOrder } from '@/hooks/use-order';
+import { useTable } from '@/hooks/use-table';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
-import { CheckCheck } from 'lucide-react';
+import { CheckCheck, Pencil, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export function WaiterOrderCard({ order }: { order: Order }) {
-  const { updateOrderStatus } = useOrder();
+  const { updateOrderStatus, deleteOrder, loadOrderForEdit } = useOrder();
+  const { tables, setActiveTable } = useTable();
+  const router = useRouter();
+  const { toast } = useToast();
 
   const statusConfig = {
     new: { label: 'Nuevo', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
@@ -27,6 +44,19 @@ export function WaiterOrderCard({ order }: { order: Order }) {
   };
 
   const currentStatus = statusConfig[order.status];
+
+  const handleModify = () => {
+    const orderData = loadOrderForEdit(order.id);
+    if (orderData) {
+        const tableForOrder = tables.find(t => t.id === orderData.tableId);
+        if (tableForOrder) {
+            setActiveTable(tableForOrder);
+            router.push('/waiter/pos');
+        } else {
+            toast({ title: 'Error', description: 'No se pudo encontrar la mesa asociada al pedido.', variant: 'destructive' });
+        }
+    }
+  };
 
   return (
     <Card className={cn("transition-all duration-300 border-2 bg-zinc-800/80 border-zinc-700 flex flex-col", cardBorderColor[order.status])}>
@@ -50,14 +80,44 @@ export function WaiterOrderCard({ order }: { order: Order }) {
           </div>
         ))}
       </CardContent>
-      {order.status === 'ready' && (
-        <CardFooter className="p-4 pt-0">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => updateOrderStatus(order.id, 'delivered')}>
-                <CheckCheck className="mr-2 h-4 w-4" />
-                Marcar como Entregado
-            </Button>
+        <CardFooter className="p-4 pt-0 flex gap-2">
+            {order.status === 'new' && (
+                <>
+                    <Button variant="outline" className="w-full border-zinc-600 hover:bg-zinc-700" onClick={handleModify}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Modificar
+                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" className="w-full">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Cancelar
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>¿Seguro que quieres cancelar el pedido?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Esta acción no se puede deshacer. El pedido #{order.id.slice(-6)} para la mesa {order.tableName} será eliminado permanentemente.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>No, mantener pedido</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteOrder(order.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                    Sí, cancelar
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </>
+            )}
+            {order.status === 'ready' && (
+                <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => updateOrderStatus(order.id, 'delivered')}>
+                    <CheckCheck className="mr-2 h-4 w-4" />
+                    Marcar como Entregado
+                </Button>
+            )}
         </CardFooter>
-      )}
     </Card>
   );
 }
