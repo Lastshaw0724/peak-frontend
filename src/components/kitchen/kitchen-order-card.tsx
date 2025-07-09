@@ -69,11 +69,18 @@ export function KitchenOrderCard({ order }: { order: Order }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        {order.items.map((item, index) => (
-          <div key={`${item.id}-${index}`}>
+        {order.items.map((item) => (
+          <div key={item.orderItemId}>
             <p className="font-bold text-lg">
               {item.quantity}x {item.name}
             </p>
+            {item.selectedExtras && item.selectedExtras.length > 0 && (
+                <div className="pl-4 text-sm text-muted-foreground">
+                    {item.selectedExtras.map(extra => (
+                        <p key={extra.id}>+ {extra.name}</p>
+                    ))}
+                </div>
+            )}
             <Separator className="my-2"/>
           </div>
         ))}

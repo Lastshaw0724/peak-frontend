@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Order } from '@/lib/types';
@@ -83,12 +84,19 @@ export function WaiterOrderCard({ order }: { order: Order }) {
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-2 flex-grow">
-        {order.items.map((item, index) => (
-          <div key={`${item.id}-${index}`}>
+        {order.items.map((item) => (
+          <div key={item.orderItemId}>
             <p className="font-semibold text-sm">
               {item.quantity}x {item.name}
             </p>
-            {index < order.items.length - 1 && <Separator className="my-2 bg-zinc-600"/>}
+             {item.selectedExtras && item.selectedExtras.length > 0 && (
+                <div className="pl-4 text-xs text-zinc-400">
+                    {item.selectedExtras.map(extra => (
+                        <p key={extra.id}>+ {extra.name}</p>
+                    ))}
+                </div>
+            )}
+            <Separator className="my-2 bg-zinc-600"/>
           </div>
         ))}
       </CardContent>

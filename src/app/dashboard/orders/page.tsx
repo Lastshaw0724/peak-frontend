@@ -1,3 +1,4 @@
+
 'use client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -75,7 +76,14 @@ export default function OrderHistoryPage() {
                                 <TableCell>
                                     <ul className="list-disc list-inside text-xs">
                                         {order.items.map(item => (
-                                            <li key={item.id}>{item.quantity}x {item.name}</li>
+                                            <li key={item.orderItemId}>
+                                                {item.quantity}x {item.name}
+                                                {item.selectedExtras && item.selectedExtras.length > 0 && (
+                                                    <span className="text-muted-foreground">
+                                                      {' (' + item.selectedExtras.map(e => e.name).join(', ') + ')'}
+                                                    </span>
+                                                )}
+                                            </li>
                                         ))}
                                     </ul>
                                 </TableCell>

@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import type { OrderItem, Order, MenuItem, OrderStatus, Discount } from '@/lib/types';
+import type { OrderItem, Order, MenuItem, OrderStatus, Discount, Extra } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
 type CurrentOrderDetails = {
@@ -12,9 +13,9 @@ interface OrderContextType {
   currentOrder: OrderItem[];
   submittedOrders: Order[];
   currentOrderDetails: CurrentOrderDetails;
-  addItemToOrder: (item: MenuItem, quantity: number) => void;
-  removeItemFromOrder: (itemId: string) => void;
-  updateItemQuantity: (itemId: string, quantity: number) => void;
+  addItemToOrder: (item: MenuItem, quantity: number, selectedExtras: Extra[]) => void;
+  removeItemFromOrder: (orderItemId: string) => void;
+  updateItemQuantity: (orderItemId: string, quantity: number) => void;
   submitOrder: (details: { 
     customerName: string; 
     paymentMethod: 'efectivo' | 'transferencia'; 
@@ -46,6 +47,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         const parsedOrders = JSON.parse(storedOrders).map((order: Order) => ({
           ...order,
           timestamp: new Date(order.timestamp),
+          items: order.items.map(item => ({
+            ...item,
+            selectedExtras: item.selectedExtras || [],
+          }))
         }));
         setSubmittedOrders(parsedOrders);
       }
@@ -61,6 +66,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
             const parsedOrders = JSON.parse(event.newValue).map((order: Order) => ({
                 ...order,
                 timestamp: new Date(order.timestamp),
+                items: order.items.map(item => ({
+                  ...item,
+                  selectedExtras: item.selectedExtras || [],
+                }))
             }));
             setSubmittedOrders(parsedOrders);
         } catch (error) {
@@ -84,10 +93,14 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       }
   }
 
-  const addItemToOrder = (item: MenuItem, quantity: number) => {
+  const addItemToOrder = (item: MenuItem, quantity: number, selectedExtras: Extra[]) => {
     setCurrentOrder((prevOrder) => {
+      // Create a consistent key for an item with specific extras
+      const extrasKey = selectedExtras.map(e => e.id).sort().join('-');
+      const compoundId = `${item.id}-${extrasKey}`;
+      
       const existingItemIndex = prevOrder.findIndex(
-        (orderItem) => orderItem.id === item.id
+        (orderItem) => `${orderItem.id}-${orderItem.selectedExtras.map(e => e.id).sort().join('-')}` === compoundId
       );
 
       if (existingItemIndex > -1) {
@@ -98,22 +111,28 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         };
         return updatedOrder;
       } else {
-        return [...prevOrder, { ...item, quantity }];
+        const newOrderItem: OrderItem = {
+          ...item,
+          quantity,
+          selectedExtras,
+          orderItemId: `oitem-${Date.now()}-${Math.random()}`
+        };
+        return [...prevOrder, newOrderItem];
       }
     });
   };
 
-  const removeItemFromOrder = (itemId: string) => {
-      setCurrentOrder((prevOrder) => prevOrder.filter((item) => item.id !== itemId));
+  const removeItemFromOrder = (orderItemId: string) => {
+      setCurrentOrder((prevOrder) => prevOrder.filter((item) => item.orderItemId !== orderItemId));
   };
 
-  const updateItemQuantity = (itemId: string, quantity: number) => {
+  const updateItemQuantity = (orderItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItemFromOrder(itemId);
+      removeItemFromOrder(orderItemId);
     } else {
       setCurrentOrder((prevOrder) =>
         prevOrder.map((item) =>
-          item.id === itemId ? { ...item, quantity } : item
+          item.orderItemId === orderItemId ? { ...item, quantity } : item
         )
       );
     }
@@ -137,7 +156,11 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     
     const { appliedDiscount, ...restDetails } = details;
 
-    const subtotal = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const subtotal = currentOrder.reduce((acc, item) => {
+        const extrasPrice = item.selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
+        const itemPrice = item.price + extrasPrice;
+        return acc + (itemPrice * item.quantity);
+    }, 0);
 
     let discountAmount = 0;
     if (appliedDiscount) {
@@ -224,7 +247,13 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const remainingOrders = submittedOrders.filter(o => o.id !== orderId);
     persistOrders(remainingOrders);
     
-    setCurrentOrder(orderToEdit.items);
+    const itemsToLoad = orderToEdit.items.map(item => ({
+        ...item,
+        orderItemId: item.orderItemId || `oitem-${Date.now()}-${Math.random()}`,
+        selectedExtras: item.selectedExtras || [],
+    }));
+
+    setCurrentOrder(itemsToLoad);
     setCurrentOrderDetails({ customerName: orderToEdit.customerName });
     
     toast({

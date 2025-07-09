@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -39,7 +40,11 @@ export function OrderSummary() {
 
   const availableDiscounts = discounts.filter(d => d.status);
   
-  const subtotal = currentOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = currentOrder.reduce((acc, item) => {
+    const extrasPrice = item.selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
+    const itemPrice = item.price + extrasPrice;
+    return acc + (itemPrice * item.quantity);
+  }, 0);
 
   let discountAmount = 0;
   if (selectedDiscount) {
@@ -114,21 +119,28 @@ export function OrderSummary() {
             </div>
           ) : (
             <div className="space-y-4">
-              {currentOrder.map((item, index) => (
-                <div key={`${item.id}-${index}`} className="flex items-start justify-between gap-4">
+              {currentOrder.map((item) => (
+                <div key={item.orderItemId} className="flex items-start justify-between gap-4">
                   <div className="flex-grow">
                     <p className="font-semibold">{item.name}</p>
+                    {item.selectedExtras.length > 0 && (
+                        <ul className="text-xs text-muted-foreground list-disc list-inside pl-2">
+                            {item.selectedExtras.map(extra => (
+                                <li key={extra.id}>{extra.name} (+${extra.price.toFixed(2)})</li>
+                            ))}
+                        </ul>
+                    )}
                     <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.id, item.quantity - 1)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.orderItemId, item.quantity - 1)}>
                       <Minus className="h-4 w-4" />
                     </Button>
                     <span className="w-6 text-center">{item.quantity}</span>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.id, item.quantity + 1)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => updateItemQuantity(item.orderItemId, item.quantity + 1)}>
                       <Plus className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeItemFromOrder(item.id)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeItemFromOrder(item.orderItemId)}>
                         <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

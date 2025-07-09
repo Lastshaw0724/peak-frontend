@@ -28,7 +28,9 @@ export interface MenuItem {
 }
 
 export interface OrderItem extends MenuItem {
+  orderItemId: string; // Unique ID for this item in this specific order
   quantity: number;
+  selectedExtras: Extra[];
 }
 
 export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered' | 'paid';
@@ -53,7 +55,7 @@ export interface InventoryItem {
 }
 
 export interface Order {
-  id: string;
+  id:string;
   tableId: string;
   tableName: string;
   customerName: string;
