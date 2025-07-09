@@ -5,12 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { History, TicketPercent } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
+import { useTable } from '@/hooks/use-table';
 import { cn } from '@/lib/utils';
-import type { OrderStatus } from '@/lib/types';
+import type { Order, OrderStatus } from '@/lib/types';
 
 
 export default function OrderHistoryPage() {
     const { submittedOrders, updateOrderStatus } = useOrder();
+    const { updateTableStatus } = useTable();
 
     const statusColors: Record<OrderStatus, string> = {
         new: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -27,6 +29,11 @@ export default function OrderHistoryPage() {
         delivered: 'Entregado',
         paid: 'Pagado',
     };
+
+    const handleMarkAsPaid = (order: Order) => {
+        updateOrderStatus(order.id, 'paid');
+        updateTableStatus(order.tableId, 'available');
+    }
 
     return (
         <Card>
@@ -86,7 +93,7 @@ export default function OrderHistoryPage() {
                                 <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
                                 <TableCell className="text-right">
                                     {order.status === 'delivered' && (
-                                        <Button size="sm" onClick={() => updateOrderStatus(order.id, 'paid')} className="bg-purple-600 hover:bg-purple-700">
+                                        <Button size="sm" onClick={() => handleMarkAsPaid(order)} className="bg-purple-600 hover:bg-purple-700">
                                             Marcar como Pagado
                                         </Button>
                                     )}

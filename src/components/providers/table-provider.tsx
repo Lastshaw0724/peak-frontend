@@ -1,14 +1,8 @@
 'use client';
 
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import type { Table, TableStatus } from '@/lib/types';
 
-export type TableStatus = 'available' | 'occupied' | 'reserved';
-
-export interface Table {
-  id: string;
-  name: string;
-  status: TableStatus;
-}
 
 const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
   id: `t${i + 1}`,
@@ -24,17 +18,59 @@ interface TableContextType {
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);
+const TABLES_STORAGE_KEY = 'gustogo-tables';
 
 export const TableProvider = ({ children }: { children: ReactNode }) => {
-  const [tables, setTables] = useState<Table[]>(initialTables);
+  const [tables, setTables] = useState<Table[]>([]);
   const [activeTable, setActiveTable] = useState<Table | null>(null);
 
+  useEffect(() => {
+    try {
+      const storedTables = localStorage.getItem(TABLES_STORAGE_KEY);
+      if (storedTables) {
+        setTables(JSON.parse(storedTables));
+      } else {
+        setTables(initialTables);
+        localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(initialTables));
+      }
+    } catch (error) {
+      console.error("Failed to load tables from localStorage", error);
+      setTables(initialTables);
+    }
+
+     // Listen for changes in other tabs
+     const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === TABLES_STORAGE_KEY && event.newValue) {
+          try {
+              setTables(JSON.parse(event.newValue));
+          } catch (error) {
+              console.error("Failed to parse tables from storage event", error);
+          }
+        }
+      };
+  
+      window.addEventListener('storage', handleStorageChange);
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+      };
+
+  }, []);
+
+  const persistTables = (updatedTables: Table[]) => {
+      setTables(updatedTables);
+      try {
+        localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(updatedTables));
+      } catch (error) {
+        console.error("Failed to save tables to localStorage", error);
+      }
+  }
+
+
   const updateTableStatus = (tableId: string, status: TableStatus) => {
-    setTables((prevTables) =>
-      prevTables.map((table) =>
+    const updatedTables = tables.map((table) =>
         table.id === tableId ? { ...table, status } : table
-      )
     );
+    persistTables(updatedTables);
   };
 
   return (
