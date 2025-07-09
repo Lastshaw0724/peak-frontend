@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { History, TicketPercent, Users } from 'lucide-react';
+import { History, TicketPercent, Users, ListFilter, Calendar as CalendarIcon } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import { useTable } from '@/hooks/use-table';
 import { useAuth } from '@/hooks/use-auth';
@@ -18,22 +18,30 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format, isSameDay } from 'date-fns';
 
 
 export default function OrderHistoryPage() {
     const { submittedOrders, updateOrderStatus } = useOrder();
     const { updateTableStatus } = useTable();
     const { users } = useAuth();
+    
     const [waiterFilter, setWaiterFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+    const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
 
     const waiters = useMemo(() => users.filter(user => user.role === 'waiter'), [users]);
 
     const filteredOrders = useMemo(() => {
-        if (waiterFilter === 'all') {
-            return submittedOrders;
-        }
-        return submittedOrders.filter(order => order.waiterId === waiterFilter);
-    }, [submittedOrders, waiterFilter]);
+        return submittedOrders.filter(order => {
+            const waiterMatch = waiterFilter === 'all' || order.waiterId === waiterFilter;
+            const statusMatch = statusFilter === 'all' || order.status === statusFilter;
+            const dateMatch = !dateFilter || isSameDay(order.timestamp, dateFilter);
+            return waiterMatch && statusMatch && dateMatch;
+        });
+    }, [submittedOrders, waiterFilter, statusFilter, dateFilter]);
 
     const statusColors: Record<OrderStatus, string> = {
         new: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -43,7 +51,8 @@ export default function OrderHistoryPage() {
         paid: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
     };
     
-    const statusDisplayNames: Record<OrderStatus, string> = {
+    const statusDisplayNames: Record<OrderStatus | 'all', string> = {
+        all: 'Todos los Estados',
         new: 'Nuevo',
         preparing: 'Preparando',
         ready: 'Listo',
@@ -66,14 +75,13 @@ export default function OrderHistoryPage() {
                         <CardDescription>Revisa todos los pedidos realizados en el restaurante.</CardDescription>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Users className="h-5 w-5 text-muted-foreground" />
+                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Select value={waiterFilter} onValueChange={setWaiterFilter}>
-                        <SelectTrigger className="w-full sm:w-[220px]">
+                        <SelectTrigger className="w-full sm:w-[180px]">
                             <SelectValue placeholder="Filtrar por mesero" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Todos los Pedidos</SelectItem>
+                            <SelectItem value="all">Todos los Meseros</SelectItem>
                             {waiters.map(waiter => (
                                 <SelectItem key={waiter.id} value={waiter.id}>
                                     {waiter.name}
@@ -81,6 +89,41 @@ export default function OrderHistoryPage() {
                             ))}
                         </SelectContent>
                     </Select>
+                     <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as OrderStatus | 'all')}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Filtrar por estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Object.entries(statusDisplayNames).map(([key, value]) => (
+                                <SelectItem key={key} value={key}>{value}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                     <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full sm:w-[240px] justify-start text-left font-normal",
+                                    !dateFilter && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateFilter ? format(dateFilter, "PPP") : <span>Seleccionar fecha</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={dateFilter}
+                                onSelect={setDateFilter}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    {dateFilter && (
+                         <Button variant="ghost" onClick={() => setDateFilter(undefined)}>Limpiar</Button>
+                    )}
                 </div>
             </CardHeader>
             <CardContent>
