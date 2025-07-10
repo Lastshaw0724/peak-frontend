@@ -8,46 +8,48 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Save, BarChart as BarChartIcon, Bell } from 'lucide-react';
+import { Settings, Save, Bell } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart"
 import type { OrderItem } from '@/lib/types';
 import { usePreferences } from '@/hooks/use-preferences';
-import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-
+import { ChartConfig } from '@/components/ui/chart';
 
 export default function PreferencesPage() {
     const { submittedOrders } = useOrder();
-    const prefs = usePreferences();
-    const { toast } = useToast();
+    const prefsContext = usePreferences();
+    const { savePreferences, isLoading, ...initialPrefs } = prefsContext;
 
-    // Create a local state to hold changes before saving
-    const [localPrefs, setLocalPrefs] = useState(prefs);
+    // Local state to hold form changes before saving
+    const [localPrefs, setLocalPrefs] = useState(initialPrefs);
 
     // When the context finishes loading, sync the data to the local state
     useEffect(() => {
-        if (!prefs.isLoading) {
-            setLocalPrefs(prefs);
+        if (!isLoading) {
+            setLocalPrefs(initialPrefs);
         }
-    }, [prefs, prefs.isLoading]);
+    }, [initialPrefs, isLoading]);
 
     const handleSaveChanges = () => {
-        if (prefs.isLoading) return; // Prevent saving while data is not ready
+        if (isLoading) return;
+        savePreferences(localPrefs);
+    };
+    
+    // Handler for individual input changes
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value, type, checked } = e.target;
+        setLocalPrefs(prev => ({
+            ...prev,
+            [id]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value,
+        }));
+    };
 
-        // Call all setter functions from the context to update the global state
-        prefs.setRestaurantName(localPrefs.restaurantName);
-        prefs.setWebsiteUrl(localPrefs.websiteUrl);
-        prefs.setAddress(localPrefs.address);
-        prefs.setPhone(localPrefs.phone);
-        prefs.setDarkMode(localPrefs.darkMode);
-        prefs.setPublicMenu(localPrefs.publicMenu);
-        prefs.setTaxRate(localPrefs.taxRate);
-        prefs.setTaxIncluded(localPrefs.taxIncluded);
-        prefs.setLowStockThreshold(localPrefs.lowStockThreshold);
-
-        toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados exitosamente." });
+    // Handler for Switch component changes
+    const handleSwitchChange = (id: string, checked: boolean) => {
+        setLocalPrefs(prev => ({
+            ...prev,
+            [id]: checked
+        }));
     };
 
     const popularProducts = useMemo(() => {
@@ -69,7 +71,7 @@ export default function PreferencesPage() {
       count: { label: "Ventas", color: "hsl(var(--primary))" },
     } satisfies ChartConfig;
 
-    if (prefs.isLoading) {
+    if (isLoading) {
         return (
             <Card>
                 <CardHeader>
@@ -104,20 +106,20 @@ export default function PreferencesPage() {
                     <TabsContent value="general" className="mt-6">
                         <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
-                                <Label htmlFor="restaurant-name">Nombre del Restaurante</Label>
-                                <Input id="restaurant-name" value={localPrefs.restaurantName} onChange={(e) => setLocalPrefs({...localPrefs, restaurantName: e.target.value})} />
+                                <Label htmlFor="restaurantName">Nombre del Restaurante</Label>
+                                <Input id="restaurantName" value={localPrefs.restaurantName} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="website-url">Sitio Web / Enlace</Label>
-                                <Input id="website-url" type="url" placeholder="https://ejemplo.com" value={localPrefs.websiteUrl} onChange={(e) => setLocalPrefs({...localPrefs, websiteUrl: e.target.value})} />
+                                <Label htmlFor="websiteUrl">Sitio Web / Enlace</Label>
+                                <Input id="websiteUrl" type="url" placeholder="https://ejemplo.com" value={localPrefs.websiteUrl} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="address">Dirección</Label>
-                                <Input id="address" value={localPrefs.address} onChange={(e) => setLocalPrefs({...localPrefs, address: e.target.value})} />
+                                <Input id="address" value={localPrefs.address} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="phone">Teléfono de Contacto</Label>
-                                <Input id="phone" type="tel" value={localPrefs.phone} onChange={(e) => setLocalPrefs({...localPrefs, phone: e.target.value})} />
+                                <Input id="phone" type="tel" value={localPrefs.phone} onChange={handleChange} />
                             </div>
                         </div>
                     </TabsContent>
@@ -125,33 +127,33 @@ export default function PreferencesPage() {
                        <div className="space-y-6 max-w-2xl">
                             <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="dark-mode" className="text-base">Modo Oscuro</Label>
+                                    <Label htmlFor="darkMode" className="text-base">Modo Oscuro</Label>
                                     <p className="text-sm text-muted-foreground">
                                         Activar el tema oscuro en toda la aplicación.
                                     </p>
                                 </div>
-                                <Switch id="dark-mode" checked={localPrefs.darkMode} onCheckedChange={(checked) => setLocalPrefs({...localPrefs, darkMode: checked})} />
+                                <Switch id="darkMode" checked={localPrefs.darkMode} onCheckedChange={(checked) => handleSwitchChange('darkMode', checked)} />
                             </div>
                              <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="public-menu" className="text-base">Menú Público</Label>
+                                    <Label htmlFor="publicMenu" className="text-base">Menú Público</Label>
                                      <p className="text-sm text-muted-foreground">
                                         Permitir que cualquiera vea el menú sin iniciar sesión.
                                     </p>
                                 </div>
-                                <Switch id="public-menu" checked={localPrefs.publicMenu} onCheckedChange={(checked) => setLocalPrefs({...localPrefs, publicMenu: checked})} />
+                                <Switch id="publicMenu" checked={localPrefs.publicMenu} onCheckedChange={(checked) => handleSwitchChange('publicMenu', checked)} />
                             </div>
                         </div>
                     </TabsContent>
                     <TabsContent value="taxes" className="mt-6">
                        <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
-                                <Label htmlFor="tax-rate">Tasa de Impuesto General (%)</Label>
-                                <Input id="tax-rate" type="number" value={localPrefs.taxRate} onChange={(e) => setLocalPrefs({...localPrefs, taxRate: Number(e.target.value)})} />
+                                <Label htmlFor="taxRate">Tasa de Impuesto General (%)</Label>
+                                <Input id="taxRate" type="number" value={localPrefs.taxRate} onChange={handleChange} />
                             </div>
                             <div className="flex items-center space-x-2">
-                                <Switch id="tax-included" checked={localPrefs.taxIncluded} onCheckedChange={(checked) => setLocalPrefs({...localPrefs, taxIncluded: checked})}/>
-                                <Label htmlFor="tax-included">¿Los precios del menú ya incluyen impuestos?</Label>
+                                <Switch id="taxIncluded" checked={localPrefs.taxIncluded} onCheckedChange={(checked) => handleSwitchChange('taxIncluded', checked)}/>
+                                <Label htmlFor="taxIncluded">¿Los precios del menú ya incluyen impuestos?</Label>
                             </div>
                         </div>
                     </TabsContent>
@@ -162,12 +164,12 @@ export default function PreferencesPage() {
                                 Notificaciones de Stock
                            </h3>
                             <div className="space-y-2 p-4 border rounded-lg">
-                                <Label htmlFor="stock-threshold">Alertar cuando el stock sea menor a:</Label>
+                                <Label htmlFor="lowStockThreshold">Alertar cuando el stock sea menor a:</Label>
                                 <Input 
-                                    id="stock-threshold" 
+                                    id="lowStockThreshold" 
                                     type="number"
                                     value={localPrefs.lowStockThreshold}
-                                    onChange={(e) => setLocalPrefs({...localPrefs, lowStockThreshold: Number(e.target.value)})}
+                                    onChange={handleChange}
                                     className="max-w-[100px]"
                                     placeholder="Ej: 20"
                                 />
@@ -179,7 +181,7 @@ export default function PreferencesPage() {
                     </TabsContent>
                 </Tabs>
                 <div className="mt-8 flex justify-end">
-                    <Button onClick={handleSaveChanges}>
+                    <Button onClick={handleSaveChanges} disabled={isLoading}>
                         <Save className="mr-2"/>
                         Guardar Cambios
                     </Button>

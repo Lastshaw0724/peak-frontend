@@ -1,5 +1,4 @@
 
-
 'use client';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,7 +46,7 @@ export default function OrderHistoryPage() {
         return submittedOrders.filter(order => {
             const waiterMatch = waiterFilter === 'all' || order.waiterId === waiterFilter;
             const statusMatch = statusFilter === 'all' || order.status === statusFilter;
-            const dateMatch = !dateFilter || isSameDay(order.timestamp, dateFilter);
+            const dateMatch = !dateFilter || isSameDay(new Date(order.timestamp), dateFilter);
             return waiterMatch && statusMatch && dateMatch;
         });
     }, [submittedOrders, waiterFilter, statusFilter, dateFilter]);
@@ -176,7 +175,7 @@ export default function OrderHistoryPage() {
                             return (
                             <TableRow key={order.id}>
                                 <TableCell className="font-mono">#{order.id.slice(-6)}</TableCell>
-                                <TableCell>{order.timestamp.toLocaleString()}</TableCell>
+                                <TableCell>{new Date(order.timestamp).toLocaleString()}</TableCell>
                                 <TableCell>{order.tableName}</TableCell>
                                 <TableCell>{order.waiterName}</TableCell>
                                 <TableCell>{order.customerName}</TableCell>

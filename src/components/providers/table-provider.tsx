@@ -1,80 +1,88 @@
+
 'use client';
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { Table, TableStatus } from '@/lib/types';
-
-
-const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
-  id: `t${i + 1}`,
-  name: `Mesa #${i + 1}`,
-  status: 'available',
-}));
+import { useToast } from '@/hooks/use-toast';
 
 interface TableContextType {
   tables: Table[];
-  updateTableStatus: (tableId: string, status: TableStatus) => void;
+  updateTableStatus: (tableId: string, status: TableStatus) => Promise<void>;
   activeTable: Table | null;
   setActiveTable: (table: Table | null) => void;
+  isLoading: boolean;
+  refreshTables: () => Promise<void>;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);
-const TABLES_STORAGE_KEY = 'gustogo-tables';
+
+const ACTIVE_TABLE_SESSION_KEY = 'gustogo-active-table';
 
 export const TableProvider = ({ children }: { children: ReactNode }) => {
   const [tables, setTables] = useState<Table[]>([]);
   const [activeTable, setActiveTable] = useState<Table | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  useEffect(() => {
+  const refreshTables = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const storedTables = localStorage.getItem(TABLES_STORAGE_KEY);
-      if (storedTables) {
-        setTables(JSON.parse(storedTables));
-      } else {
-        setTables(initialTables);
-        localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(initialTables));
-      }
+        const response = await fetch('/api/tables');
+        if (!response.ok) throw new Error('Failed to fetch tables');
+        const data = await response.json();
+        setTables(data);
     } catch (error) {
-      console.error("Failed to load tables from localStorage", error);
-      setTables(initialTables);
+        console.error(error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load table data.' });
+    } finally {
+        setIsLoading(false);
     }
-
-     // Listen for changes in other tabs
-     const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === TABLES_STORAGE_KEY && event.newValue) {
-          try {
-              setTables(JSON.parse(event.newValue));
-          } catch (error) {
-              console.error("Failed to parse tables from storage event", error);
-          }
-        }
-      };
+  }, [toast]);
   
-      window.addEventListener('storage', handleStorageChange);
-      return () => {
-        window.removeEventListener('storage', handleStorageChange);
-      };
+  useEffect(() => {
+    refreshTables();
+    
+    // Also load active table from session storage
+    const storedActiveTable = sessionStorage.getItem(ACTIVE_TABLE_SESSION_KEY);
+    if(storedActiveTable) {
+        setActiveTable(JSON.parse(storedActiveTable));
+    }
+  }, [refreshTables]);
 
-  }, []);
-
-  const persistTables = (updatedTables: Table[]) => {
-      setTables(updatedTables);
-      try {
-        localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(updatedTables));
-      } catch (error) {
-        console.error("Failed to save tables to localStorage", error);
-      }
+  const handleSetActiveTable = (table: Table | null) => {
+    setActiveTable(table);
+    if (table) {
+        sessionStorage.setItem(ACTIVE_TABLE_SESSION_KEY, JSON.stringify(table));
+    } else {
+        sessionStorage.removeItem(ACTIVE_TABLE_SESSION_KEY);
+    }
   }
 
+  const updateTableStatus = async (tableId: string, status: TableStatus) => {
+    try {
+        const response = await fetch('/api/tables', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tableId, status })
+        });
+        if (!response.ok) throw new Error('Failed to update table status');
+        await refreshTables(); // Re-fetch all tables to ensure consistency
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not update table status.' });
+    }
+  };
 
-  const updateTableStatus = (tableId: string, status: TableStatus) => {
-    const updatedTables = tables.map((table) =>
-        table.id === tableId ? { ...table, status } : table
-    );
-    persistTables(updatedTables);
+  const contextValue = { 
+    tables, 
+    updateTableStatus, 
+    activeTable, 
+    setActiveTable: handleSetActiveTable, 
+    isLoading,
+    refreshTables 
   };
 
   return (
-    <TableContext.Provider value={{ tables, updateTableStatus, activeTable, setActiveTable }}>
+    <TableContext.Provider value={contextValue}>
       {children}
     </TableContext.Provider>
   );

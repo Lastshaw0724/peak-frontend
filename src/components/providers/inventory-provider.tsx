@@ -1,86 +1,120 @@
 
 "use client";
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { InventoryItem } from '@/lib/types';
-import { initialInventoryData } from '@/lib/inventory-data';
 import { useToast } from "@/hooks/use-toast";
 
 interface InventoryContextType {
   inventory: InventoryItem[];
-  addInventoryItem: (item: Omit<InventoryItem, 'id'>) => void;
-  updateInventoryItem: (id: string, data: Omit<InventoryItem, 'id'>) => void;
-  deleteInventoryItem: (id: string) => void;
+  addInventoryItem: (item: Omit<InventoryItem, 'id'>) => Promise<void>;
+  updateInventoryItem: (id: string, data: Omit<InventoryItem, 'id'>) => Promise<void>;
+  deleteInventoryItem: (id: string) => Promise<void>;
+  refreshInventory: () => Promise<void>;
+  isLoading: boolean;
 }
 
 export const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
-const INVENTORY_STORAGE_KEY = 'gustogo-inventory';
 
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
+  const refreshInventory = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const storedInventory = localStorage.getItem(INVENTORY_STORAGE_KEY);
-      if (storedInventory) {
-        setInventory(JSON.parse(storedInventory));
-      } else {
-        setInventory(initialInventoryData);
-        localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(initialInventoryData));
-      }
+      const response = await fetch('/api/inventory');
+      if (!response.ok) throw new Error('Failed to fetch inventory');
+      const data = await response.json();
+      setInventory(data);
     } catch (error) {
-      console.error("Failed to load inventory from localStorage", error);
-      setInventory(initialInventoryData);
+      console.error(error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not load inventory data.' });
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [toast]);
 
-  const persistInventory = (updatedInventory: InventoryItem[]) => {
-      setInventory(updatedInventory);
-      try {
-        localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(updatedInventory));
-      } catch (error) {
-        console.error("Failed to save inventory to localStorage", error);
-      }
-  }
+  useEffect(() => {
+    refreshInventory();
+  }, [refreshInventory]);
 
-  const addInventoryItem = (itemData: Omit<InventoryItem, 'id'>) => {
-    const newItem: InventoryItem = {
-      ...itemData,
-      id: `inv-${Date.now()}`,
-    };
-    const updatedInventory = [...inventory, newItem];
-    persistInventory(updatedInventory);
-    toast({
-      title: "Insumo Añadido",
-      description: `El insumo "${newItem.name}" ha sido añadido al inventario.`,
-    });
-  };
-
-  const updateInventoryItem = (id: string, data: Omit<InventoryItem, 'id'>) => {
-      const updatedInventory = inventory.map(item => item.id === id ? { id, ...data } : item);
-      persistInventory(updatedInventory);
-      toast({
-          title: "Insumo Actualizado",
-          description: `El insumo "${data.name}" ha sido actualizado.`,
+  const addInventoryItem = async (itemData: Omit<InventoryItem, 'id'>) => {
+    try {
+      const response = await fetch('/api/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(itemData),
       });
+      if (!response.ok) throw new Error('Failed to add item');
+      
+      const newItem = await response.json();
+      setInventory(prev => [...prev, newItem]);
+      
+      toast({
+        title: "Insumo Añadido",
+        description: `El insumo "${newItem.name}" ha sido añadido al inventario.`,
+      });
+    } catch (error) {
+       toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el insumo.' });
+    }
   };
 
-  const deleteInventoryItem = (id: string) => {
-      const itemToDelete = inventory.find(item => item.id === id);
-      const updatedInventory = inventory.filter(item => item.id !== id);
-      persistInventory(updatedInventory);
-      if (itemToDelete) {
-          toast({
-              title: "Insumo Eliminado",
-              description: `El insumo "${itemToDelete.name}" ha sido eliminado.`,
-              variant: "destructive",
-          });
-      }
+  const updateInventoryItem = async (id: string, data: Omit<InventoryItem, 'id'>) => {
+    try {
+        const response = await fetch(`/api/inventory/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Failed to update item');
+        
+        await refreshInventory(); // Refresh the whole list
+        
+        toast({
+            title: "Insumo Actualizado",
+            description: `El insumo "${data.name}" ha sido actualizado.`,
+        });
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo actualizar el insumo.' });
+    }
+  };
+
+  const deleteInventoryItem = async (id: string) => {
+    const itemToDelete = inventory.find(item => item.id === id);
+    if (!itemToDelete) return;
+
+    try {
+        const response = await fetch(`/api/inventory/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Failed to delete item');
+        
+        await refreshInventory(); // Refresh the list from the server
+
+        toast({
+            title: "Insumo Eliminado",
+            description: `El insumo "${itemToDelete.name}" ha sido eliminado.`,
+            variant: "destructive",
+        });
+
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Error', description: `No se pudo eliminar el insumo "${itemToDelete.name}".` });
+    }
+  };
+
+  const contextValue = {
+    inventory,
+    addInventoryItem,
+    updateInventoryItem,
+    deleteInventoryItem,
+    refreshInventory,
+    isLoading
   };
 
   return (
-    <InventoryContext.Provider value={{ inventory, addInventoryItem, updateInventoryItem, deleteInventoryItem }}>
+    <InventoryContext.Provider value={contextValue}>
       {children}
     </InventoryContext.Provider>
   );
