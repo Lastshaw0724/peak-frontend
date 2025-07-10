@@ -23,15 +23,20 @@ export default function PreferencesPage() {
     const prefs = usePreferences();
     const { toast } = useToast();
 
+    // Create a local state to hold changes before saving
     const [localPrefs, setLocalPrefs] = useState(prefs);
 
+    // When the context finishes loading, sync the data to the local state
     useEffect(() => {
         if (!prefs.isLoading) {
             setLocalPrefs(prefs);
         }
-    }, [prefs]);
+    }, [prefs, prefs.isLoading]);
 
     const handleSaveChanges = () => {
+        if (prefs.isLoading) return; // Prevent saving while data is not ready
+
+        // Call all setter functions from the context to update the global state
         prefs.setRestaurantName(localPrefs.restaurantName);
         prefs.setWebsiteUrl(localPrefs.websiteUrl);
         prefs.setAddress(localPrefs.address);
@@ -42,7 +47,7 @@ export default function PreferencesPage() {
         prefs.setTaxIncluded(localPrefs.taxIncluded);
         prefs.setLowStockThreshold(localPrefs.lowStockThreshold);
 
-        toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados." });
+        toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados exitosamente." });
     };
 
     const popularProducts = useMemo(() => {
