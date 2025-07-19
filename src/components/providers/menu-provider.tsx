@@ -2,107 +2,109 @@
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import type { MenuItem } from '@/lib/types';
+import type { MenuItem, Extra } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
+import { initialMenuData } from '@/lib/menu-data';
 
 interface MenuContextType {
   menu: MenuItem[];
-  addProduct: (product: Omit<MenuItem, 'id'>) => Promise<void>;
-  updateProduct: (id: string, productData: Omit<MenuItem, 'id'>) => Promise<void>;
-  deleteProduct: (id: string) => Promise<void>;
-  refreshMenu: () => Promise<void>;
+  addProduct: (product: Omit<MenuItem, 'id'>) => void;
+  updateProduct: (id: string, productData: Omit<MenuItem, 'id'>) => void;
+  deleteProduct: (id: string) => void;
   isLoading: boolean;
 }
 
 export const MenuContext = createContext<MenuContextType | undefined>(undefined);
+
+const MENU_STORAGE_KEY = 'gustogo-menu';
 
 export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const refreshMenu = useCallback(async () => {
-    setIsLoading(true);
+  const loadMenu = useCallback(() => {
     try {
-      const response = await fetch('/api/menu');
-      if (!response.ok) throw new Error('Failed to fetch menu');
-      const data = await response.json();
-      setMenu(data);
+        const storedMenu = localStorage.getItem(MENU_STORAGE_KEY);
+        if (storedMenu) {
+            setMenu(JSON.parse(storedMenu));
+        } else {
+            setMenu(initialMenuData);
+            localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(initialMenuData));
+        }
     } catch (error) {
-      console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not load menu data.' });
-    } finally {
-      setIsLoading(false);
+        console.error("Failed to load menu", error);
+        setMenu(initialMenuData);
     }
-  }, [toast]);
+  }, []);
+
+  const saveMenu = useCallback((updatedMenu: MenuItem[]) => {
+      setMenu(updatedMenu);
+      localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(updatedMenu));
+  }, []);
 
   useEffect(() => {
-    refreshMenu();
-  }, [refreshMenu]);
+    setIsLoading(true);
+    loadMenu();
+    setIsLoading(false);
+  }, [loadMenu]);
 
-  const addProduct = async (productData: Omit<MenuItem, 'id'>) => {
-    try {
-        const response = await fetch('/api/menu', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(productData),
-        });
-        if (!response.ok) throw new Error('Failed to add product');
-        
-        const newProduct = await response.json();
-        setMenu(prev => [...prev, newProduct]);
-        
-        toast({
-          title: "Producto Añadido!",
-          description: `El producto "${newProduct.name}" ha sido añadido al menú.`,
-        });
+  const addProduct = (productData: Omit<MenuItem, 'id'>) => {
+    const dataFromForm = productData as Omit<MenuItem, 'id'> & { extras?: ({ name: string, price: number })[] };
 
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo añadir el producto.' });
-    }
+    const newProduct: MenuItem = {
+      ...dataFromForm,
+      id: `prod-${Date.now()}`,
+      dataAiHint: dataFromForm.dataAiHint || dataFromForm.name.toLowerCase().split(' ').slice(0, 2).join(' '),
+      extras: dataFromForm.extras?.map(extra => ({
+        ...extra,
+        id: `extra-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      })),
+    };
+
+    saveMenu([...menu, newProduct]);
+
+    toast({
+      title: "Producto Añadido!",
+      description: `El producto "${newProduct.name}" ha sido añadido al menú.`,
+    });
   };
 
-  const updateProduct = async (id: string, productData: Omit<MenuItem, 'id'>) => {
-    try {
-        const response = await fetch(`/api/menu/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(productData),
-        });
-        if (!response.ok) throw new Error('Failed to update product');
-        
-        await refreshMenu();
-        
-        toast({
-            title: "Producto Actualizado",
-            description: `El producto "${productData.name}" ha sido actualizado.`,
-        });
+  const updateProduct = (id: string, productData: Omit<MenuItem, 'id'>) => {
+     const dataFromForm = productData as Omit<MenuItem, 'id'> & { extras?: ({ id?: string, name: string, price: number })[] };
 
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo actualizar el producto.' });
-    }
-  };
-
-  const deleteProduct = async (id: string) => {
-    const productToDelete = menu.find(item => item.id === id);
-    if (!productToDelete) return;
+     const updatedMenu = menu.map(item => {
+      if (item.id === id) {
+        const updatedProduct = { ...item, ...dataFromForm };
+        if (updatedProduct.extras) {
+            updatedProduct.extras = updatedProduct.extras.map(extra => ({
+                ...extra,
+                id: extra.id || `extra-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+            })) as Extra[];
+        }
+        return updatedProduct;
+      }
+      return item;
+    });
     
-    try {
-        const response = await fetch(`/api/menu/${id}`, {
-            method: 'DELETE',
-        });
-        if (!response.ok) throw new Error('Failed to delete product');
+    saveMenu(updatedMenu);
+    
+    toast({
+        title: "Producto Actualizado",
+        description: `El producto "${productData.name}" ha sido actualizado.`,
+    });
+  };
 
-        await refreshMenu();
-
-        toast({
-            title: "Producto Eliminado",
-            description: `El producto "${productToDelete.name}" ha sido eliminado.`,
-            variant: "destructive",
-        });
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: `No se pudo eliminar el producto "${productToDelete.name}".` });
-    }
+  const deleteProduct = (id: string) => {
+    const productToDelete = menu.find(item => item.id === id);
+    const updatedMenu = menu.filter(item => item.id !== id);
+    saveMenu(updatedMenu);
+    
+    toast({
+        title: "Producto Eliminado",
+        description: `El producto "${productToDelete?.name}" ha sido eliminado.`,
+        variant: "destructive",
+    });
   };
   
   const contextValue = { 
@@ -110,7 +112,6 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     addProduct, 
     updateProduct, 
     deleteProduct,
-    refreshMenu,
     isLoading
   };
 

@@ -7,16 +7,22 @@ import { useToast } from '@/hooks/use-toast';
 
 interface TableContextType {
   tables: Table[];
-  updateTableStatus: (tableId: string, status: TableStatus) => Promise<void>;
+  updateTableStatus: (tableId: string, status: TableStatus) => void;
   activeTable: Table | null;
   setActiveTable: (table: Table | null) => void;
   isLoading: boolean;
-  refreshTables: () => Promise<void>;
 }
 
 export const TableContext = createContext<TableContextType | undefined>(undefined);
 
+const TABLES_STORAGE_KEY = 'gustogo-tables';
 const ACTIVE_TABLE_SESSION_KEY = 'gustogo-active-table';
+
+const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
+    id: `t${i + 1}`,
+    name: `Mesa #${i + 1}`,
+    status: 'available',
+}));
 
 export const TableProvider = ({ children }: { children: ReactNode }) => {
   const [tables, setTables] = useState<Table[]>([]);
@@ -24,30 +30,41 @@ export const TableProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const refreshTables = useCallback(async () => {
-    setIsLoading(true);
-    try {
-        const response = await fetch('/api/tables');
-        if (!response.ok) throw new Error('Failed to fetch tables');
-        const data = await response.json();
-        setTables(data);
-    } catch (error) {
-        console.error(error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not load table data.' });
-    } finally {
-        setIsLoading(false);
-    }
-  }, [toast]);
+  const loadTables = useCallback(() => {
+      try {
+        const storedTables = localStorage.getItem(TABLES_STORAGE_KEY);
+        if (storedTables) {
+            setTables(JSON.parse(storedTables));
+        } else {
+            setTables(initialTables);
+            localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(initialTables));
+        }
+      } catch (error) {
+        console.error("Failed to load tables", error);
+        setTables(initialTables);
+      }
+  }, []);
+
+  const saveTables = useCallback((updatedTables: Table[]) => {
+      setTables(updatedTables);
+      localStorage.setItem(TABLES_STORAGE_KEY, JSON.stringify(updatedTables));
+  }, []);
   
   useEffect(() => {
-    refreshTables();
+    setIsLoading(true);
+    loadTables();
     
-    // Also load active table from session storage
-    const storedActiveTable = sessionStorage.getItem(ACTIVE_TABLE_SESSION_KEY);
-    if(storedActiveTable) {
-        setActiveTable(JSON.parse(storedActiveTable));
+    try {
+        const storedActiveTable = sessionStorage.getItem(ACTIVE_TABLE_SESSION_KEY);
+        if(storedActiveTable) {
+            setActiveTable(JSON.parse(storedActiveTable));
+        }
+    } catch(error) {
+        console.error("Failed to load active table", error);
     }
-  }, [refreshTables]);
+
+    setIsLoading(false);
+  }, [loadTables]);
 
   const handleSetActiveTable = (table: Table | null) => {
     setActiveTable(table);
@@ -58,18 +75,11 @@ export const TableProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const updateTableStatus = async (tableId: string, status: TableStatus) => {
-    try {
-        const response = await fetch('/api/tables', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tableId, status })
-        });
-        if (!response.ok) throw new Error('Failed to update table status');
-        await refreshTables(); // Re-fetch all tables to ensure consistency
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not update table status.' });
-    }
+  const updateTableStatus = (tableId: string, status: TableStatus) => {
+    const updatedTables = tables.map((t) =>
+      t.id === tableId ? { ...t, status } : t
+    );
+    saveTables(updatedTables);
   };
 
   const contextValue = { 
@@ -77,8 +87,7 @@ export const TableProvider = ({ children }: { children: ReactNode }) => {
     updateTableStatus, 
     activeTable, 
     setActiveTable: handleSetActiveTable, 
-    isLoading,
-    refreshTables 
+    isLoading 
   };
 
   return (

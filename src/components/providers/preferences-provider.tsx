@@ -26,7 +26,7 @@ interface SetterFunctions {
   setPhone: (phone: string) => void;
   setTaxRate: (rate: number) => void;
   setTaxIncluded: (enabled: boolean) => void;
-  savePreferences: (newPrefs: Preferences) => Promise<void>;
+  savePreferences: (newPrefs: Preferences) => void;
 }
 
 interface PreferencesContextType extends Preferences, SetterFunctions {
@@ -34,6 +34,8 @@ interface PreferencesContextType extends Preferences, SetterFunctions {
 }
 
 export const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);
+
+const PREFERENCES_STORAGE_KEY = 'gustogo-preferences';
 
 const defaultPreferences: Preferences = {
   lowStockThreshold: 20,
@@ -52,67 +54,58 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchPreferences = useCallback(async () => {
-    setIsLoading(true);
+  const loadPreferences = useCallback(() => {
     try {
-      const response = await fetch('/api/preferences');
-      if (!response.ok) throw new Error('Failed to fetch preferences');
-      const data = await response.json();
-      setPreferences(data);
-    } catch (error) {
-      console.error(error);
-      setPreferences(defaultPreferences); // Fallback to default
-    } finally {
-      setIsLoading(false);
+        const storedPrefs = localStorage.getItem(PREFERENCES_STORAGE_KEY);
+        if (storedPrefs) {
+            // Merge stored prefs with defaults to prevent missing keys if the structure changes
+            setPreferences({ ...defaultPreferences, ...JSON.parse(storedPrefs) });
+        } else {
+            setPreferences(defaultPreferences);
+            localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(defaultPreferences));
+        }
+    } catch(error) {
+        console.error("Failed to load preferences", error);
+        setPreferences(defaultPreferences);
     }
   }, []);
 
   useEffect(() => {
-    fetchPreferences();
-  }, [fetchPreferences]);
-
+    setIsLoading(true);
+    loadPreferences();
+    setIsLoading(false);
+  }, [loadPreferences]);
+  
   useEffect(() => {
     if (!isLoading) {
       document.documentElement.classList.toggle('dark', preferences.darkMode);
     }
   }, [preferences.darkMode, isLoading]);
 
-  const savePreferences = async (newPrefs: Preferences) => {
-    try {
-      const response = await fetch('/api/preferences', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newPrefs),
-      });
-      if (!response.ok) throw new Error('Failed to save preferences');
-      const data = await response.json();
-      setPreferences(data);
-      toast({ title: "Preferences Saved", description: "Your changes have been saved successfully." });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save your preferences.' });
-    }
+  const savePreferences = (newPrefs: Preferences) => {
+    setPreferences(newPrefs);
+    localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(newPrefs));
+    toast({ title: "Preferences Saved", description: "Your changes have been saved successfully." });
   };
-
-  // The individual setters are now gone, as the form will manage local state
-  // and use savePreferences to commit all changes at once.
-  // We provide dummy functions to avoid breaking the app structure immediately,
-  // but they should be removed or refactored out.
+  
+  const createSetter = <K extends keyof Preferences>(key: K) => (value: Preferences[K]) => {
+    const newPrefs = { ...preferences, [key]: value };
+    savePreferences(newPrefs);
+  };
+  
   const value: PreferencesContextType = {
     ...preferences,
     isLoading,
+    setLowStockThreshold: createSetter('lowStockThreshold'),
+    setDarkMode: createSetter('darkMode'),
+    setPublicMenu: createSetter('publicMenu'),
+    setRestaurantName: createSetter('restaurantName'),
+    setWebsiteUrl: createSetter('websiteUrl'),
+    setAddress: createSetter('address'),
+    setPhone: createSetter('phone'),
+    setTaxRate: createSetter('taxRate'),
+    setTaxIncluded: createSetter('taxIncluded'),
     savePreferences,
-    // The following setters are now effectively managed by the form state in the PreferencesPage
-    // and the `savePreferences` function. They are provided for context completeness but aren't
-    // the primary way to update state anymore.
-    setLowStockThreshold: () => {},
-    setDarkMode: () => {},
-    setPublicMenu: () => {},
-    setRestaurantName: () => {},
-    setWebsiteUrl: () => {},
-    setAddress: () => {},
-    setPhone: () => {},
-    setTaxRate: () => {},
-    setTaxIncluded: () => {},
   };
 
   return (

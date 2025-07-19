@@ -25,17 +25,20 @@ interface OrderContextType {
     waiterId: string;
     waiterName: string;
     invoiceOption: InvoiceOption;
-  }) => Promise<void>;
-  updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<void>;
-  startPreparingOrder: (orderId: string, preparationTime: number) => Promise<void>;
+  }) => void;
+  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+  startPreparingOrder: (orderId: string, preparationTime: number) => void;
   clearCurrentOrder: () => void;
-  deleteOrder: (orderId: string) => Promise<void>;
-  loadOrderForEdit: (orderId: string) => Promise<Order | undefined>;
-  refreshOrders: () => Promise<void>;
+  deleteOrder: (orderId: string) => void;
+  loadOrderForEdit: (orderId: string) => Order | undefined;
   isLoading: boolean;
 }
 
 export const OrderContext = createContext<OrderContextType | undefined>(undefined);
+
+const CURRENT_ORDER_KEY = 'gustogo-current-order';
+const SUBMITTED_ORDERS_KEY = 'gustogo-submitted-orders';
+const CURRENT_ORDER_DETAILS_KEY = 'gustogo-current-order-details';
 
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [currentOrder, setCurrentOrder] = useState<OrderItem[]>([]);
@@ -44,74 +47,98 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const refreshOrders = useCallback(async () => {
-    setIsLoading(true);
+  const loadOrders = useCallback(() => {
     try {
-      const response = await fetch('/api/orders');
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      const data = await response.json();
-      const parsedOrders = data.map((order: Order) => ({
-        ...order,
-        timestamp: new Date(order.timestamp),
-      }));
-      setSubmittedOrders(parsedOrders);
+        const storedCurrentOrder = localStorage.getItem(CURRENT_ORDER_KEY);
+        if (storedCurrentOrder) setCurrentOrder(JSON.parse(storedCurrentOrder));
+
+        const storedSubmittedOrders = localStorage.getItem(SUBMITTED_ORDERS_KEY);
+        if (storedSubmittedOrders) {
+            const parsedOrders = JSON.parse(storedSubmittedOrders).map((order: Order) => ({
+                ...order,
+                timestamp: new Date(order.timestamp),
+            }));
+            setSubmittedOrders(parsedOrders);
+        }
+        
+        const storedDetails = localStorage.getItem(CURRENT_ORDER_DETAILS_KEY);
+        if (storedDetails) setCurrentOrderDetails(JSON.parse(storedDetails));
+
     } catch (error) {
-      console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not load order history.' });
-    } finally {
-      setIsLoading(false);
+        console.error("Failed to load orders from localStorage", error);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
-    refreshOrders();
-  }, [refreshOrders]);
+    setIsLoading(true);
+    loadOrders();
+    setIsLoading(false);
+  }, [loadOrders]);
+
+
+  const saveCurrentOrder = (order: OrderItem[]) => {
+      setCurrentOrder(order);
+      localStorage.setItem(CURRENT_ORDER_KEY, JSON.stringify(order));
+  };
+
+  const saveSubmittedOrders = (orders: Order[]) => {
+      setSubmittedOrders(orders);
+      localStorage.setItem(SUBMITTED_ORDERS_KEY, JSON.stringify(orders));
+  };
+  
+  const saveCurrentOrderDetails = (details: CurrentOrderDetails) => {
+      setCurrentOrderDetails(details);
+      if (details) {
+        localStorage.setItem(CURRENT_ORDER_DETAILS_KEY, JSON.stringify(details));
+      } else {
+        localStorage.removeItem(CURRENT_ORDER_DETAILS_KEY);
+      }
+  }
 
   const addItemToOrder = (item: MenuItem, quantity: number, selectedExtras: Extra[]) => {
-    setCurrentOrder((prevOrder) => {
-      const extrasKey = selectedExtras.map(e => e.id).sort().join('-');
-      const compoundId = `${item.id}-${extrasKey}`;
-      
-      const existingItemIndex = prevOrder.findIndex(
-        (orderItem) => `${orderItem.id}-${orderItem.selectedExtras.map(e => e.id).sort().join('-')}` === compoundId
-      );
+    const extrasKey = selectedExtras.map(e => e.id).sort().join('-');
+    const compoundId = `${item.id}-${extrasKey}`;
+    
+    const existingItemIndex = currentOrder.findIndex(
+      (orderItem) => `${orderItem.id}-${orderItem.selectedExtras.map(e => e.id).sort().join('-')}` === compoundId
+    );
 
-      if (existingItemIndex > -1) {
-        const updatedOrder = [...prevOrder];
-        updatedOrder[existingItemIndex] = {
-          ...updatedOrder[existingItemIndex],
-          quantity: updatedOrder[existingItemIndex].quantity + quantity,
-        };
-        return updatedOrder;
-      } else {
-        const newOrderItem: OrderItem = {
-          ...item,
-          quantity,
-          selectedExtras,
-          orderItemId: `oitem-${Date.now()}-${Math.random()}`
-        };
-        return [...prevOrder, newOrderItem];
-      }
-    });
+    let newOrder;
+    if (existingItemIndex > -1) {
+      newOrder = [...currentOrder];
+      newOrder[existingItemIndex] = {
+        ...newOrder[existingItemIndex],
+        quantity: newOrder[existingItemIndex].quantity + quantity,
+      };
+    } else {
+      const newOrderItem: OrderItem = {
+        ...item,
+        quantity,
+        selectedExtras,
+        orderItemId: `oitem-${Date.now()}-${Math.random()}`
+      };
+      newOrder = [...currentOrder, newOrderItem];
+    }
+    saveCurrentOrder(newOrder);
   };
 
   const removeItemFromOrder = (orderItemId: string) => {
-      setCurrentOrder((prevOrder) => prevOrder.filter((item) => item.orderItemId !== orderItemId));
+      const newOrder = currentOrder.filter((item) => item.orderItemId !== orderItemId);
+      saveCurrentOrder(newOrder);
   };
 
   const updateItemQuantity = (orderItemId: string, quantity: number) => {
     if (quantity <= 0) {
       removeItemFromOrder(orderItemId);
     } else {
-      setCurrentOrder((prevOrder) =>
-        prevOrder.map((item) =>
+      const newOrder = currentOrder.map((item) =>
           item.orderItemId === orderItemId ? { ...item, quantity } : item
-        )
       );
+      saveCurrentOrder(newOrder);
     }
   };
   
-  const submitOrder = async (details: { 
+  const submitOrder = (details: { 
     customerName: string; 
     paymentMethod: 'efectivo' | 'transferencia'; 
     tableId: string; 
@@ -143,8 +170,10 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     }
     const total = subtotal - discountAmount;
     
-    const newOrderPayload = {
+    const newOrder: Order = {
+      id: `ORD-${Date.now()}`,
       items: currentOrder,
+      timestamp: new Date(),
       subtotal,
       discountCode: appliedDiscount?.code,
       discountAmount,
@@ -153,108 +182,67 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       ...restDetails
     };
 
-    try {
-        const response = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newOrderPayload)
-        });
-        if (!response.ok) throw new Error('Failed to submit order');
-
-        await refreshOrders();
-        setCurrentOrder([]);
-        setCurrentOrderDetails(null);
-        toast({
-          title: "Order Submitted!",
-          description: "The order has been sent to the kitchen.",
-        });
-
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not submit the order.' });
-    }
+    saveSubmittedOrders([newOrder, ...submittedOrders]);
+    saveCurrentOrder([]);
+    saveCurrentOrderDetails(null);
+    toast({
+      title: "Order Submitted!",
+      description: "The order has been sent to the kitchen.",
+    });
   };
 
-  const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
-    try {
-        const response = await fetch(`/api/orders/${orderId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status })
-        });
-        if (!response.ok) throw new Error('Failed to update status');
-        await refreshOrders();
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not update order status.' });
-    }
+  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
+    const updatedOrders = submittedOrders.map((order) =>
+      order.id === orderId ? { ...order, status } : order
+    );
+    saveSubmittedOrders(updatedOrders);
   };
 
-  const startPreparingOrder = async (orderId: string, preparationTime: number) => {
-    try {
-        const response = await fetch(`/api/orders/${orderId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'preparing', preparationTime })
-        });
-        if (!response.ok) throw new Error('Failed to start preparation');
-        await refreshOrders();
-        toast({
-          title: "Pedido en preparación",
-          description: `El pedido #${orderId.slice(-6)} ha comenzado. Tiempo estimado: ${preparationTime} min.`,
-        });
-    } catch(error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo iniciar la preparación del pedido.' });
-    }
+  const startPreparingOrder = (orderId: string, preparationTime: number) => {
+    const updatedOrders = submittedOrders.map((order) =>
+      order.id === orderId ? { ...order, status: 'preparing', preparationTime } : order
+    );
+    saveSubmittedOrders(updatedOrders);
+    toast({
+      title: "Pedido en preparación",
+      description: `El pedido #${orderId.slice(-6)} ha comenzado. Tiempo estimado: ${preparationTime} min.`,
+    });
   };
 
   const clearCurrentOrder = () => {
-    setCurrentOrder([]);
-    setCurrentOrderDetails(null);
+    saveCurrentOrder([]);
+    saveCurrentOrderDetails(null);
   };
 
-  const deleteOrder = async (orderId: string) => {
-    try {
-        const response = await fetch(`/api/orders/${orderId}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) throw new Error('Failed to delete order');
-        await refreshOrders();
+  const deleteOrder = (orderId: string) => {
+    const updatedOrders = submittedOrders.filter(order => order.id !== orderId);
+    saveSubmittedOrders(updatedOrders);
+    toast({
+        title: "Pedido Cancelado",
+        description: `El pedido #${orderId.slice(-6)} ha sido eliminado.`,
+        variant: 'destructive'
+    });
+  };
+
+  const loadOrderForEdit = (orderId: string): Order | undefined => {
+    const orderToEdit = submittedOrders.find(o => o.id === orderId);
+    if (orderToEdit) {
+        const remainingOrders = submittedOrders.filter(o => o.id !== orderId);
+        saveSubmittedOrders(remainingOrders);
+        saveCurrentOrder(orderToEdit.items);
+        saveCurrentOrderDetails({ customerName: orderToEdit.customerName });
         toast({
-            title: "Pedido Cancelado",
-            description: `El pedido #${orderId.slice(-6)} ha sido eliminado.`,
-            variant: 'destructive'
+            title: "Modificando Pedido",
+            description: `Se ha cargado el pedido #${orderId.slice(-6)}.`,
         });
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo cancelar el pedido.' });
+        return orderToEdit;
     }
-  };
-
-  const loadOrderForEdit = async (orderId: string): Promise<Order | undefined> => {
-    try {
-      const response = await fetch(`/api/orders/${orderId}`, {
-        method: 'PATCH', // Using PATCH to signify this special "load and remove" operation
-      });
-      if (!response.ok) throw new Error('Order not found or could not be loaded');
-
-      const orderToEdit: Order = await response.json();
-      await refreshOrders(); // Refresh the list now that the order is removed from the main list
-
-      setCurrentOrder(orderToEdit.items);
-      setCurrentOrderDetails({ customerName: orderToEdit.customerName });
-      
-      toast({
-          title: "Modificando Pedido",
-          description: `Se ha cargado el pedido #${orderId.slice(-6)}.`,
-      });
-
-      return orderToEdit;
-    } catch (error) {
-      toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No se pudo cargar el pedido para modificar.",
-      });
-      return undefined;
-    }
+    toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo cargar el pedido para modificar.",
+    });
+    return undefined;
   };
 
   const contextValue = {
@@ -270,7 +258,6 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     clearCurrentOrder,
     deleteOrder,
     loadOrderForEdit,
-    refreshOrders,
     isLoading
   };
 
