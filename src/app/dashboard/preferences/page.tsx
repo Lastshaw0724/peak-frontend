@@ -221,7 +221,7 @@ export default function PreferencesPage() {
                                 ) : (
                                     <div className="space-y-2">
                                         <Label htmlFor="logoUrlInput">URL del Logo</Label>
-                                        <Input id="logoUrlInput" type="url" placeholder="https://ejemplo.com/logo.png" value={localPrefs.logoUrl.startsWith('data:') ? '' : localPrefs.logoUrl} onChange={handleLogoUrlChange} />
+                                        <Input id="logoUrlInput" type="url" placeholder="https://ejemplo.com/logo.png" value={(localPrefs.logoUrl || '').startsWith('data:') ? '' : localPrefs.logoUrl || ''} onChange={handleLogoUrlChange} />
                                     </div>
                                 )}
                                 
