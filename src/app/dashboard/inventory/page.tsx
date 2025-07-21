@@ -277,68 +277,70 @@ export default function InventoryPage() {
                 </div>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Insumo</TableHead>
-                            <TableHead>Categoría</TableHead>
-                            <TableHead>Proveedor</TableHead>
-                            <TableHead className="w-[250px]">Nivel de Stock</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {displayedInventory.map(item => (
-                            <TableRow key={item.id} className={item.stock < lowStockThreshold ? 'bg-destructive/10' : ''}>
-                                <TableCell className="font-medium">
-                                    <div className="flex items-center gap-2">
-                                        {item.stock < lowStockThreshold && (
-                                            <AlertCircle className="h-5 w-5 text-destructive" />
-                                        )}
-                                        {item.name}
-                                    </div>
-                                </TableCell>
-                                <TableCell>{item.category}</TableCell>
-                                <TableCell className="text-muted-foreground">{item.supplier}</TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2">
-                                        <Progress value={(item.stock / item.maxStock) * 100} className="h-3" />
-                                        <span className="text-sm font-mono">{item.stock}/{item.maxStock}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                     <div className="flex justify-end items-center gap-2">
-                                        <Button variant="outline" size="sm" onClick={() => handleOpenDialog('edit', item)}>
-                                            Ajustar
-                                        </Button>
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="icon" className="h-9 w-9">
-                                                    <Trash2 className="h-4 w-4" />
-                                                    <span className="sr-only">Eliminar insumo</span>
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el insumo "{item.name}".
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => deleteInventoryItem(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                        Sí, eliminar
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </div>
-                                </TableCell>
+                <div className="relative w-full overflow-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Insumo</TableHead>
+                                <TableHead>Categoría</TableHead>
+                                <TableHead>Proveedor</TableHead>
+                                <TableHead className="w-[250px]">Nivel de Stock</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {displayedInventory.map(item => (
+                                <TableRow key={item.id} className={item.stock < lowStockThreshold ? 'bg-destructive/10' : ''}>
+                                    <TableCell className="font-medium whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            {item.stock < lowStockThreshold && (
+                                                <AlertCircle className="h-5 w-5 text-destructive" />
+                                            )}
+                                            {item.name}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="whitespace-nowrap">{item.category}</TableCell>
+                                    <TableCell className="text-muted-foreground whitespace-nowrap">{item.supplier}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <Progress value={(item.stock / item.maxStock) * 100} className="h-3" />
+                                            <span className="text-sm font-mono">{item.stock}/{item.maxStock}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                         <div className="flex justify-end items-center gap-2">
+                                            <Button variant="outline" size="sm" onClick={() => handleOpenDialog('edit', item)}>
+                                                Ajustar
+                                            </Button>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="icon" className="h-9 w-9">
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Eliminar insumo</span>
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el insumo "{item.name}".
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => deleteInventoryItem(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
         </Card>
     );

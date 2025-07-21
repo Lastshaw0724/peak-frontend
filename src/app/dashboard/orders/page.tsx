@@ -100,7 +100,7 @@ export default function OrderHistoryPage() {
                         <CardDescription>Revisa todos los pedidos realizados en el restaurante.</CardDescription>
                     </div>
                 </div>
-                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                 <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Select value={waiterFilter} onValueChange={setWaiterFilter}>
                         <SelectTrigger className="w-full sm:w-[180px]">
                             <SelectValue placeholder="Filtrar por mesero" />
@@ -129,7 +129,7 @@ export default function OrderHistoryPage() {
                             <Button
                                 variant={"outline"}
                                 className={cn(
-                                    "w-full sm:w-[240px] justify-start text-left font-normal",
+                                    "w-full sm:w-auto justify-start text-left font-normal",
                                     !dateFilter && "text-muted-foreground"
                                 )}
                             >
@@ -152,110 +152,112 @@ export default function OrderHistoryPage() {
                 </div>
             </CardHeader>
             <CardContent>
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>ID Pedido</TableHead>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead>Mesa</TableHead>
-                            <TableHead>Mesero</TableHead>
-                            <TableHead>Cliente</TableHead>
-                            <TableHead>Estado</TableHead>
-                            <TableHead>Artículos</TableHead>
-                            <TableHead>Pago</TableHead>
-                            <TableHead>Descuento</TableHead>
-                            <TableHead>Factura</TableHead>
-                            <TableHead className="text-right">Total</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredOrders.length > 0 ? filteredOrders.map(order => {
-                            const invoiceConfig = invoiceOptionConfig[order.invoiceOption || 'none'];
-                            return (
-                            <TableRow key={order.id}>
-                                <TableCell className="font-mono">#{order.id.slice(-6)}</TableCell>
-                                <TableCell>{new Date(order.timestamp).toLocaleString()}</TableCell>
-                                <TableCell>{order.tableName}</TableCell>
-                                <TableCell>{order.waiterName}</TableCell>
-                                <TableCell>{order.customerName}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
-                                        {statusDisplayNames[order.status] || order.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <ul className="list-disc list-inside text-xs">
-                                        {order.items.map((item, index) => (
-                                            <li key={`${item.orderItemId}-${index}`}>
-                                                {item.quantity}x {item.name}
-                                                {item.selectedExtras && item.selectedExtras.length > 0 && (
-                                                    <span className="text-muted-foreground">
-                                                      {' (' + item.selectedExtras.map(e => e.name).join(', ') + ')'}
-                                                    </span>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </TableCell>
-                                <TableCell className="capitalize">{order.paymentMethod}</TableCell>
-                                <TableCell>
-                                    {order.discountCode ? (
-                                        <Badge variant="secondary" className="flex items-center gap-1">
-                                            <TicketPercent className="h-3 w-3" />
-                                            {order.discountCode} (-${order.discountAmount.toFixed(2)})
+                <div className="relative w-full overflow-auto">
+                     <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>ID Pedido</TableHead>
+                                <TableHead>Fecha</TableHead>
+                                <TableHead>Mesa</TableHead>
+                                <TableHead>Mesero</TableHead>
+                                <TableHead>Cliente</TableHead>
+                                <TableHead>Estado</TableHead>
+                                <TableHead>Artículos</TableHead>
+                                <TableHead>Pago</TableHead>
+                                <TableHead>Descuento</TableHead>
+                                <TableHead>Factura</TableHead>
+                                <TableHead className="text-right">Total</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredOrders.length > 0 ? filteredOrders.map(order => {
+                                const invoiceConfig = invoiceOptionConfig[order.invoiceOption || 'none'];
+                                return (
+                                <TableRow key={order.id}>
+                                    <TableCell className="font-mono whitespace-nowrap">#{order.id.slice(-6)}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{new Date(order.timestamp).toLocaleString()}</TableCell>
+                                    <TableCell>{order.tableName}</TableCell>
+                                    <TableCell>{order.waiterName}</TableCell>
+                                    <TableCell>{order.customerName}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
+                                            {statusDisplayNames[order.status] || order.status}
                                         </Badge>
-                                    ) : (
-                                        'N/A'
-                                    )}
-                                </TableCell>
-                                <TableCell>
-                                    <div className={cn("flex items-center gap-1.5 text-xs font-medium", invoiceConfig.className)}>
-                                       <invoiceConfig.icon className="h-3.5 w-3.5" />
-                                       <span>{invoiceConfig.text}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">
-                                    {order.status === 'delivered' && (
-                                        <Button size="sm" onClick={() => handleMarkAsPaid(order)} className="bg-purple-600 hover:bg-purple-700">
-                                            Marcar como Pagado
-                                        </Button>
-                                    )}
-                                     {order.status === 'paid' && (order.invoiceOption === 'print' || order.invoiceOption === 'email') && (
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                {order.invoiceOption === 'print' && (
-                                                    <DropdownMenuItem onSelect={() => handlePrintInvoice(order.id)}>
-                                                        <Printer className="mr-2 h-4 w-4" />
-                                                        Imprimir Factura
-                                                    </DropdownMenuItem>
-                                                )}
-                                                {order.invoiceOption === 'email' && (
-                                                    <DropdownMenuItem onSelect={() => handleSendInvoice(order.id)}>
-                                                        <Send className="mr-2 h-4 w-4" />
-                                                        Enviar Factura
-                                                    </DropdownMenuItem>
-                                                )}
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        )}) : (
-                             <TableRow>
-                                <TableCell colSpan={12} className="text-center h-24">
-                                    Aún no hay pedidos que coincidan con el filtro seleccionado.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                                    </TableCell>
+                                    <TableCell>
+                                        <ul className="list-disc list-inside text-xs">
+                                            {order.items.map((item, index) => (
+                                                <li key={`${item.orderItemId}-${index}`}>
+                                                    {item.quantity}x {item.name}
+                                                    {item.selectedExtras && item.selectedExtras.length > 0 && (
+                                                        <span className="text-muted-foreground">
+                                                          {' (' + item.selectedExtras.map(e => e.name).join(', ') + ')'}
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </TableCell>
+                                    <TableCell className="capitalize">{order.paymentMethod}</TableCell>
+                                    <TableCell>
+                                        {order.discountCode ? (
+                                            <Badge variant="secondary" className="flex items-center gap-1">
+                                                <TicketPercent className="h-3 w-3" />
+                                                {order.discountCode} (-${order.discountAmount.toFixed(2)})
+                                            </Badge>
+                                        ) : (
+                                            'N/A'
+                                        )}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className={cn("flex items-center gap-1.5 text-xs font-medium", invoiceConfig.className)}>
+                                           <invoiceConfig.icon className="h-3.5 w-3.5" />
+                                           <span>{invoiceConfig.text}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right font-medium">${order.total.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right">
+                                        {order.status === 'delivered' && (
+                                            <Button size="sm" onClick={() => handleMarkAsPaid(order)} className="bg-purple-600 hover:bg-purple-700">
+                                                Marcar como Pagado
+                                            </Button>
+                                        )}
+                                         {order.status === 'paid' && (order.invoiceOption === 'print' || order.invoiceOption === 'email') && (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    {order.invoiceOption === 'print' && (
+                                                        <DropdownMenuItem onSelect={() => handlePrintInvoice(order.id)}>
+                                                            <Printer className="mr-2 h-4 w-4" />
+                                                            Imprimir Factura
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    {order.invoiceOption === 'email' && (
+                                                        <DropdownMenuItem onSelect={() => handleSendInvoice(order.id)}>
+                                                            <Send className="mr-2 h-4 w-4" />
+                                                            Enviar Factura
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            )}) : (
+                                 <TableRow>
+                                    <TableCell colSpan={12} className="text-center h-24">
+                                        Aún no hay pedidos que coincidan con el filtro seleccionado.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
         </Card>
     );

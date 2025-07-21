@@ -96,8 +96,8 @@ export default function PreferencesPage() {
                 </div>
             </CardHeader>
             <CardContent>
-                <Tabs defaultValue="general">
-                    <TabsList className="grid w-full grid-cols-4">
+                <Tabs defaultValue="general" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto sm:h-10">
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="appearance">Apariencia</TabsTrigger>
                         <TabsTrigger value="taxes">Impuestos</TabsTrigger>

@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Trash2, PlusCircle, KeyRound, Save } from 'lucide-react';
+import { Users, Trash2, PlusCircle, KeyRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -126,7 +126,7 @@ export function UserRoleManager() {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                      <Users className="h-8 w-8 text-primary" />
                      <div>
@@ -136,7 +136,7 @@ export function UserRoleManager() {
                 </div>
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button className="w-full sm:w-auto">
                             <PlusCircle className="mr-2" />
                             Añadir Empleado
                         </Button>
@@ -164,71 +164,73 @@ export function UserRoleManager() {
                 </Dialog>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Nombre</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Rol Actual</TableHead>
-                            <TableHead className="w-[200px]">Asignar Nuevo Rol</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                         {manageableUsers.map(user => (
-                            <TableRow key={user.id}>
-                                <TableCell className="font-medium">{user.name}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell><Badge variant="secondary" className="capitalize">{roleDisplayNames[user.role] || user.role}</Badge></TableCell>
-                                <TableCell>
-                                    <Select value={userRoles[user.id] || user.role} onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="customer">Cliente</SelectItem>
-                                            <SelectItem value="waiter">Mesero</SelectItem>
-                                            <SelectItem value="cook">Cocinero</SelectItem>
-                                            <SelectItem value="cashier">Cajero</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <Button size="sm" onClick={() => handleSaveRole(user.id)} disabled={!userRoles[user.id] || userRoles[user.id] === user.role}>
-                                            Guardar Rol
-                                        </Button>
-                                         <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => openPasswordDialog(user)}>
-                                            <KeyRound className="h-4 w-4" />
-                                            <span className="sr-only">Cambiar contraseña</span>
-                                        </Button>
-                                         <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="icon" className="h-9 w-9">
-                                                    <Trash2 className="h-4 w-4" />
-                                                    <span className="sr-only">Eliminar usuario</span>
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Esta acción no se puede deshacer. Esto eliminará permanentemente al usuario 
-                                                        <span className="font-semibold"> {user.name}</span> y sus datos del sistema.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => deleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                        Sí, eliminar
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </div>
-                                </TableCell>
+                <div className="relative w-full overflow-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Nombre</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Rol Actual</TableHead>
+                                <TableHead className="min-w-[200px]">Asignar Nuevo Rol</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                             {manageableUsers.map(user => (
+                                <TableRow key={user.id}>
+                                    <TableCell className="font-medium whitespace-nowrap">{user.name}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{user.email}</TableCell>
+                                    <TableCell><Badge variant="secondary" className="capitalize">{roleDisplayNames[user.role] || user.role}</Badge></TableCell>
+                                    <TableCell>
+                                        <Select value={userRoles[user.id] || user.role} onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}>
+                                            <SelectTrigger><SelectValue/></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="customer">Cliente</SelectItem>
+                                                <SelectItem value="waiter">Mesero</SelectItem>
+                                                <SelectItem value="cook">Cocinero</SelectItem>
+                                                <SelectItem value="cashier">Cajero</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button size="sm" onClick={() => handleSaveRole(user.id)} disabled={!userRoles[user.id] || userRoles[user.id] === user.role}>
+                                                Guardar
+                                            </Button>
+                                             <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => openPasswordDialog(user)}>
+                                                <KeyRound className="h-4 w-4" />
+                                                <span className="sr-only">Cambiar contraseña</span>
+                                            </Button>
+                                             <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="icon" className="h-9 w-9">
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Eliminar usuario</span>
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente al usuario 
+                                                            <span className="font-semibold"> {user.name}</span> y sus datos del sistema.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => deleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
 
              <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>

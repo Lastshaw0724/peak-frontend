@@ -77,7 +77,7 @@ export default function DiscountsPage() {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                  <div className="flex items-center gap-4">
                     <Percent className="h-8 w-8 text-primary" />
                     <div>
@@ -87,7 +87,7 @@ export default function DiscountsPage() {
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                         <Button>
+                         <Button className="w-full sm:w-auto">
                             <PlusCircle className="mr-2" />
                             Crear Descuento
                         </Button>
@@ -165,60 +165,62 @@ export default function DiscountsPage() {
                 </Dialog>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Nombre</TableHead>
-                            <TableHead>Código</TableHead>
-                            <TableHead>Valor</TableHead>
-                            <TableHead>Usos</TableHead>
-                             <TableHead>Expira</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {discounts.map(discount => (
-                             <TableRow key={discount.id}>
-                                <TableCell className="font-medium">{discount.name}</TableCell>
-                                <TableCell><Badge variant="secondary">{discount.code}</Badge></TableCell>
-                                <TableCell className="font-semibold text-primary">{discount.value}</TableCell>
-                                <TableCell>{discount.used}</TableCell>
-                                <TableCell>{discount.expires}</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex justify-end items-center gap-2">
-                                        <Switch
-                                            checked={discount.status}
-                                            onCheckedChange={(checked) => updateDiscountStatus(discount.id, checked)}
-                                            aria-label={`Activate discount ${discount.name}`}
-                                        />
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="icon" className="h-9 w-9">
-                                                    <Trash2 className="h-4 w-4" />
-                                                    <span className="sr-only">Eliminar descuento</span>
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el descuento "{discount.name}".
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => deleteDiscount(discount.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                        Sí, eliminar
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </div>
-                                </TableCell>
-                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <div className="relative w-full overflow-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Nombre</TableHead>
+                                <TableHead>Código</TableHead>
+                                <TableHead>Valor</TableHead>
+                                <TableHead>Usos</TableHead>
+                                 <TableHead>Expira</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {discounts.map(discount => (
+                                 <TableRow key={discount.id}>
+                                    <TableCell className="font-medium whitespace-nowrap">{discount.name}</TableCell>
+                                    <TableCell><Badge variant="secondary">{discount.code}</Badge></TableCell>
+                                    <TableCell className="font-semibold text-primary whitespace-nowrap">{discount.value}</TableCell>
+                                    <TableCell>{discount.used}</TableCell>
+                                    <TableCell>{discount.expires}</TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end items-center gap-2">
+                                            <Switch
+                                                checked={discount.status}
+                                                onCheckedChange={(checked) => updateDiscountStatus(discount.id, checked)}
+                                                aria-label={`Activate discount ${discount.name}`}
+                                            />
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="icon" className="h-9 w-9">
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Eliminar descuento</span>
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el descuento "{discount.name}".
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => deleteDiscount(discount.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
+                                    </TableCell>
+                                 </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
         </Card>
     );

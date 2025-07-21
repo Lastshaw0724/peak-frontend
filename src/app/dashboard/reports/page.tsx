@@ -19,11 +19,11 @@ export default function ReportsPage() {
                 </div>
             </CardHeader>
             <CardContent>
-                <Tabs defaultValue="product-availability">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="product-availability">Disponibilidad de Productos</TabsTrigger>
-                        <TabsTrigger value="product-sales">Ventas de Productos</TabsTrigger>
-                        <TabsTrigger value="inventory-stock">Stock de Insumos</TabsTrigger>
+                <Tabs defaultValue="product-availability" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 h-auto">
+                        <TabsTrigger value="product-availability" className="whitespace-normal">Disponibilidad de Productos</TabsTrigger>
+                        <TabsTrigger value="product-sales" className="whitespace-normal">Ventas de Productos</TabsTrigger>
+                        <TabsTrigger value="inventory-stock" className="whitespace-normal">Stock de Insumos</TabsTrigger>
                     </TabsList>
                     <TabsContent value="product-availability" className="mt-6">
                         <InventoryReport />
