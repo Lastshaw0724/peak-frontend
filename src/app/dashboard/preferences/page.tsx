@@ -15,6 +15,7 @@ import { usePreferences } from '@/hooks/use-preferences';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartConfig } from '@/components/ui/chart';
 import Image from 'next/image';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 function hexToHsl(hex: string): string {
     if (!hex) return "0 0% 0%";
@@ -52,6 +53,8 @@ export default function PreferencesPage() {
 
     // Local state to hold form changes before saving
     const [localPrefs, setLocalPrefs] = useState(initialPrefs);
+    const [logoInputMethod, setLogoInputMethod] = useState<'upload' | 'url'>('upload');
+
 
     // When the context finishes loading, sync the data to the local state
     useEffect(() => {
@@ -77,7 +80,7 @@ export default function PreferencesPage() {
         }));
     };
 
-    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -89,6 +92,13 @@ export default function PreferencesPage() {
             }));
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleLogoUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLocalPrefs(prev => ({
+            ...prev,
+            logoUrl: e.target.value,
+        }));
     };
 
     // Handler for Switch component changes
@@ -192,10 +202,29 @@ export default function PreferencesPage() {
                             </div>
                             <div className="rounded-lg border p-4 space-y-4">
                                 <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Logo del Restaurante</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="logoUrl">Cargar Logo</Label>
-                                    <Input id="logoUrl" type="file" accept="image/*" onChange={handleLogoChange} className="file:text-foreground" />
-                                </div>
+                                 <RadioGroup defaultValue="upload" value={logoInputMethod} onValueChange={(v) => setLogoInputMethod(v as 'upload' | 'url')} className="flex gap-4">
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="upload" id="r_upload" />
+                                        <Label htmlFor="r_upload">Subir Archivo</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="url" id="r_url" />
+                                        <Label htmlFor="r_url">Usar URL</Label>
+                                    </div>
+                                </RadioGroup>
+
+                                {logoInputMethod === 'upload' ? (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="logoUpload">Cargar Logo</Label>
+                                        <Input id="logoUpload" type="file" accept="image/*" onChange={handleLogoUpload} className="file:text-foreground" />
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="logoUrlInput">URL del Logo</Label>
+                                        <Input id="logoUrlInput" type="url" placeholder="https://ejemplo.com/logo.png" value={localPrefs.logoUrl.startsWith('data:') ? '' : localPrefs.logoUrl} onChange={handleLogoUrlChange} />
+                                    </div>
+                                )}
+                                
                                 {localPrefs.logoUrl && (
                                      <div className="flex items-center justify-center p-4 bg-muted rounded-md">
                                         <Image src={localPrefs.logoUrl} alt="Logo Preview" width={150} height={150} className="object-contain" />
@@ -268,5 +297,3 @@ export default function PreferencesPage() {
         </Card>
     );
 }
-
-    
