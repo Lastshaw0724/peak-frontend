@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Save, Bell, Palette, Image as ImageIcon } from 'lucide-react';
+import { Settings, Save, Bell, Palette, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import type { OrderItem } from '@/lib/types';
 import { usePreferences } from '@/hooks/use-preferences';
@@ -98,6 +98,13 @@ export default function PreferencesPage() {
         setLocalPrefs(prev => ({
             ...prev,
             logoUrl: e.target.value,
+        }));
+    };
+
+    const handleDeleteLogo = () => {
+        setLocalPrefs(prev => ({
+            ...prev,
+            logoUrl: '',
         }));
     };
 
@@ -226,8 +233,15 @@ export default function PreferencesPage() {
                                 )}
                                 
                                 {localPrefs.logoUrl && (
-                                     <div className="flex items-center justify-center p-4 bg-muted rounded-md">
-                                        <Image src={localPrefs.logoUrl} alt="Logo Preview" width={150} height={150} className="object-contain" />
+                                     <div className="mt-4 space-y-3">
+                                         <Label>Vista Previa</Label>
+                                        <div className="flex items-center justify-center p-4 bg-muted rounded-md">
+                                            <Image src={localPrefs.logoUrl} alt="Logo Preview" width={150} height={150} className="object-contain" />
+                                        </div>
+                                         <Button variant="destructive" size="sm" onClick={handleDeleteLogo} className="w-full">
+                                            <Trash2 className="mr-2"/>
+                                            Eliminar Logo
+                                        </Button>
                                     </div>
                                 )}
                             </div>
