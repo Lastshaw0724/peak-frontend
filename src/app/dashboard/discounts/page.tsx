@@ -171,10 +171,10 @@ export default function DiscountsPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Nombre</TableHead>
-                                <TableHead className="hidden sm:table-cell">Código</TableHead>
+                                <TableHead>Código</TableHead>
                                 <TableHead>Valor</TableHead>
-                                <TableHead className="hidden md:table-cell">Usos</TableHead>
-                                <TableHead className="hidden md:table-cell">Expira</TableHead>
+                                <TableHead>Usos</TableHead>
+                                <TableHead>Expira</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -182,10 +182,10 @@ export default function DiscountsPage() {
                             {discounts.map(discount => (
                                  <TableRow key={discount.id}>
                                     <TableCell className="font-medium whitespace-nowrap">{discount.name}</TableCell>
-                                    <TableCell className="hidden sm:table-cell"><Badge variant="secondary">{discount.code}</Badge></TableCell>
+                                    <TableCell><Badge variant="secondary">{discount.code}</Badge></TableCell>
                                     <TableCell className="font-semibold text-primary whitespace-nowrap">{discount.value}</TableCell>
-                                    <TableCell className="hidden md:table-cell">{discount.used}</TableCell>
-                                    <TableCell className="hidden md:table-cell">{discount.expires}</TableCell>
+                                    <TableCell>{discount.used}</TableCell>
+                                    <TableCell>{discount.expires}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end items-center gap-2">
                                             <Switch

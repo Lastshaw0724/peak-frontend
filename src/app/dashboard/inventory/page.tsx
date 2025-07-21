@@ -282,9 +282,9 @@ export default function InventoryPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Insumo</TableHead>
-                                <TableHead className="hidden sm:table-cell">Categoría</TableHead>
-                                <TableHead className="hidden md:table-cell">Proveedor</TableHead>
-                                <TableHead className="w-[180px] sm:w-[250px]">Nivel de Stock</TableHead>
+                                <TableHead>Categoría</TableHead>
+                                <TableHead>Proveedor</TableHead>
+                                <TableHead className="w-[250px]">Nivel de Stock</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -299,8 +299,8 @@ export default function InventoryPage() {
                                             <span className="truncate">{item.name}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="hidden sm:table-cell whitespace-nowrap">{item.category}</TableCell>
-                                    <TableCell className="hidden md:table-cell text-muted-foreground whitespace-nowrap">{item.supplier}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{item.category}</TableCell>
+                                    <TableCell className="text-muted-foreground whitespace-nowrap">{item.supplier}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Progress value={(item.stock / item.maxStock) * 100} className="h-3" />

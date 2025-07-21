@@ -170,9 +170,9 @@ export function UserRoleManager() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Nombre</TableHead>
-                                <TableHead className="hidden sm:table-cell">Email</TableHead>
+                                <TableHead>Email</TableHead>
                                 <TableHead>Rol</TableHead>
-                                <TableHead className="hidden md:table-cell min-w-[200px]">Asignar Rol</TableHead>
+                                <TableHead className="min-w-[200px]">Asignar Rol</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -180,9 +180,9 @@ export function UserRoleManager() {
                              {manageableUsers.map(user => (
                                 <TableRow key={user.id}>
                                     <TableCell className="font-medium whitespace-nowrap">{user.name}</TableCell>
-                                    <TableCell className="hidden sm:table-cell whitespace-nowrap">{user.email}</TableCell>
+                                    <TableCell className="whitespace-nowrap">{user.email}</TableCell>
                                     <TableCell><Badge variant="secondary" className="capitalize">{roleDisplayNames[user.role] || user.role}</Badge></TableCell>
-                                    <TableCell className="hidden md:table-cell">
+                                    <TableCell>
                                         <Select value={userRoles[user.id] || user.role} onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}>
                                             <SelectTrigger><SelectValue/></SelectTrigger>
                                             <SelectContent>
@@ -195,7 +195,7 @@ export function UserRoleManager() {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Button size="sm" onClick={() => handleSaveRole(user.id)} disabled={!userRoles[user.id] || userRoles[user.id] === user.role} className="hidden md:inline-flex">
+                                            <Button size="sm" onClick={() => handleSaveRole(user.id)} disabled={!userRoles[user.id] || userRoles[user.id] === user.role}>
                                                 Guardar
                                             </Button>
                                              <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => openPasswordDialog(user)}>
