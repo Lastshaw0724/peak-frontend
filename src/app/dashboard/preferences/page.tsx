@@ -77,6 +77,20 @@ export default function PreferencesPage() {
         }));
     };
 
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setLocalPrefs(prev => ({
+                ...prev,
+                logoUrl: reader.result as string,
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
+
     // Handler for Switch component changes
     const handleSwitchChange = (id: string, checked: boolean) => {
         setLocalPrefs(prev => ({
@@ -179,8 +193,8 @@ export default function PreferencesPage() {
                             <div className="rounded-lg border p-4 space-y-4">
                                 <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Logo del Restaurante</h3>
                                 <div className="space-y-2">
-                                    <Label htmlFor="logoUrl">URL del Logo</Label>
-                                    <Input id="logoUrl" placeholder="https://ejemplo.com/logo.png" value={localPrefs.logoUrl} onChange={handleChange} />
+                                    <Label htmlFor="logoUrl">Cargar Logo</Label>
+                                    <Input id="logoUrl" type="file" accept="image/*" onChange={handleLogoChange} className="file:text-foreground" />
                                 </div>
                                 {localPrefs.logoUrl && (
                                      <div className="flex items-center justify-center p-4 bg-muted rounded-md">
