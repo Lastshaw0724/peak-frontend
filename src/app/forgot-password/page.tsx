@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,10 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { usePreferences } from '@/hooks/use-preferences';
+import Image from 'next/image';
 
 export default function ForgotPasswordPage() {
     const { toast } = useToast();
     const router = useRouter();
+    const { logoUrl } = usePreferences();
 
     const handleReset = (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +31,13 @@ export default function ForgotPasswordPage() {
     <main className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <Logo className="w-32 h-auto mx-auto mb-4" />
+          <div className="mx-auto mb-4">
+            {logoUrl ? (
+              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
+            ) : (
+              <Logo className="w-32 h-auto" />
+            )}
+          </div>
           <CardTitle className="font-headline text-3xl">Forgot Password</CardTitle>
           <CardDescription>Enter your email to receive a reset link.</CardDescription>
         </CardHeader>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,11 +9,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
+import { usePreferences } from '@/hooks/use-preferences';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
+  const { logoUrl } = usePreferences();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +27,13 @@ export default function LoginPage() {
     <main className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <Logo className="w-32 h-auto mx-auto mb-4" />
+          <div className="mx-auto mb-4">
+            {logoUrl ? (
+              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
+            ) : (
+              <Logo className="w-32 h-auto" />
+            )}
+          </div>
           <CardTitle className="font-headline text-3xl">Welcome Back</CardTitle>
           <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
