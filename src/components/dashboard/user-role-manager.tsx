@@ -165,7 +165,7 @@ export function UserRoleManager() {
                 </Dialog>
             </CardHeader>
             <CardContent>
-                <div className="relative w-full overflow-auto">
+                <div className="relative w-full overflow-auto no-scrollbar">
                     <Table>
                         <TableHeader>
                             <TableRow>
