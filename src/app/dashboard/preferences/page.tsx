@@ -8,12 +8,42 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Save, Bell } from 'lucide-react';
+import { Settings, Save, Bell, Palette, Image as ImageIcon } from 'lucide-react';
 import { useOrder } from '@/hooks/use-order';
 import type { OrderItem } from '@/lib/types';
 import { usePreferences } from '@/hooks/use-preferences';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartConfig } from '@/components/ui/chart';
+import Image from 'next/image';
+
+function hexToHsl(hex: string): string {
+    if (!hex) return "0 0% 0%";
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+
+    if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+    return `${h} ${s}% ${l}%`;
+}
+
 
 export default function PreferencesPage() {
     const { submittedOrders } = useOrder();
@@ -28,11 +58,14 @@ export default function PreferencesPage() {
         if (!isLoading) {
             setLocalPrefs(initialPrefs);
         }
-    }, [isLoading, initialPrefs.restaurantName, initialPrefs.websiteUrl, initialPrefs.address, initialPrefs.phone, initialPrefs.darkMode, initialPrefs.publicMenu, initialPrefs.taxRate, initialPrefs.taxIncluded, initialPrefs.lowStockThreshold]);
+    }, [isLoading, initialPrefs.restaurantName, initialPrefs.websiteUrl, initialPrefs.address, initialPrefs.phone, initialPrefs.darkMode, initialPrefs.publicMenu, initialPrefs.taxRate, initialPrefs.taxIncluded, initialPrefs.lowStockThreshold, initialPrefs.primaryColor, initialPrefs.accentColor, initialPrefs.logoUrl]);
 
     const handleSaveChanges = () => {
         if (isLoading) return;
         savePreferences(localPrefs);
+        // Apply theme colors dynamically
+        document.documentElement.style.setProperty('--primary', hexToHsl(localPrefs.primaryColor));
+        document.documentElement.style.setProperty('--accent', hexToHsl(localPrefs.accentColor));
     };
     
     // Handler for individual input changes
@@ -143,6 +176,37 @@ export default function PreferencesPage() {
                                 </div>
                                 <Switch id="publicMenu" checked={localPrefs.publicMenu} onCheckedChange={(checked) => handleSwitchChange('publicMenu', checked)} />
                             </div>
+                            <div className="rounded-lg border p-4 space-y-4">
+                                <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Logo del Restaurante</h3>
+                                <div className="space-y-2">
+                                    <Label htmlFor="logoUrl">URL del Logo</Label>
+                                    <Input id="logoUrl" placeholder="https://ejemplo.com/logo.png" value={localPrefs.logoUrl} onChange={handleChange} />
+                                </div>
+                                {localPrefs.logoUrl && (
+                                     <div className="flex items-center justify-center p-4 bg-muted rounded-md">
+                                        <Image src={localPrefs.logoUrl} alt="Logo Preview" width={150} height={150} className="object-contain" />
+                                    </div>
+                                )}
+                            </div>
+                             <div className="rounded-lg border p-4 space-y-4">
+                                <h3 className="text-base font-semibold flex items-center gap-2"><Palette className="text-primary" />Colores del Tema</h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="primaryColor">Color Primario</Label>
+                                        <div className="flex items-center gap-2">
+                                            <Input id="primaryColor" type="color" value={localPrefs.primaryColor} onChange={handleChange} className="w-16 p-1"/>
+                                            <span className="font-mono text-sm">{localPrefs.primaryColor}</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="accentColor">Color de Acento</Label>
+                                         <div className="flex items-center gap-2">
+                                            <Input id="accentColor" type="color" value={localPrefs.accentColor} onChange={handleChange} className="w-16 p-1"/>
+                                             <span className="font-mono text-sm">{localPrefs.accentColor}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </TabsContent>
                     <TabsContent value="taxes" className="mt-6">
@@ -190,3 +254,5 @@ export default function PreferencesPage() {
         </Card>
     );
 }
+
+    

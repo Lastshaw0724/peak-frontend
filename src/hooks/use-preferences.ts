@@ -6,7 +6,7 @@ import { PreferencesContext, Preferences } from '@/components/providers/preferen
 
 interface PreferencesHook extends Preferences {
   isLoading: boolean;
-  savePreferences: (newPrefs: Preferences) => Promise<void>;
+  savePreferences: (newPrefs: Preferences) => void;
 }
 
 export const usePreferences = (): PreferencesHook => {
@@ -15,8 +15,6 @@ export const usePreferences = (): PreferencesHook => {
     throw new Error('usePreferences must be used within a PreferencesProvider');
   }
   
-  // The individual setters are deprecated in favor of savePreferences.
-  // We only expose the data, loading state, and the master save function.
   const { 
     isLoading, 
     savePreferences,
@@ -29,3 +27,5 @@ export const usePreferences = (): PreferencesHook => {
     savePreferences,
   };
 };
+
+    

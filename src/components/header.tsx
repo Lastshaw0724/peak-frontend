@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -16,9 +17,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useRouter } from 'next/navigation';
+import { usePreferences } from '@/hooks/use-preferences';
+import Image from 'next/image';
 
 export function AppHeader({ title }: { title: string }) {
   const { user, logout } = useAuth();
+  const { logoUrl } = usePreferences();
   const router = useRouter();
 
   const getInitials = (name: string) => {
@@ -40,7 +44,11 @@ export function AppHeader({ title }: { title: string }) {
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
             <Link href="/">
-              <Logo className="w-36 h-auto" />
+              {logoUrl ? (
+                <Image src={logoUrl} alt="Restaurant Logo" width={144} height={48} className="object-contain h-12 w-auto" />
+              ) : (
+                <Logo className="w-36 h-auto" />
+              )}
             </Link>
           </div>
           <h1 className="hidden md:block text-3xl font-headline text-foreground">{title}</h1>
@@ -125,3 +133,5 @@ export function AppHeader({ title }: { title: string }) {
     </header>
   );
 }
+
+    

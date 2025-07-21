@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,6 +9,8 @@ import { Users, Package, History, Settings, Warehouse, Percent, AreaChart } from
 import { useAuth } from '@/hooks/use-auth';
 import { Logo } from '../logo';
 import type { UserRole } from '@/lib/types';
+import { usePreferences } from '@/hooks/use-preferences';
+import Image from 'next/image';
 
 const getInitials = (name: string) => {
     if (!name) return '';
@@ -31,6 +34,7 @@ const navItems: { href: string; label: string; icon: React.ElementType; roles: U
 export function NavContent() {
     const pathname = usePathname();
     const { user } = useAuth();
+    const { logoUrl } = usePreferences();
     
     if(!user) return null;
 
@@ -40,7 +44,11 @@ export function NavContent() {
         <div className="flex flex-col h-full bg-card text-card-foreground">
             <div className="p-6 flex flex-col items-center gap-4 border-b">
                  <Link href="/">
-                    <Logo className="w-36 h-auto mb-4" />
+                    {logoUrl ? (
+                        <Image src={logoUrl} alt="Restaurant Logo" width={144} height={56} className="object-contain h-14 w-auto" />
+                    ) : (
+                        <Logo className="w-36 h-auto mb-4" />
+                    )}
                 </Link>
                 <Avatar className="h-24 w-24">
                     <AvatarImage src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${user.name}`} alt={user.name} />
@@ -74,3 +82,5 @@ export function Sidebar() {
         </aside>
     );
 }
+
+    
