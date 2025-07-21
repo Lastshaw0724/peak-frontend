@@ -359,8 +359,8 @@ export default function ProductsPage() {
                             <TableRow>
                                 <TableHead className="hidden w-[100px] sm:table-cell">Imagen</TableHead>
                                 <TableHead>Nombre</TableHead>
-                                <TableHead>Categoría</TableHead>
-                                <TableHead>Extras</TableHead>
+                                <TableHead className="hidden md:table-cell">Categoría</TableHead>
+                                <TableHead className="hidden lg:table-cell">Extras</TableHead>
                                 <TableHead className="text-right">Precio</TableHead>
                                 <TableHead className="text-center">Acciones</TableHead>
                             </TableRow>
@@ -379,10 +379,10 @@ export default function ProductsPage() {
                                         />
                                     </TableCell>
                                     <TableCell className="font-medium whitespace-nowrap">{item.name}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="hidden md:table-cell">
                                         <Badge variant="outline">{item.category}</Badge>
                                     </TableCell>
-                                     <TableCell>
+                                     <TableCell className="hidden lg:table-cell">
                                         {item.extras && item.extras.length > 0 ? (
                                             <div className="flex flex-wrap gap-1">
                                                 {item.extras.map(extra => (

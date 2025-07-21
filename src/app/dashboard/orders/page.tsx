@@ -157,15 +157,15 @@ export default function OrderHistoryPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>ID Pedido</TableHead>
-                                <TableHead>Fecha</TableHead>
+                                <TableHead className="hidden lg:table-cell">Fecha</TableHead>
                                 <TableHead>Mesa</TableHead>
-                                <TableHead>Mesero</TableHead>
+                                <TableHead className="hidden md:table-cell">Mesero</TableHead>
                                 <TableHead>Cliente</TableHead>
                                 <TableHead>Estado</TableHead>
-                                <TableHead>Artículos</TableHead>
-                                <TableHead>Pago</TableHead>
-                                <TableHead>Descuento</TableHead>
-                                <TableHead>Factura</TableHead>
+                                <TableHead className="hidden lg:table-cell">Artículos</TableHead>
+                                <TableHead className="hidden md:table-cell">Pago</TableHead>
+                                <TableHead className="hidden lg:table-cell">Descuento</TableHead>
+                                <TableHead className="hidden sm:table-cell">Factura</TableHead>
                                 <TableHead className="text-right">Total</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
@@ -176,16 +176,16 @@ export default function OrderHistoryPage() {
                                 return (
                                 <TableRow key={order.id}>
                                     <TableCell className="font-mono whitespace-nowrap">#{order.id.slice(-6)}</TableCell>
-                                    <TableCell className="whitespace-nowrap">{new Date(order.timestamp).toLocaleString()}</TableCell>
+                                    <TableCell className="hidden lg:table-cell whitespace-nowrap">{new Date(order.timestamp).toLocaleString()}</TableCell>
                                     <TableCell>{order.tableName}</TableCell>
-                                    <TableCell>{order.waiterName}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{order.waiterName}</TableCell>
                                     <TableCell>{order.customerName}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline" className={cn("capitalize", statusColors[order.status])}>
                                             {statusDisplayNames[order.status] || order.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="hidden lg:table-cell">
                                         <ul className="list-disc list-inside text-xs">
                                             {order.items.map((item, index) => (
                                                 <li key={`${item.orderItemId}-${index}`}>
@@ -199,8 +199,8 @@ export default function OrderHistoryPage() {
                                             ))}
                                         </ul>
                                     </TableCell>
-                                    <TableCell className="capitalize">{order.paymentMethod}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="hidden md:table-cell capitalize">{order.paymentMethod}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">
                                         {order.discountCode ? (
                                             <Badge variant="secondary" className="flex items-center gap-1">
                                                 <TicketPercent className="h-3 w-3" />
@@ -210,7 +210,7 @@ export default function OrderHistoryPage() {
                                             'N/A'
                                         )}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="hidden sm:table-cell">
                                         <div className={cn("flex items-center gap-1.5 text-xs font-medium", invoiceConfig.className)}>
                                            <invoiceConfig.icon className="h-3.5 w-3.5" />
                                            <span>{invoiceConfig.text}</span>
