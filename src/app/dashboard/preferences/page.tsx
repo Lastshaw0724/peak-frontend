@@ -28,7 +28,7 @@ export default function PreferencesPage() {
         if (!isLoading) {
             setLocalPrefs(initialPrefs);
         }
-    }, [initialPrefs, isLoading]);
+    }, [isLoading, initialPrefs.restaurantName, initialPrefs.websiteUrl, initialPrefs.address, initialPrefs.phone, initialPrefs.darkMode, initialPrefs.publicMenu, initialPrefs.taxRate, initialPrefs.taxIncluded, initialPrefs.lowStockThreshold]);
 
     const handleSaveChanges = () => {
         if (isLoading) return;
