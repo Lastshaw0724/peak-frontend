@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from '../ui/separator';
+import { Label } from '../ui/label';
 
 
 const employeeSchema = z.object({
