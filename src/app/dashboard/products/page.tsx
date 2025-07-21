@@ -353,94 +353,92 @@ export default function ProductsPage() {
                 </div>
             </CardHeader>
             <CardContent>
-                <div className="relative w-full overflow-auto no-scrollbar">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Imagen</TableHead>
-                                <TableHead>Nombre</TableHead>
-                                <TableHead>Categoría</TableHead>
-                                <TableHead>Extras</TableHead>
-                                <TableHead className="text-right">Precio</TableHead>
-                                <TableHead className="text-center">Acciones</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {displayedMenu.map((item) => (
-                                 <TableRow key={item.id}>
-                                    <TableCell>
-                                        <Image
-                                        alt={item.name}
-                                        className="aspect-square rounded-md object-cover"
-                                        height="64"
-                                        src={item.image}
-                                        width="64"
-                                        data-ai-hint={item.dataAiHint}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="font-medium whitespace-nowrap">{item.name}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline">{item.category}</Badge>
-                                    </TableCell>
-                                     <TableCell>
-                                        {item.extras && item.extras.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {item.extras.map(extra => (
-                                                    <Badge key={extra.id} variant="secondary">{extra.name}</Badge>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <span className="text-muted-foreground text-xs">N/A</span>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                                    <TableCell className="text-center">
-                                         <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                            <Button
-                                                aria-haspopup="true"
-                                                size="icon"
-                                                variant="ghost"
-                                            >
-                                                <MoreHorizontal className="h-4 w-4" />
-                                                <span className="sr-only">Toggle menu</span>
-                                            </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onSelect={() => handleOpenDialog('edit', item)}>
-                                                    <Pencil className="mr-2" />
-                                                    Editar
-                                                </DropdownMenuItem>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                                                            <Trash2 className="mr-2" />
-                                                            Eliminar
-                                                        </DropdownMenuItem>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                Esta acción no se puede deshacer. Esto eliminará permanentemente el producto "{item.name}".
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => deleteProduct(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                                Sí, eliminar
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[100px]">Imagen</TableHead>
+                            <TableHead>Nombre</TableHead>
+                            <TableHead>Categoría</TableHead>
+                            <TableHead>Extras</TableHead>
+                            <TableHead className="text-right">Precio</TableHead>
+                            <TableHead className="text-center">Acciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {displayedMenu.map((item) => (
+                             <TableRow key={item.id}>
+                                <TableCell>
+                                    <Image
+                                    alt={item.name}
+                                    className="aspect-square rounded-md object-cover"
+                                    height="64"
+                                    src={item.image}
+                                    width="64"
+                                    data-ai-hint={item.dataAiHint}
+                                    />
+                                </TableCell>
+                                <TableCell className="font-medium whitespace-nowrap">{item.name}</TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">{item.category}</Badge>
+                                </TableCell>
+                                 <TableCell>
+                                    {item.extras && item.extras.length > 0 ? (
+                                        <div className="flex flex-wrap gap-1">
+                                            {item.extras.map(extra => (
+                                                <Badge key={extra.id} variant="secondary">{extra.name}</Badge>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className="text-muted-foreground text-xs">N/A</span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
+                                <TableCell className="text-center">
+                                     <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                        <Button
+                                            aria-haspopup="true"
+                                            size="icon"
+                                            variant="ghost"
+                                        >
+                                            <MoreHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">Toggle menu</span>
+                                        </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onSelect={() => handleOpenDialog('edit', item)}>
+                                                <Pencil className="mr-2" />
+                                                Editar
+                                            </DropdownMenuItem>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                                        <Trash2 className="mr-2" />
+                                                        Eliminar
+                                                    </DropdownMenuItem>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el producto "{item.name}".
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => deleteProduct(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                            Sí, eliminar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                             </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </CardContent>
         </Card>
     );
