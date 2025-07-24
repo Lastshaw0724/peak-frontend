@@ -1,4 +1,3 @@
-
 import type { MenuItem } from './types';
 
 export const initialMenuData: MenuItem[] = [

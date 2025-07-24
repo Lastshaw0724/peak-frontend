@@ -1,4 +1,3 @@
-
 'use client'
 import { useState, useMemo, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -163,33 +162,33 @@ export default function ProductsPage() {
                 <div className="flex items-center gap-4">
                     <Package className="h-8 w-8 text-primary" />
                     <div>
-                        <CardTitle className="text-2xl font-headline">Productos</CardTitle>
-                        <CardDescription>Gestiona y organiza los productos de tu menú.</CardDescription>
+                        <CardTitle className="text-2xl font-headline">Products</CardTitle>
+                        <CardDescription>Manage and organize your menu items.</CardDescription>
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-2 flex-wrap">
                     <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                         <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Filtrar por categoría" />
+                            <SelectValue placeholder="Filter by category" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Todas las Categorías</SelectItem>
-                            <SelectItem value="Appetizers">Entradas</SelectItem>
-                            <SelectItem value="Main Courses">Platos Fuertes</SelectItem>
-                            <SelectItem value="Desserts">Postres</SelectItem>
-                            <SelectItem value="Drinks">Bebidas</SelectItem>
+                            <SelectItem value="all">All Categories</SelectItem>
+                            <SelectItem value="Appetizers">Appetizers</SelectItem>
+                            <SelectItem value="Main Courses">Main Courses</SelectItem>
+                            <SelectItem value="Desserts">Desserts</SelectItem>
+                            <SelectItem value="Drinks">Drinks</SelectItem>
                         </SelectContent>
                     </Select>
 
                     <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Ordenar por" />
+                            <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="default">Por defecto</SelectItem>
-                            <SelectItem value="name-asc">Nombre (A - Z)</SelectItem>
-                            <SelectItem value="price-asc">Precio (Bajo a Alto)</SelectItem>
-                            <SelectItem value="price-desc">Precio (Alto a Bajo)</SelectItem>
+                            <SelectItem value="default">Default</SelectItem>
+                            <SelectItem value="name-asc">Name (A - Z)</SelectItem>
+                            <SelectItem value="price-asc">Price (Low to High)</SelectItem>
+                            <SelectItem value="price-desc">Price (High to Low)</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -197,31 +196,31 @@ export default function ProductsPage() {
                         <DialogTrigger asChild>
                             <Button className="w-full sm:w-auto" onClick={() => handleOpenDialog('add')}>
                                 <PlusCircle className="mr-2" />
-                                Añadir Producto
+                                Add Product
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-xl">
                             <DialogHeader>
-                                <DialogTitle>{dialogMode === 'add' ? 'Añadir Nuevo Producto' : 'Editar Producto'}</DialogTitle>
+                                <DialogTitle>{dialogMode === 'add' ? 'Add New Product' : 'Edit Product'}</DialogTitle>
                                 <DialogDescription>
                                     {dialogMode === 'add' 
-                                        ? 'Completa los detalles para añadirlo al menú.'
-                                        : `Modificando el producto: ${selectedProduct?.name}`
+                                        ? 'Fill in the details to add it to the menu.'
+                                        : `Modifying product: ${selectedProduct?.name}`
                                     }
                                 </DialogDescription>
                             </DialogHeader>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                                    <ScrollArea className="max-h-[60vh] pr-6">
+                                    <ScrollArea className="max-h-[60vh] pr-6 no-scrollbar">
                                         <div className="space-y-4">
                                             <FormField
                                                 control={form.control}
                                                 name="name"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Nombre</FormLabel>
+                                                        <FormLabel>Name</FormLabel>
                                                         <FormControl>
-                                                            <Input placeholder="Ej: Pizza Margherita" {...field} />
+                                                            <Input placeholder="E.g., Pizza Margherita" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -232,9 +231,9 @@ export default function ProductsPage() {
                                                 name="description"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Descripción</FormLabel>
+                                                        <FormLabel>Description</FormLabel>
                                                         <FormControl>
-                                                            <Textarea placeholder="Describe el producto..." {...field} />
+                                                            <Textarea placeholder="Describe the product..." {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -245,7 +244,7 @@ export default function ProductsPage() {
                                                 name="price"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Precio</FormLabel>
+                                                        <FormLabel>Price</FormLabel>
                                                         <FormControl>
                                                             <Input type="number" step="0.01" {...field} />
                                                         </FormControl>
@@ -258,18 +257,18 @@ export default function ProductsPage() {
                                                 name="category"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Categoría</FormLabel>
+                                                        <FormLabel>Category</FormLabel>
                                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                             <FormControl>
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Selecciona una categoría" />
+                                                                    <SelectValue placeholder="Select a category" />
                                                                 </SelectTrigger>
                                                             </FormControl>
                                                             <SelectContent>
-                                                                <SelectItem value="Appetizers">Entradas</SelectItem>
-                                                                <SelectItem value="Main Courses">Platos Fuertes</SelectItem>
-                                                                <SelectItem value="Desserts">Postres</SelectItem>
-                                                                <SelectItem value="Drinks">Bebidas</SelectItem>
+                                                                <SelectItem value="Appetizers">Appetizers</SelectItem>
+                                                                <SelectItem value="Main Courses">Main Courses</SelectItem>
+                                                                <SelectItem value="Desserts">Desserts</SelectItem>
+                                                                <SelectItem value="Drinks">Drinks</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                         <FormMessage />
@@ -281,7 +280,7 @@ export default function ProductsPage() {
                                                 name="image"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>URL de la Imagen</FormLabel>
+                                                        <FormLabel>Image URL</FormLabel>
                                                         <FormControl>
                                                             <Input placeholder="https://placehold.co/600x400.png" {...field} />
                                                         </FormControl>
@@ -291,7 +290,7 @@ export default function ProductsPage() {
                                             />
 
                                             <div className="space-y-4 rounded-lg border p-4">
-                                                <h3 className="text-base font-semibold">Extras del Producto</h3>
+                                                <h3 className="text-base font-semibold">Product Extras</h3>
                                                 <div className="space-y-3">
                                                     {fields.map((field, index) => (
                                                         <div key={field.id} className="flex items-end gap-2 rounded-md border bg-muted/50 p-3">
@@ -300,9 +299,9 @@ export default function ProductsPage() {
                                                                 name={`extras.${index}.name`}
                                                                 render={({ field }) => (
                                                                     <FormItem className="flex-grow">
-                                                                        <FormLabel>Nombre del extra</FormLabel>
+                                                                        <FormLabel>Extra Name</FormLabel>
                                                                         <FormControl>
-                                                                            <Input placeholder="Ej: Queso Extra" {...field} />
+                                                                            <Input placeholder="E.g., Extra Cheese" {...field} />
                                                                         </FormControl>
                                                                         <FormMessage className="text-xs" />
                                                                     </FormItem>
@@ -313,7 +312,7 @@ export default function ProductsPage() {
                                                                 name={`extras.${index}.price`}
                                                                 render={({ field }) => (
                                                                     <FormItem className="w-28">
-                                                                        <FormLabel>Precio</FormLabel>
+                                                                        <FormLabel>Price</FormLabel>
                                                                         <FormControl>
                                                                             <Input type="number" step="0.01" placeholder="0.00" {...field} />
                                                                         </FormControl>
@@ -335,16 +334,16 @@ export default function ProductsPage() {
                                                     className="w-full"
                                                 >
                                                     <PlusCircle className="mr-2" />
-                                                    Añadir Extra
+                                                    Add Extra
                                                 </Button>
                                             </div>
                                         </div>
                                     </ScrollArea>
                                     <DialogFooter className="pt-6">
                                         <DialogClose asChild>
-                                        <Button type="button" variant="secondary">Cancelar</Button>
+                                        <Button type="button" variant="secondary">Cancel</Button>
                                         </DialogClose>
-                                        <Button type="submit">Guardar Producto</Button>
+                                        <Button type="submit">Save Product</Button>
                                     </DialogFooter>
                                 </form>
                             </Form>
@@ -357,12 +356,12 @@ export default function ProductsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">Imagen</TableHead>
-                                <TableHead>Nombre</TableHead>
-                                <TableHead>Categoría</TableHead>
+                                <TableHead className="w-[100px]">Image</TableHead>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Category</TableHead>
                                 <TableHead>Extras</TableHead>
-                                <TableHead className="text-right">Precio</TableHead>
-                                <TableHead className="text-center">Acciones</TableHead>
+                                <TableHead className="text-right">Price</TableHead>
+                                <TableHead className="text-center">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -409,26 +408,26 @@ export default function ProductsPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem onSelect={() => handleOpenDialog('edit', item)}>
                                                     <Pencil className="mr-2" />
-                                                    Editar
+                                                    Edit
                                                 </DropdownMenuItem>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive focus:bg-destructive/10">
                                                             <Trash2 className="mr-2" />
-                                                            Eliminar
+                                                            Delete
                                                         </DropdownMenuItem>
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Esta acción no se puede deshacer. Esto eliminará permanentemente el producto "{item.name}".
+                                                                This action cannot be undone. This will permanently delete the "{item.name}" product.
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                             <AlertDialogAction onClick={() => deleteProduct(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                                Sí, eliminar
+                                                                Yes, delete
                                                             </AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>

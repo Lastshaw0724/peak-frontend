@@ -48,8 +48,8 @@ export default function AssignTablePage() {
     <div className="p-4 sm:p-6 lg:p-8 h-full flex flex-col">
       <div className="flex-1 flex flex-col">
         <div className="mb-6">
-            <h2 className="text-3xl font-headline mb-2">Estado de las Mesas</h2>
-            <p className="text-muted-foreground">Selecciona una mesa disponible para tomar un pedido.</p>
+            <h2 className="text-3xl font-headline mb-2">Table Status</h2>
+            <p className="text-muted-foreground">Select an available table to take an order.</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-grow">
@@ -100,7 +100,7 @@ export default function AssignTablePage() {
 
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={() => setSelectedTableId(null)} className="bg-zinc-700 hover:bg-zinc-600">
-              Cancelar Selección
+              Clear Selection
             </Button>
             
             <Button 
@@ -108,7 +108,7 @@ export default function AssignTablePage() {
               onClick={handleAssignTable}
               disabled={!selectedTableId || selectedTable?.status !== 'available'}
             >
-              Asignar y tomar pedido
+              Assign & Take Order
             </Button>
           </div>
         </div>

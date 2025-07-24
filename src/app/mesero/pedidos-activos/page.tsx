@@ -1,6 +1,6 @@
 'use client';
-import { PantallaPedidosActivos } from '@/components/mesero/pantalla-pedidos-activos';
+import { ActiveOrdersDisplay } from '@/components/mesero/active-orders-display';
 
-export default function PaginaPedidosActivos() {
-  return <PantallaPedidosActivos />;
+export default function ActiveOrdersPage() {
+  return <ActiveOrdersDisplay />;
 }

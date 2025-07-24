@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -65,8 +64,8 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     saveMenu([...menu, newProduct]);
 
     toast({
-      title: "Producto Añadido!",
-      description: `El producto "${newProduct.name}" ha sido añadido al menú.`,
+      title: "Product Added!",
+      description: `Product "${newProduct.name}" has been added to the menu.`,
     });
   };
 
@@ -90,8 +89,8 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     saveMenu(updatedMenu);
     
     toast({
-        title: "Producto Actualizado",
-        description: `El producto "${productData.name}" ha sido actualizado.`,
+        title: "Product Updated",
+        description: `Product "${productData.name}" has been updated.`,
     });
   };
 
@@ -101,8 +100,8 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     saveMenu(updatedMenu);
     
     toast({
-        title: "Producto Eliminado",
-        description: `El producto "${productToDelete?.name}" ha sido eliminado.`,
+        title: "Product Deleted",
+        description: `Product "${productToDelete?.name}" has been deleted.`,
         variant: "destructive",
     });
   };

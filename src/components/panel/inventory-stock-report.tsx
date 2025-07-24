@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -15,7 +14,7 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"
 
 const chartConfig = {
   items: {
-    label: "Insumos",
+    label: "Items",
   },
 } satisfies ChartConfig
 
@@ -43,8 +42,8 @@ export function InventoryStockReport() {
         <div className="space-y-8">
             <Card>
                  <CardHeader>
-                    <CardTitle className="text-xl font-headline">Distribución de Insumos por Categoría</CardTitle>
-                    <CardDescription>Visualización de la cantidad de tipos de insumos en cada categoría.</CardDescription>
+                    <CardTitle className="text-xl font-headline">Item Distribution by Category</CardTitle>
+                    <CardDescription>Visualization of the number of item types in each category.</CardDescription>
                 </CardHeader>
                  <CardContent>
                     {categoryDistribution.length > 0 ? (
@@ -71,25 +70,25 @@ export function InventoryStockReport() {
                             </PieChart>
                         </ChartContainer>
                     ) : (
-                        <p className="text-muted-foreground text-center py-8">No hay datos de inventario para mostrar el gráfico.</p>
+                        <p className="text-muted-foreground text-center py-8">No inventory data to display the chart.</p>
                     )}
                  </CardContent>
             </Card>
             
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-xl font-headline">Niveles de Stock Actuales</CardTitle>
-                    <CardDescription>Resumen de todos los insumos en el inventario, ordenados por nivel de stock.</CardDescription>
+                    <CardTitle className="text-xl font-headline">Current Stock Levels</CardTitle>
+                    <CardDescription>An overview of all items in the inventory, sorted by stock level.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="relative w-full overflow-auto no-scrollbar">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Insumo</TableHead>
-                                    <TableHead>Categoría</TableHead>
-                                    <TableHead className="w-[250px]">Nivel de Stock</TableHead>
-                                    <TableHead>Proveedor</TableHead>
+                                    <TableHead>Item</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead className="w-[250px]">Stock Level</TableHead>
+                                    <TableHead>Supplier</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -115,7 +114,7 @@ export function InventoryStockReport() {
                                 )) : (
                                     <TableRow>
                                         <TableCell colSpan={4} className="text-center h-24">
-                                            No hay insumos en el inventario.
+                                            There are no items in the inventory.
                                         </TableCell>
                                     </TableRow>
                                 )}

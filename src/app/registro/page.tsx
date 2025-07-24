@@ -1,23 +1,22 @@
-
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usarAutenticacion } from '@/hooks/usar-autenticacion';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
-import { usarPreferencias } from '@/hooks/usar-preferencias';
+import { usePreferences } from '@/hooks/use-preferences';
 import Image from 'next/image';
 
-export default function PaginaRegistro() {
+export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { register } = usarAutenticacion();
-  const { logoUrl } = usarPreferencias();
+  const { register } = useAuth();
+  const { logoUrl } = usePreferences();
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,18 +29,18 @@ export default function PaginaRegistro() {
         <CardHeader className="text-center">
            <div className="mx-auto mb-4">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Logo del Restaurante" width={160} height={80} className="object-contain h-20 w-auto" />
+              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
             ) : (
               <Logo className="w-32 h-auto" />
             )}
           </div>
-          <CardTitle className="font-headline text-3xl">Crear una Cuenta</CardTitle>
-          <CardDescription>Únete a GustoGo para ver nuestro menú y hacer pedidos.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Create an Account</CardTitle>
+          <CardDescription>Join GustoGo to view our menu and place orders.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSignup}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nombre</Label>
+              <Label htmlFor="name">Name</Label>
               <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
@@ -49,16 +48,16 @@ export default function PaginaRegistro() {
               <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Registrarse</Button>
+            <Button type="submit" className="w-full">Sign Up</Button>
             <div className="text-center text-sm text-muted-foreground">
-              ¿Ya tienes una cuenta?{' '}
+              Already have an account?{' '}
               <Link href="/ingresar" className="underline hover:text-primary">
-                Inicia sesión
+                Sign in
               </Link>
             </div>
           </CardFooter>

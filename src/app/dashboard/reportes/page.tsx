@@ -1,38 +1,37 @@
-
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ReporteInventario } from '@/components/panel/reporte-inventario';
-import { ReporteVentasProducto } from "@/components/panel/reporte-ventas-producto";
-import { ReporteStockInventario } from "@/components/panel/reporte-stock-inventario";
+import { InventoryReport } from '@/components/panel/inventory-report';
+import { ProductSalesReport } from "@/components/panel/product-sales-report";
+import { InventoryStockReport } from "@/components/panel/inventory-stock-report";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart } from "lucide-react";
 
-export default function PaginaReportes() {
+export default function ReportsPage() {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center gap-4">
                 <AreaChart className="h-8 w-8 text-primary" />
                 <div>
-                    <CardTitle className="text-2xl font-headline">Reportes</CardTitle>
-                    <CardDescription>Analiza el rendimiento de tu restaurante.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">Reports</CardTitle>
+                    <CardDescription>Analyze your restaurant's performance.</CardDescription>
                 </div>
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="product-availability" className="w-full">
                     <TabsList className="grid w-full grid-cols-3 h-auto">
-                        <TabsTrigger value="product-availability" className="whitespace-normal">Disponibilidad de Productos</TabsTrigger>
-                        <TabsTrigger value="product-sales" className="whitespace-normal">Ventas de Productos</TabsTrigger>
-                        <TabsTrigger value="inventory-stock" className="whitespace-normal">Stock de Insumos</TabsTrigger>
+                        <TabsTrigger value="product-availability" className="whitespace-normal">Product Availability</TabsTrigger>
+                        <TabsTrigger value="product-sales" className="whitespace-normal">Product Sales</TabsTrigger>
+                        <TabsTrigger value="inventory-stock" className="whitespace-normal">Inventory Stock</TabsTrigger>
                     </TabsList>
                     <TabsContent value="product-availability" className="mt-6">
-                        <ReporteInventario />
+                        <InventoryReport />
                     </TabsContent>
                     <TabsContent value="product-sales" className="mt-6">
-                        <ReporteVentasProducto />
+                        <ProductSalesReport />
                     </TabsContent>
                     <TabsContent value="inventory-stock" className="mt-6">
-                        <ReporteStockInventario />
+                        <InventoryStockReport />
                     </TabsContent>
                 </Tabs>
             </CardContent>

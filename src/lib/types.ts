@@ -1,5 +1,3 @@
-
-
 export type UserRole = 'admin' | 'cook' | 'customer' | 'waiter' | 'cashier';
 
 export interface User {
@@ -63,7 +61,7 @@ export interface Order {
   customerName: string;
   waiterId: string;
   waiterName: string;
-  paymentMethod: 'efectivo' | 'transferencia';
+  paymentMethod: 'cash' | 'card';
   items: OrderItem[];
   subtotal: number;
   discountCode?: string;

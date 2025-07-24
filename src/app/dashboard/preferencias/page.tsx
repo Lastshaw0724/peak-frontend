@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -9,9 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, Save, Bell, Palette, Image as ImageIcon, Trash2 } from 'lucide-react';
-import { usarPedidos } from '@/hooks/usar-pedidos';
-import type { ArticuloPedido } from '@/lib/tipos';
-import { usarPreferencias } from '@/hooks/usar-preferencias';
+import { useOrder } from '@/hooks/use-order';
+import type { OrderItem } from '@/lib/types';
+import { usePreferences } from '@/hooks/use-preferences';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartConfig } from '@/components/ui/chart';
 import Image from 'next/image';
@@ -47,8 +46,8 @@ function hexToHsl(hex: string): string {
 
 
 export default function PreferencesPage() {
-    const { submittedOrders } = usarPedidos();
-    const prefsContext = usarPreferencias();
+    const { submittedOrders } = useOrder();
+    const prefsContext = usePreferences();
     const { savePreferences, isLoading, ...initialPrefs } = prefsContext;
 
     // Local state to hold form changes before saving
@@ -120,7 +119,7 @@ export default function PreferencesPage() {
         if (!submittedOrders || submittedOrders.length === 0) return [];
         const productCounts: { [key: string]: { name: string, count: number } } = {};
         submittedOrders.forEach(order => {
-            order.items.forEach((item: ArticuloPedido) => {
+            order.items.forEach((item: OrderItem) => {
                 if (productCounts[item.id]) {
                     productCounts[item.id].count += item.quantity;
                 } else {
@@ -132,7 +131,7 @@ export default function PreferencesPage() {
     }, [submittedOrders]);
 
     const chartConfig = {
-      count: { label: "Ventas", color: "hsl(var(--primary))" },
+      count: { label: "Sales", color: "hsl(var(--primary))" },
     } satisfies ChartConfig;
 
     if (isLoading) {
@@ -155,34 +154,34 @@ export default function PreferencesPage() {
             <CardHeader className="flex flex-row items-center gap-4">
                 <Settings className="h-8 w-8 text-primary" />
                  <div>
-                    <CardTitle className="text-2xl font-headline">Preferencias del Sistema</CardTitle>
-                    <CardDescription>Configura los ajustes generales y notificaciones de tu restaurante.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">System Preferences</CardTitle>
+                    <CardDescription>Configure general settings and notifications for your restaurant.</CardDescription>
                 </div>
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="general" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto sm:h-10">
                         <TabsTrigger value="general">General</TabsTrigger>
-                        <TabsTrigger value="appearance">Apariencia</TabsTrigger>
-                        <TabsTrigger value="taxes">Impuestos</TabsTrigger>
+                        <TabsTrigger value="appearance">Appearance</TabsTrigger>
+                        <TabsTrigger value="taxes">Taxes</TabsTrigger>
                         <TabsTrigger value="stock">Stock</TabsTrigger>
                     </TabsList>
                     <TabsContent value="general" className="mt-6">
                         <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
-                                <Label htmlFor="restaurantName">Nombre del Restaurante</Label>
+                                <Label htmlFor="restaurantName">Restaurant Name</Label>
                                 <Input id="restaurantName" value={localPrefs.restaurantName} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="websiteUrl">Sitio Web / Enlace</Label>
-                                <Input id="websiteUrl" type="url" placeholder="https://ejemplo.com" value={localPrefs.websiteUrl} onChange={handleChange} />
+                                <Label htmlFor="websiteUrl">Website / Link</Label>
+                                <Input id="websiteUrl" type="url" placeholder="https://example.com" value={localPrefs.websiteUrl} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="address">Dirección</Label>
+                                <Label htmlFor="address">Address</Label>
                                 <Input id="address" value={localPrefs.address} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="phone">Teléfono de Contacto</Label>
+                                <Label htmlFor="phone">Contact Phone</Label>
                                 <Input id="phone" type="tel" value={localPrefs.phone} onChange={handleChange} />
                             </div>
                         </div>
@@ -191,72 +190,72 @@ export default function PreferencesPage() {
                        <div className="space-y-6 max-w-2xl">
                             <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="darkMode" className="text-base">Modo Oscuro</Label>
+                                    <Label htmlFor="darkMode" className="text-base">Dark Mode</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Activar el tema oscuro en toda la aplicación.
+                                        Enable the dark theme across the application.
                                     </p>
                                 </div>
                                 <Switch id="darkMode" checked={localPrefs.darkMode} onCheckedChange={(checked) => handleSwitchChange('darkMode', checked)} />
                             </div>
                              <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="publicMenu" className="text-base">Menú Público</Label>
+                                    <Label htmlFor="publicMenu" className="text-base">Public Menu</Label>
                                      <p className="text-sm text-muted-foreground">
-                                        Permitir que cualquiera vea el menú sin iniciar sesión.
+                                        Allow anyone to view the menu without logging in.
                                     </p>
                                 </div>
                                 <Switch id="publicMenu" checked={localPrefs.publicMenu} onCheckedChange={(checked) => handleSwitchChange('publicMenu', checked)} />
                             </div>
                             <div className="rounded-lg border p-4 space-y-4">
-                                <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Logo del Restaurante</h3>
+                                <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Restaurant Logo</h3>
                                  <RadioGroup defaultValue="upload" value={logoInputMethod} onValueChange={(v) => setLogoInputMethod(v as 'upload' | 'url')} className="flex gap-4">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="upload" id="r_upload" />
-                                        <Label htmlFor="r_upload">Subir Archivo</Label>
+                                        <Label htmlFor="r_upload">Upload File</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="url" id="r_url" />
-                                        <Label htmlFor="r_url">Usar URL</Label>
+                                        <Label htmlFor="r_url">Use URL</Label>
                                     </div>
                                 </RadioGroup>
 
                                 {logoInputMethod === 'upload' ? (
                                     <div className="space-y-2">
-                                        <Label htmlFor="logoUpload">Cargar Logo</Label>
+                                        <Label htmlFor="logoUpload">Upload Logo</Label>
                                         <Input id="logoUpload" type="file" accept="image/*" onChange={handleLogoUpload} className="file:text-foreground" />
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
-                                        <Label htmlFor="logoUrlInput">URL del Logo</Label>
-                                        <Input id="logoUrlInput" type="url" placeholder="https://ejemplo.com/logo.png" value={(localPrefs.logoUrl || '').startsWith('data:') ? '' : localPrefs.logoUrl || ''} onChange={handleLogoUrlChange} />
+                                        <Label htmlFor="logoUrlInput">Logo URL</Label>
+                                        <Input id="logoUrlInput" type="url" placeholder="https://example.com/logo.png" value={(localPrefs.logoUrl || '').startsWith('data:') ? '' : localPrefs.logoUrl || ''} onChange={handleLogoUrlChange} />
                                     </div>
                                 )}
                                 
                                 {localPrefs.logoUrl && (
                                      <div className="mt-4 space-y-3">
-                                         <Label>Vista Previa</Label>
+                                         <Label>Preview</Label>
                                         <div className="flex items-center justify-center p-4 bg-muted rounded-md">
                                             <Image src={localPrefs.logoUrl} alt="Logo Preview" width={150} height={150} className="object-contain" />
                                         </div>
                                          <Button variant="destructive" size="sm" onClick={handleDeleteLogo} className="w-full">
                                             <Trash2 className="mr-2"/>
-                                            Eliminar Logo
+                                            Delete Logo
                                         </Button>
                                     </div>
                                 )}
                             </div>
                              <div className="rounded-lg border p-4 space-y-4">
-                                <h3 className="text-base font-semibold flex items-center gap-2"><Palette className="text-primary" />Colores del Tema</h3>
+                                <h3 className="text-base font-semibold flex items-center gap-2"><Palette className="text-primary" />Theme Colors</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="primaryColor">Color Primario</Label>
+                                        <Label htmlFor="primaryColor">Primary Color</Label>
                                         <div className="flex items-center gap-2">
                                             <Input id="primaryColor" type="color" value={localPrefs.primaryColor} onChange={handleChange} className="w-16 p-1"/>
                                             <span className="font-mono text-sm">{localPrefs.primaryColor}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="accentColor">Color de Acento</Label>
+                                        <Label htmlFor="accentColor">Accent Color</Label>
                                          <div className="flex items-center gap-2">
                                             <Input id="accentColor" type="color" value={localPrefs.accentColor} onChange={handleChange} className="w-16 p-1"/>
                                              <span className="font-mono text-sm">{localPrefs.accentColor}</span>
@@ -269,12 +268,12 @@ export default function PreferencesPage() {
                     <TabsContent value="taxes" className="mt-6">
                        <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
-                                <Label htmlFor="taxRate">Tasa de Impuesto General (%)</Label>
+                                <Label htmlFor="taxRate">General Tax Rate (%)</Label>
                                 <Input id="taxRate" type="number" value={localPrefs.taxRate} onChange={handleChange} />
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Switch id="taxIncluded" checked={localPrefs.taxIncluded} onCheckedChange={(checked) => handleSwitchChange('taxIncluded', checked)}/>
-                                <Label htmlFor="taxIncluded">¿Los precios del menú ya incluyen impuestos?</Label>
+                                <Label htmlFor="taxIncluded">Do menu prices already include taxes?</Label>
                             </div>
                         </div>
                     </TabsContent>
@@ -282,20 +281,20 @@ export default function PreferencesPage() {
                        <div className="space-y-6 max-w-2xl">
                            <h3 className="text-xl font-semibold flex items-center gap-2">
                                 <Bell className="h-5 w-5 text-primary" />
-                                Notificaciones de Stock
+                                Stock Notifications
                            </h3>
                             <div className="space-y-2 p-4 border rounded-lg">
-                                <Label htmlFor="lowStockThreshold">Alertar cuando el stock sea menor a:</Label>
+                                <Label htmlFor="lowStockThreshold">Alert when stock is less than:</Label>
                                 <Input 
                                     id="lowStockThreshold" 
                                     type="number"
                                     value={localPrefs.lowStockThreshold}
                                     onChange={handleChange}
                                     className="max-w-[100px]"
-                                    placeholder="Ej: 20"
+                                    placeholder="E.g., 20"
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Recibirás una notificación cuando un insumo baje de este número de unidades.
+                                    You will receive a notification when an item falls below this number of units.
                                 </p>
                             </div>
                         </div>
@@ -304,7 +303,7 @@ export default function PreferencesPage() {
                 <div className="mt-8 flex justify-end">
                     <Button onClick={handleSaveChanges} disabled={isLoading}>
                         <Save className="mr-2"/>
-                        Guardar Cambios
+                        Save Changes
                     </Button>
                 </div>
             </CardContent>

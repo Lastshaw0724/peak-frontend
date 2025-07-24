@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useContext } from 'react';
@@ -27,5 +26,3 @@ export const usePreferences = (): PreferencesHook => {
     savePreferences,
   };
 };
-
-    

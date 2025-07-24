@@ -2,18 +2,18 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usarAutenticacion } from '@/hooks/usar-autenticacion';
+import { useAuth } from '@/hooks/use-auth';
 
-export default function PaginaRedireccionPanel() {
+export default function DashboardRedirectPage() {
     const router = useRouter();
-    const { user } = usarAutenticacion();
+    const { user } = useAuth();
 
     useEffect(() => {
         if (user) {
             if (user.role === 'cashier') {
                 router.replace('/dashboard/pedidos');
             } else { // default for admin
-                router.replace('/dashboard/empleados');
+                router.replace('/dashboard/employees');
             }
         }
     }, [user, router]);

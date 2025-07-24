@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -87,7 +86,7 @@ export function AppHeader({ title }: { title: string }) {
                     {user.role === 'cashier' && (
                          <DropdownMenuItem onClick={() => navigate('/dashboard/pedidos')}>
                             <History className="mr-2 h-4 w-4" />
-                            <span>Historial Pedidos</span>
+                            <span>Order History</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'cook' && (
@@ -133,5 +132,3 @@ export function AppHeader({ title }: { title: string }) {
     </header>
   );
 }
-
-    

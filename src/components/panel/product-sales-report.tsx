@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -35,15 +34,15 @@ export function ProductSalesReport() {
     const topProducts = useMemo(() => salesData.slice(0, 5).reverse(), [salesData]);
 
     const chartConfig = {
-      quantity: { label: "Unidades Vendidas", color: "hsl(var(--primary))" },
+      quantity: { label: "Units Sold", color: "hsl(var(--primary))" },
     } satisfies ChartConfig;
 
     return (
         <div className="space-y-8">
             <Card>
                  <CardHeader>
-                    <CardTitle className="text-xl font-headline">Top 5 Productos Más Vendidos</CardTitle>
-                    <CardDescription>Visualización de los productos más populares por unidades vendidas.</CardDescription>
+                    <CardTitle className="text-xl font-headline">Top 5 Best-Selling Products</CardTitle>
+                    <CardDescription>Visualization of the most popular products by units sold.</CardDescription>
                 </CardHeader>
                  <CardContent>
                     {topProducts.length > 0 ? (
@@ -82,25 +81,25 @@ export function ProductSalesReport() {
                               </BarChart>
                         </ChartContainer>
                     ) : (
-                        <p className="text-muted-foreground text-center py-8">No hay suficientes datos de ventas para mostrar el gráfico.</p>
+                        <p className="text-muted-foreground text-center py-8">Not enough sales data to display the chart.</p>
                     )}
                  </CardContent>
             </Card>
             
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-xl font-headline">Reporte General de Ventas por Producto</CardTitle>
-                    <CardDescription>Un resumen completo de la cantidad y los ingresos por cada producto vendido.</CardDescription>
+                    <CardTitle className="text-xl font-headline">Overall Product Sales Report</CardTitle>
+                    <CardDescription>A complete summary of quantity and revenue for each product sold.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="relative w-full overflow-auto no-scrollbar">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Producto</TableHead>
-                                    <TableHead>Categoría</TableHead>
-                                    <TableHead className="text-right">Unidades Vendidas</TableHead>
-                                    <TableHead className="text-right">Ingresos Totales</TableHead>
+                                    <TableHead>Product</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead className="text-right">Units Sold</TableHead>
+                                    <TableHead className="text-right">Total Revenue</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -114,7 +113,7 @@ export function ProductSalesReport() {
                                 )) : (
                                     <TableRow>
                                         <TableCell colSpan={4} className="text-center h-24">
-                                            No hay datos de ventas disponibles.
+                                            No sales data available.
                                         </TableCell>
                                     </TableRow>
                                 )}

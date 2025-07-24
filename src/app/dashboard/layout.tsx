@@ -1,22 +1,21 @@
-
 'use client';
 
-import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
-import { BarraLateral } from '@/components/panel/barra-lateral';
-import { CabeceraPanel } from '@/components/panel/cabecera';
-import { ProveedorEncuestas } from '@/components/proveedores/proveedor-encuestas';
-import { ProveedorMesas } from '@/components/proveedores/proveedor-mesas';
-import { ProveedorMenu } from '@/components/proveedores/proveedor-menu';
-import { ProveedorDescuentos } from '@/components/proveedores/proveedor-descuentos';
-import { ProveedorInventario } from '@/components/proveedores/proveedor-inventario';
-import { ProveedorPedidos } from '@/components/proveedores/proveedor-pedidos';
+import { ProtectedRoute } from '@/components/autenticacion/protected-route';
+import { Sidebar } from '@/components/panel/sidebar';
+import { DashboardHeader } from '@/components/panel/header';
+import { SurveyProvider } from '@/components/providers/survey-provider';
+import { TableProvider } from '@/components/providers/table-provider';
+import { MenuProvider } from '@/components/providers/menu-provider';
+import { DiscountProvider } from '@/components/providers/discount-provider';
+import { InventoryProvider } from '@/components/providers/inventory-provider';
+import { OrderProvider } from '@/components/providers/order-provider';
 
-function LayoutPanelContenido({ children }: { children: React.ReactNode }) {
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex min-h-screen bg-background text-foreground">
-            <BarraLateral />
+            <Sidebar />
             <div className="flex flex-col flex-1 min-w-0">
-                <CabeceraPanel />
+                <DashboardHeader />
                 <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto no-scrollbar">
                     {children}
                 </main>
@@ -25,22 +24,22 @@ function LayoutPanelContenido({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default function LayoutPanel({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
-        <RutaProtegida allowedRoles={['admin', 'cashier']}>
-            <ProveedorEncuestas>
-              <ProveedorMesas>
-                <ProveedorMenu>
-                  <ProveedorDescuentos>
-                    <ProveedorInventario>
-                      <ProveedorPedidos>
-                         <LayoutPanelContenido>{children}</LayoutPanelContenido>
-                      </ProveedorPedidos>
-                    </ProveedorInventario>
-                  </ProveedorDescuentos>
-                </ProveedorMenu>
-              </ProveedorMesas>
-            </ProveedorEncuestas>
-        </RutaProtegida>
+        <ProtectedRoute allowedRoles={['admin', 'cashier']}>
+            <SurveyProvider>
+              <TableProvider>
+                <MenuProvider>
+                  <DiscountProvider>
+                    <InventoryProvider>
+                      <OrderProvider>
+                         <DashboardLayoutContent>{children}</DashboardLayoutContent>
+                      </OrderProvider>
+                    </InventoryProvider>
+                  </DiscountProvider>
+                </MenuProvider>
+              </TableProvider>
+            </SurveyProvider>
+        </ProtectedRoute>
     );
 }

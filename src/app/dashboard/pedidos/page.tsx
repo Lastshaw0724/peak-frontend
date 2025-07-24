@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,18 +59,18 @@ export default function OrderHistoryPage() {
     };
     
     const statusDisplayNames: Record<OrderStatus | 'all', string> = {
-        all: 'Todos los Estados',
-        new: 'Nuevo',
-        preparing: 'Preparando',
-        ready: 'Listo',
-        delivered: 'Entregado',
-        paid: 'Pagado',
+        all: 'All Statuses',
+        new: 'New',
+        preparing: 'Preparing',
+        ready: 'Ready',
+        delivered: 'Delivered',
+        paid: 'Paid',
     };
 
     const invoiceOptionConfig: Record<InvoiceOption, { text: string, icon: React.ElementType, className: string }> = {
-        none: { text: 'No Requerida', icon: Ban, className: 'text-muted-foreground' },
-        print: { text: 'Imprimir', icon: Printer, className: 'text-blue-500' },
-        email: { text: 'Enviar', icon: Send, className: 'text-green-500' },
+        none: { text: 'Not Required', icon: Ban, className: 'text-muted-foreground' },
+        print: { text: 'Print', icon: Printer, className: 'text-blue-500' },
+        email: { text: 'Send', icon: Send, className: 'text-green-500' },
     };
 
     const handleMarkAsPaid = (order: Order) => {
@@ -80,12 +79,12 @@ export default function OrderHistoryPage() {
     };
 
     const handlePrintInvoice = (orderId: string) => {
-        toast({ title: 'Imprimiendo Factura', description: `La factura para el pedido #${orderId.slice(-6)} se está generando.` });
+        toast({ title: 'Printing Invoice', description: `Invoice for order #${orderId.slice(-6)} is being generated.` });
         // In a real app, this would trigger a print dialog.
     };
 
     const handleSendInvoice = (orderId: string) => {
-        toast({ title: 'Factura Enviada', description: `La factura para el pedido #${orderId.slice(-6)} ha sido enviada por correo.` });
+        toast({ title: 'Invoice Sent', description: `Invoice for order #${orderId.slice(-6)} has been sent via email.` });
         // In a real app, this would trigger an email flow.
     };
 
@@ -96,17 +95,17 @@ export default function OrderHistoryPage() {
                 <div className="flex items-center gap-4">
                     <History className="h-8 w-8 text-primary" />
                     <div>
-                        <CardTitle className="text-2xl font-headline">Historial de Pedidos</CardTitle>
-                        <CardDescription>Revisa todos los pedidos realizados en el restaurante.</CardDescription>
+                        <CardTitle className="text-2xl font-headline">Order History</CardTitle>
+                        <CardDescription>Review all orders placed at the restaurant.</CardDescription>
                     </div>
                 </div>
                  <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Select value={waiterFilter} onValueChange={setWaiterFilter}>
                         <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Filtrar por mesero" />
+                            <SelectValue placeholder="Filter by waiter" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">Todos los Meseros</SelectItem>
+                            <SelectItem value="all">All Waiters</SelectItem>
                             {waiters.map(waiter => (
                                 <SelectItem key={waiter.id} value={waiter.id}>
                                     {waiter.name}
@@ -116,7 +115,7 @@ export default function OrderHistoryPage() {
                     </Select>
                      <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as OrderStatus | 'all')}>
                         <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Filtrar por estado" />
+                            <SelectValue placeholder="Filter by status" />
                         </SelectTrigger>
                         <SelectContent>
                             {Object.entries(statusDisplayNames).map(([key, value]) => (
@@ -134,7 +133,7 @@ export default function OrderHistoryPage() {
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {dateFilter ? format(dateFilter, "PPP") : <span>Seleccionar fecha</span>}
+                                {dateFilter ? format(dateFilter, "PPP") : <span>Pick a date</span>}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -147,7 +146,7 @@ export default function OrderHistoryPage() {
                         </PopoverContent>
                     </Popover>
                     {dateFilter && (
-                         <Button variant="ghost" onClick={() => setDateFilter(undefined)}>Limpiar</Button>
+                         <Button variant="ghost" onClick={() => setDateFilter(undefined)}>Clear</Button>
                     )}
                 </div>
             </CardHeader>
@@ -156,18 +155,18 @@ export default function OrderHistoryPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>ID Pedido</TableHead>
-                                <TableHead>Fecha</TableHead>
-                                <TableHead>Mesa</TableHead>
-                                <TableHead>Mesero</TableHead>
-                                <TableHead>Cliente</TableHead>
-                                <TableHead>Estado</TableHead>
-                                <TableHead>Artículos</TableHead>
-                                <TableHead>Pago</TableHead>
-                                <TableHead>Descuento</TableHead>
-                                <TableHead>Factura</TableHead>
+                                <TableHead>Order ID</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Table</TableHead>
+                                <TableHead>Waiter</TableHead>
+                                <TableHead>Customer</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Items</TableHead>
+                                <TableHead>Payment</TableHead>
+                                <TableHead>Discount</TableHead>
+                                <TableHead>Invoice</TableHead>
                                 <TableHead className="text-right">Total</TableHead>
-                                <TableHead className="text-right">Acciones</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -220,7 +219,7 @@ export default function OrderHistoryPage() {
                                     <TableCell className="text-right">
                                         {order.status === 'delivered' && (
                                             <Button size="sm" onClick={() => handleMarkAsPaid(order)} className="bg-purple-600 hover:bg-purple-700">
-                                                Marcar como Pagado
+                                                Mark as Paid
                                             </Button>
                                         )}
                                          {order.status === 'paid' && (order.invoiceOption === 'print' || order.invoiceOption === 'email') && (
@@ -234,13 +233,13 @@ export default function OrderHistoryPage() {
                                                     {order.invoiceOption === 'print' && (
                                                         <DropdownMenuItem onSelect={() => handlePrintInvoice(order.id)}>
                                                             <Printer className="mr-2 h-4 w-4" />
-                                                            Imprimir Factura
+                                                            Print Invoice
                                                         </DropdownMenuItem>
                                                     )}
                                                     {order.invoiceOption === 'email' && (
                                                         <DropdownMenuItem onSelect={() => handleSendInvoice(order.id)}>
                                                             <Send className="mr-2 h-4 w-4" />
-                                                            Enviar Factura
+                                                            Send Invoice
                                                         </DropdownMenuItem>
                                                     )}
                                                 </DropdownMenuContent>
@@ -251,7 +250,7 @@ export default function OrderHistoryPage() {
                             )}) : (
                                  <TableRow>
                                     <TableCell colSpan={12} className="text-center h-24">
-                                        Aún no hay pedidos que coincidan con el filtro seleccionado.
+                                        No orders match the selected filters yet.
                                     </TableCell>
                                 </TableRow>
                             )}

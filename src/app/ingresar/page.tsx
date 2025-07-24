@@ -1,22 +1,21 @@
-
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usarAutenticacion } from '@/hooks/usar-autenticacion';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
-import { usarPreferencias } from '@/hooks/usar-preferencias';
+import { usePreferences } from '@/hooks/use-preferences';
 import Image from 'next/image';
 
-export default function PaginaIngresar() {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = usarAutenticacion();
-  const { logoUrl } = usarPreferencias();
+  const { login } = useAuth();
+  const { logoUrl } = usePreferences();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,13 +28,13 @@ export default function PaginaIngresar() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Logo del Restaurante" width={160} height={80} className="object-contain h-20 w-auto" />
+              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
             ) : (
               <Logo className="w-32 h-auto" />
             )}
           </div>
-          <CardTitle className="font-headline text-3xl">Bienvenido de Vuelta</CardTitle>
-          <CardDescription>Ingresa tus credenciales para acceder a tu cuenta.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Welcome Back</CardTitle>
+          <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
@@ -51,7 +50,7 @@ export default function PaginaIngresar() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -62,17 +61,17 @@ export default function PaginaIngresar() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Iniciar Sesión</Button>
+            <Button type="submit" className="w-full">Sign In</Button>
             <div className="text-center text-sm text-muted-foreground">
               <p>
-                ¿No tienes una cuenta?{' '}
+                Don't have an account?{' '}
                 <Link href="/registro" className="underline hover:text-primary">
-                  Regístrate
+                  Sign up
                 </Link>
               </p>
                <p>
                 <Link href="/recuperar-clave" className="underline hover:text-primary text-xs">
-                  ¿Olvidaste tu contraseña?
+                  Forgot your password?
                 </Link>
               </p>
             </div>

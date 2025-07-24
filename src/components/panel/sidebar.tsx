@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -22,13 +21,13 @@ const getInitials = (name: string) => {
 }
 
 const navItems: { href: string; label: string; icon: React.ElementType; roles: UserRole[] }[] = [
-    { href: '/dashboard/empleados', label: 'Empleados', icon: Users, roles: ['admin'] },
-    { href: '/dashboard/productos', label: 'Productos', icon: Package, roles: ['admin'] },
-    { href: '/dashboard/pedidos', label: 'Historial Pedidos', icon: History, roles: ['admin', 'cashier'] },
-    { href: '/dashboard/reportes', label: 'Reportes', icon: AreaChart, roles: ['admin'] },
-    { href: '/dashboard/inventario', label: 'Inventario', icon: Warehouse, roles: ['admin'] },
-    { href: '/dashboard/descuentos', label: 'Descuentos', icon: Percent, roles: ['admin'] },
-    { href: '/dashboard/preferencias', label: 'Preferencias', icon: Settings, roles: ['admin'] },
+    { href: '/dashboard/employees', label: 'Employees', icon: Users, roles: ['admin'] },
+    { href: '/dashboard/productos', label: 'Products', icon: Package, roles: ['admin'] },
+    { href: '/dashboard/pedidos', label: 'Order History', icon: History, roles: ['admin', 'cashier'] },
+    { href: '/dashboard/reportes', label: 'Reports', icon: AreaChart, roles: ['admin'] },
+    { href: '/dashboard/inventario', label: 'Inventory', icon: Warehouse, roles: ['admin'] },
+    { href: '/dashboard/descuentos', label: 'Discounts', icon: Percent, roles: ['admin'] },
+    { href: '/dashboard/preferencias', label: 'Preferences', icon: Settings, roles: ['admin'] },
 ];
 
 export function NavContent() {
@@ -82,5 +81,3 @@ export function Sidebar() {
         </aside>
     );
 }
-
-    

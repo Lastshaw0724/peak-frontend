@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -66,7 +65,7 @@ const defaultPreferences: Preferences = {
   publicMenu: false,
   restaurantName: 'GustoGo',
   websiteUrl: 'https://example.com',
-  address: '123 Calle Ficticia, Ciudad, País',
+  address: '123 Main Street, Anytown, USA',
   phone: '+1 (555) 123-4567',
   taxRate: 7,
   taxIncluded: true,
@@ -109,7 +108,7 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
     setPreferences(newPrefs);
     localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(newPrefs));
     applyTheme(newPrefs);
-    toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados correctamente." });
+    toast({ title: "Preferences Saved", description: "Your changes have been saved successfully." });
   };
   
   const value: PreferencesContextType = {
@@ -124,5 +123,3 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
     </PreferencesContext.Provider>
   );
 };
-
-    

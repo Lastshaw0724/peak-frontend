@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,7 +28,7 @@ export function OrderSummary() {
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
   const [invoiceOption, setInvoiceOption] = useState<InvoiceOption>('none');
   const [selectedDiscount, setSelectedDiscount] = useState<Discount | null>(null);
 
@@ -83,15 +81,15 @@ export function OrderSummary() {
 
   const handleSubmit = () => {
     if (!activeTable) {
-        toast({ title: 'Error', description: 'No hay ninguna mesa asignada a este pedido.', variant: 'destructive' });
+        toast({ title: 'Error', description: 'No table is assigned to this order.', variant: 'destructive' });
         return;
     }
     if (!customerName.trim()) {
-        toast({ title: 'Campo requerido', description: 'Por favor, introduce el nombre del cliente.', variant: 'destructive' });
+        toast({ title: 'Required Field', description: 'Please enter the customer name.', variant: 'destructive' });
         return;
     }
     if (!user) {
-        toast({ title: 'Error de Autenticación', description: 'No se pudo identificar al mesero.', variant: 'destructive' });
+        toast({ title: 'Authentication Error', description: 'Could not identify the waiter.', variant: 'destructive' });
         return;
     }
 
@@ -114,19 +112,19 @@ export function OrderSummary() {
   return (
     <div className="flex flex-col h-full bg-card border-l">
       <CardHeader>
-        <CardTitle className="font-headline text-3xl">Orden Actual</CardTitle>
+        <CardTitle className="font-headline text-3xl">Current Order</CardTitle>
         {activeTable && (
             <CardDescription className="font-semibold text-lg text-primary !mt-2">
-                Mesa: {activeTable.name}
+                Table: {activeTable.name}
             </CardDescription>
         )}
       </CardHeader>
-      <ScrollArea className="flex-grow">
+      <ScrollArea className="flex-grow no-scrollbar">
         <CardContent>
           {currentOrder.length === 0 ? (
             <div className="text-center text-muted-foreground py-16">
-              <p>No hay artículos en la orden.</p>
-              <p className="text-sm">Añade artículos desde la cartilla.</p>
+              <p>No items in the order.</p>
+              <p className="text-sm">Add items from the menu.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -170,13 +168,13 @@ export function OrderSummary() {
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Label htmlFor="discount-select" className="text-muted-foreground flex-shrink-0">Descuento:</Label>
+                    <Label htmlFor="discount-select" className="text-muted-foreground flex-shrink-0">Discount:</Label>
                     <Select onValueChange={handleDiscountChange} defaultValue="none">
                         <SelectTrigger id="discount-select" className="h-9">
-                            <SelectValue placeholder="Aplicar descuento" />
+                            <SelectValue placeholder="Apply discount" />
                         </SelectTrigger>
                         <SelectContent>
-                             <SelectItem value="none">Ninguno</SelectItem>
+                             <SelectItem value="none">None</SelectItem>
                             {availableDiscounts.map(d => (
                                 <SelectItem key={d.id} value={d.code}>{d.name} ({d.value})</SelectItem>
                             ))}
@@ -198,57 +196,57 @@ export function OrderSummary() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Button variant="destructive" onClick={handleClearOrder}>
-                <Trash2 className="mr-2 h-4 w-4" /> Cancelar
+                <Trash2 className="mr-2 h-4 w-4" /> Cancel
               </Button>
               <Button onClick={() => setIsCheckoutOpen(true)} className="bg-purple-600 text-accent-foreground hover:bg-purple-700">
-                <Send className="mr-2 h-4 w-4" /> Finalizar Pedido
+                <Send className="mr-2 h-4 w-4" /> Submit Order
               </Button>
             </div>
           </CardFooter>
           <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Finalizar Pedido</DialogTitle>
-                    <DialogDescription>Completa los detalles para enviar el pedido a la cocina.</DialogDescription>
+                    <DialogTitle>Finalize Order</DialogTitle>
+                    <DialogDescription>Fill in the details to send the order to the kitchen.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-6 py-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Nombre Cliente</Label>
-                        <Input id="name" placeholder="Nombre del cliente" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                        <Label htmlFor="name">Customer Name</Label>
+                        <Input id="name" placeholder="Customer's name" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Método de Pago</Label>
-                        <RadioGroup defaultValue="efectivo" value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'efectivo' | 'transferencia')} className="flex gap-4 pt-1">
+                        <Label>Payment Method</Label>
+                        <RadioGroup defaultValue="cash" value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'cash' | 'card')} className="flex gap-4 pt-1">
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="efectivo" id="r1" />
-                                <Label htmlFor="r1">Efectivo</Label>
+                                <RadioGroupItem value="cash" id="r1" />
+                                <Label htmlFor="r1">Cash</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="transferencia" id="r2" />
-                                <Label htmlFor="r2">Transferencia</Label>
+                                <RadioGroupItem value="card" id="r2" />
+                                <Label htmlFor="r2">Card</Label>
                             </div>
                         </RadioGroup>
                     </div>
                     <div className="space-y-2">
-                        <Label>Opciones de Factura</Label>
+                        <Label>Invoice Options</Label>
                         <RadioGroup defaultValue="none" value={invoiceOption} onValueChange={(v) => setInvoiceOption(v as InvoiceOption)} className="space-y-1 pt-1">
                              <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="none" id="f0" />
-                                <Label htmlFor="f0" className="font-normal flex items-center gap-2"><Ban className="h-4 w-4 text-muted-foreground"/>No Requerida</Label>
+                                <Label htmlFor="f0" className="font-normal flex items-center gap-2"><Ban className="h-4 w-4 text-muted-foreground"/>Not Required</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="print" id="f1" />
-                                <Label htmlFor="f1" className="font-normal flex items-center gap-2"><Printer className="h-4 w-4 text-muted-foreground"/>Imprimir en Caja</Label>
+                                <Label htmlFor="f1" className="font-normal flex items-center gap-2"><Printer className="h-4 w-4 text-muted-foreground"/>Print at Counter</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="email" id="f2" />
-                                <Label htmlFor="f2" className="font-normal flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>Enviar por Correo</Label>
+                                <Label htmlFor="f2" className="font-normal flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>Send by Email</Label>
                             </div>
                         </RadioGroup>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" onClick={handleSubmit}>Enviar Pedido</Button>
+                    <Button type="submit" onClick={handleSubmit}>Submit Order</Button>
                 </DialogFooter>
             </DialogContent>
           </Dialog>

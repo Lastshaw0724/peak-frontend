@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -18,7 +17,7 @@ interface OrderContextType {
   updateItemQuantity: (orderItemId: string, quantity: number) => void;
   submitOrder: (details: { 
     customerName: string; 
-    paymentMethod: 'efectivo' | 'transferencia'; 
+    paymentMethod: 'cash' | 'card'; 
     tableId: string; 
     tableName: string; 
     appliedDiscount: Discount | null;
@@ -49,7 +48,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   const loadOrders = useCallback(() => {
     try {
-        const storedCurrentOrder = localStorage.getItem(CURRENT_ORDER_KEY);
+        const storedCurrentOrder = sessionStorage.getItem(CURRENT_ORDER_KEY);
         if (storedCurrentOrder) setCurrentOrder(JSON.parse(storedCurrentOrder));
 
         const storedSubmittedOrders = localStorage.getItem(SUBMITTED_ORDERS_KEY);
@@ -61,11 +60,11 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
             setSubmittedOrders(parsedOrders);
         }
         
-        const storedDetails = localStorage.getItem(CURRENT_ORDER_DETAILS_KEY);
+        const storedDetails = sessionStorage.getItem(CURRENT_ORDER_DETAILS_KEY);
         if (storedDetails) setCurrentOrderDetails(JSON.parse(storedDetails));
 
     } catch (error) {
-        console.error("Failed to load orders from localStorage", error);
+        console.error("Failed to load orders from storage", error);
     }
   }, []);
 
@@ -78,7 +77,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
 
   const saveCurrentOrder = (order: OrderItem[]) => {
       setCurrentOrder(order);
-      localStorage.setItem(CURRENT_ORDER_KEY, JSON.stringify(order));
+      sessionStorage.setItem(CURRENT_ORDER_KEY, JSON.stringify(order));
   };
 
   const saveSubmittedOrders = (orders: Order[]) => {
@@ -89,9 +88,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const saveCurrentOrderDetails = (details: CurrentOrderDetails) => {
       setCurrentOrderDetails(details);
       if (details) {
-        localStorage.setItem(CURRENT_ORDER_DETAILS_KEY, JSON.stringify(details));
+        sessionStorage.setItem(CURRENT_ORDER_DETAILS_KEY, JSON.stringify(details));
       } else {
-        localStorage.removeItem(CURRENT_ORDER_DETAILS_KEY);
+        sessionStorage.removeItem(CURRENT_ORDER_DETAILS_KEY);
       }
   }
 
@@ -140,7 +139,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   
   const submitOrder = (details: { 
     customerName: string; 
-    paymentMethod: 'efectivo' | 'transferencia'; 
+    paymentMethod: 'cash' | 'card'; 
     tableId: string; 
     tableName: string;
     appliedDiscount: Discount | null;
@@ -204,8 +203,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     );
     saveSubmittedOrders(updatedOrders);
     toast({
-      title: "Pedido en preparación",
-      description: `El pedido #${orderId.slice(-6)} ha comenzado. Tiempo estimado: ${preparationTime} min.`,
+      title: "Order Preparing",
+      description: `Order #${orderId.slice(-6)} has started. Estimated time: ${preparationTime} min.`,
     });
   };
 
@@ -218,8 +217,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const updatedOrders = submittedOrders.filter(order => order.id !== orderId);
     saveSubmittedOrders(updatedOrders);
     toast({
-        title: "Pedido Cancelado",
-        description: `El pedido #${orderId.slice(-6)} ha sido eliminado.`,
+        title: "Order Canceled",
+        description: `Order #${orderId.slice(-6)} has been removed.`,
         variant: 'destructive'
     });
   };
@@ -232,15 +231,15 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         saveCurrentOrder(orderToEdit.items);
         saveCurrentOrderDetails({ customerName: orderToEdit.customerName });
         toast({
-            title: "Modificando Pedido",
-            description: `Se ha cargado el pedido #${orderId.slice(-6)}.`,
+            title: "Editing Order",
+            description: `Order #${orderId.slice(-6)} has been loaded.`,
         });
         return orderToEdit;
     }
     toast({
         variant: "destructive",
         title: "Error",
-        description: "No se pudo cargar el pedido para modificar.",
+        description: "Could not load order for editing.",
     });
     return undefined;
   };

@@ -1,6 +1,6 @@
 'use client';
-import { InterfazMesero } from '@/components/mesero/interfaz-mesero';
+import { WaiterInterface } from '@/components/mesero/waiter-interface';
 
-export default function PaginaPOSMesero() {
-    return <InterfazMesero />;
+export default function WaiterPOSPage() {
+    return <WaiterInterface />;
 }

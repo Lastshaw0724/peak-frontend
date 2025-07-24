@@ -2,29 +2,29 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CabeceraApp } from '@/components/cabecera';
+import { AppHeader } from '@/components/header';
 import { Button } from '@/components/ui/button';
-import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
+import { ProtectedRoute } from '@/components/autenticacion/protected-route';
 import { ArrowLeft } from 'lucide-react';
 
 
-function ContenidoPaginaCodigoQR() {
+function QRCodePageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <CabeceraApp title="Código QR del Menú" />
+      <AppHeader title="Menu QR Code" />
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-4xl">Escanea para Ver Nuestro Menú</CardTitle>
+            <CardTitle className="font-headline text-4xl">Scan to View Our Menu</CardTitle>
             <CardDescription className="text-lg">
-              Apunta la cámara de tu teléfono al código de abajo.
+              Point your phone's camera at the code below.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-6">
             <div className="p-4 bg-white rounded-lg border">
                 <Image
                     src="https://placehold.co/300x300.png"
-                    alt="Código QR del menú"
+                    alt="Menu QR Code"
                     width={300}
                     height={300}
                     data-ai-hint="qr code"
@@ -34,7 +34,7 @@ function ContenidoPaginaCodigoQR() {
             <Button asChild className="w-full max-w-xs mt-2">
                 <Link href="/mesero">
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Regresar a la Interfaz
+                    Back to Interface
                 </Link>
             </Button>
           </CardContent>
@@ -44,10 +44,10 @@ function ContenidoPaginaCodigoQR() {
   );
 }
 
-export default function PaginaCodigoQR() {
+export default function QRCodePage() {
     return (
-        <RutaProtegida allowedRoles={['waiter', 'admin']}>
-            <ContenidoPaginaCodigoQR />
-        </RutaProtegida>
+        <ProtectedRoute allowedRoles={['waiter', 'admin']}>
+            <QRCodePageContent />
+        </ProtectedRoute>
     );
 }

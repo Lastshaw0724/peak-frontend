@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
@@ -46,14 +45,14 @@ import { Input } from "@/components/ui/input";
 
 
 const employeeSchema = z.object({
-    name: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres." }),
-    email: z.string().email({ message: "Por favor, introduce un email válido." }),
-    password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres." }),
-    role: z.enum(['customer', 'waiter', 'cook', 'cashier'], { required_error: "Debes seleccionar un rol." }),
+    name: z.string().min(3, { message: "Name must be at least 3 characters." }),
+    email: z.string().email({ message: "Please enter a valid email." }),
+    password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+    role: z.enum(['customer', 'waiter', 'cook', 'cashier'], { required_error: "You must select a role." }),
 });
 
 const passwordSchema = z.object({
-    password: z.string().min(6, { message: "La nueva contraseña debe tener al menos 6 caracteres." }),
+    password: z.string().min(6, { message: "New password must be at least 6 characters." }),
 });
 
 export function UserRoleManager() {
@@ -103,7 +102,7 @@ export function UserRoleManager() {
         const newRole = userRoles[userId];
         if (newRole) {
             updateUserRole(userId, newRole);
-            toast({ title: 'Rol Actualizado', description: 'El rol del usuario ha sido actualizado.' });
+            toast({ title: 'Role Updated', description: 'The user role has been updated.' });
             setUserRoles(prev => {
                 const newRoles = { ...prev };
                 delete newRoles[userId];
@@ -119,10 +118,10 @@ export function UserRoleManager() {
 
     const roleDisplayNames: Record<string, string> = {
       admin: 'Admin',
-      waiter: 'Mesero',
-      cook: 'Cocinero',
-      customer: 'Cliente',
-      cashier: 'Cajero',
+      waiter: 'Waiter',
+      cook: 'Cook',
+      customer: 'Customer',
+      cashier: 'Cashier',
     };
 
     return (
@@ -131,33 +130,33 @@ export function UserRoleManager() {
                 <div className="flex items-center gap-4">
                      <Users className="h-8 w-8 text-primary" />
                      <div>
-                        <CardTitle className="text-2xl font-headline">Gestión de Usuarios</CardTitle>
-                        <CardDescription>Asigna roles y añade nuevos empleados al sistema.</CardDescription>
+                        <CardTitle className="text-2xl font-headline">User Management</CardTitle>
+                        <CardDescription>Assign roles and add new employees to the system.</CardDescription>
                      </div>
                 </div>
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="w-full sm:w-auto">
                             <PlusCircle className="mr-2" />
-                            Añadir Empleado
+                            Add Employee
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Añadir Nuevo Empleado</DialogTitle>
+                            <DialogTitle>Add New Employee</DialogTitle>
                             <DialogDescription>
-                                Completa los datos para registrar un nuevo miembro del equipo.
+                                Fill in the details to register a new team member.
                             </DialogDescription>
                         </DialogHeader>
                         <Form {...employeeForm}>
                             <form onSubmit={employeeForm.handleSubmit(onEmployeeSubmit)} className="space-y-4">
-                                <FormField control={employeeForm.control} name="name" render={({ field }) => (<FormItem><FormLabel>Nombre Completo</FormLabel><FormControl><Input placeholder="Ej: Juan Pérez" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={employeeForm.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="ejemplo@correo.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={employeeForm.control} name="password" render={({ field }) => (<FormItem><FormLabel>Contraseña Temporal</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={employeeForm.control} name="role" render={({ field }) => (<FormItem><FormLabel>Rol</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona un rol" /></SelectTrigger></FormControl><SelectContent><SelectItem value="waiter">Mesero</SelectItem><SelectItem value="cook">Cocinero</SelectItem><SelectItem value="cashier">Cajero</SelectItem><SelectItem value="customer">Cliente</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                                <FormField control={employeeForm.control} name="name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="E.g., John Doe" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={employeeForm.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="example@email.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={employeeForm.control} name="password" render={({ field }) => (<FormItem><FormLabel>Temporary Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={employeeForm.control} name="role" render={({ field }) => (<FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl><SelectContent><SelectItem value="waiter">Waiter</SelectItem><SelectItem value="cook">Cook</SelectItem><SelectItem value="cashier">Cashier</SelectItem><SelectItem value="customer">Customer</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                                 <DialogFooter>
-                                    <DialogClose asChild><Button type="button" variant="secondary">Cancelar</Button></DialogClose>
-                                    <Button type="submit">Crear Empleado</Button>
+                                    <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
+                                    <Button type="submit">Create Employee</Button>
                                 </DialogFooter>
                             </form>
                         </Form>
@@ -169,11 +168,11 @@ export function UserRoleManager() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Nombre</TableHead>
+                                <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
-                                <TableHead>Rol</TableHead>
-                                <TableHead className="min-w-[200px]">Asignar Rol</TableHead>
-                                <TableHead className="text-right">Acciones</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead className="min-w-[200px]">Assign Role</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -186,41 +185,41 @@ export function UserRoleManager() {
                                         <Select value={userRoles[user.id] || user.role} onValueChange={(value: UserRole) => handleRoleChange(user.id, value)}>
                                             <SelectTrigger><SelectValue/></SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="customer">Cliente</SelectItem>
-                                                <SelectItem value="waiter">Mesero</SelectItem>
-                                                <SelectItem value="cook">Cocinero</SelectItem>
-                                                <SelectItem value="cashier">Cajero</SelectItem>
+                                                <SelectItem value="customer">Customer</SelectItem>
+                                                <SelectItem value="waiter">Waiter</SelectItem>
+                                                <SelectItem value="cook">Cook</SelectItem>
+                                                <SelectItem value="cashier">Cashier</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <Button size="sm" onClick={() => handleSaveRole(user.id)} disabled={!userRoles[user.id] || userRoles[user.id] === user.role}>
-                                                Guardar
+                                                Save
                                             </Button>
                                              <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => openPasswordDialog(user)}>
                                                 <KeyRound className="h-4 w-4" />
-                                                <span className="sr-only">Cambiar contraseña</span>
+                                                <span className="sr-only">Change password</span>
                                             </Button>
                                              <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button variant="destructive" size="icon" className="h-9 w-9">
                                                         <Trash2 className="h-4 w-4" />
-                                                        <span className="sr-only">Eliminar usuario</span>
+                                                        <span className="sr-only">Delete user</span>
                                                     </Button>
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
-                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente al usuario 
-                                                            <span className="font-semibold"> {user.name}</span> y sus datos del sistema.
+                                                            This action cannot be undone. This will permanently delete the user 
+                                                            <span className="font-semibold"> {user.name}</span> and their data from the system.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                         <AlertDialogAction onClick={() => deleteUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                            Sí, eliminar
+                                                            Yes, delete
                                                         </AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
@@ -237,9 +236,9 @@ export function UserRoleManager() {
              <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Cambiar Contraseña</DialogTitle>
+                        <DialogTitle>Change Password</DialogTitle>
                         <DialogDescription>
-                           Estás cambiando la contraseña para <span className="font-semibold">{selectedUser?.name}</span>. El usuario deberá usar esta nueva contraseña para iniciar sesión.
+                           You are changing the password for <span className="font-semibold">{selectedUser?.name}</span>. The user will need to use this new password to log in.
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...passwordForm}>
@@ -249,17 +248,17 @@ export function UserRoleManager() {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nueva Contraseña</FormLabel>
+                                        <FormLabel>New Password</FormLabel>
                                         <FormControl>
-                                            <Input type="password" placeholder="Introduce la nueva contraseña" {...field} />
+                                            <Input type="password" placeholder="Enter the new password" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <DialogFooter>
-                                <DialogClose asChild><Button type="button" variant="secondary" onClick={() => setSelectedUser(null)}>Cancelar</Button></DialogClose>
-                                <Button type="submit">Guardar Contraseña</Button>
+                                <DialogClose asChild><Button type="button" variant="secondary" onClick={() => setSelectedUser(null)}>Cancel</Button></DialogClose>
+                                <Button type="submit">Save Password</Button>
                             </DialogFooter>
                         </form>
                     </Form>

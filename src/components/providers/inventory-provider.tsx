@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -56,8 +55,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     };
     saveInventory([...inventory, newItem]);
     toast({
-        title: "Insumo Añadido",
-        description: `El insumo "${newItem.name}" ha sido añadido al inventario.`,
+        title: "Item Added",
+        description: `Item "${newItem.name}" has been added to inventory.`,
     });
   };
 
@@ -67,8 +66,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     );
     saveInventory(updatedInventory);
      toast({
-        title: "Insumo Actualizado",
-        description: `El insumo "${data.name}" ha sido actualizado.`,
+        title: "Item Updated",
+        description: `Item "${data.name}" has been updated.`,
     });
   };
 
@@ -77,8 +76,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     const updatedInventory = inventory.filter(item => item.id !== id);
     saveInventory(updatedInventory);
      toast({
-        title: "Insumo Eliminado",
-        description: `El insumo "${itemToDelete?.name}" ha sido eliminado.`,
+        title: "Item Deleted",
+        description: `Item "${itemToDelete?.name}" has been deleted.`,
         variant: "destructive",
     });
   };

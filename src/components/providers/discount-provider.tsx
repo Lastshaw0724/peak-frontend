@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -58,8 +57,8 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
     };
     saveDiscounts([...discounts, newDiscount]);
     toast({
-        title: "Descuento Creado",
-        description: `El descuento "${newDiscount.name}" ha sido añadido.`
+        title: "Discount Created",
+        description: `The discount "${newDiscount.name}" has been added.`
     });
   };
 
@@ -72,8 +71,8 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
     const updatedDiscounts = discounts.filter(d => d.id !== id);
     saveDiscounts(updatedDiscounts);
     toast({
-        title: "Descuento Eliminado",
-        description: "El descuento ha sido eliminado correctamente.",
+        title: "Discount Deleted",
+        description: "The discount has been deleted successfully.",
         variant: "destructive",
     });
   };

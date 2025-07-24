@@ -1,10 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usarAutenticacion } from '@/hooks/usar-autenticacion';
-import { usarEncuesta } from '@/hooks/usar-encuesta';
-import { CabeceraApp } from '@/components/cabecera';
-import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
+import { useAuth } from '@/hooks/use-auth';
+import { useSurvey } from '@/hooks/use-survey';
+import { AppHeader } from '@/components/header';
+import { ProtectedRoute } from '@/components/autenticacion/protected-route';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -13,10 +13,11 @@ import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { Star, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { SurveyProvider } from '@/components/providers/survey-provider';
 
-function ContenidoPaginaEncuesta() {
-    const { user, users } = usarAutenticacion();
-    const { submitSurvey } = usarEncuesta();
+function SurveyPageContent() {
+    const { user, users } = useAuth();
+    const { submitSurvey } = useSurvey();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -31,8 +32,8 @@ function ContenidoPaginaEncuesta() {
         if (!waiterId || !user) {
             toast({
                 variant: 'destructive',
-                title: 'Formulario Incompleto',
-                description: 'Por favor, selecciona el mesero que te atendió.',
+                title: 'Incomplete Form',
+                description: 'Please select the waiter who served you.',
             });
             return;
         }
@@ -53,25 +54,25 @@ function ContenidoPaginaEncuesta() {
 
     return (
         <div className="bg-background min-h-screen">
-            <CabeceraApp title="Encuesta de Satisfacción" />
+            <AppHeader title="Satisfaction Survey" />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-center">
                 <Card className="w-full max-w-2xl shadow-xl">
                     <form onSubmit={handleSubmit}>
                         <CardHeader>
                             <CardTitle className="font-headline text-3xl flex items-center gap-3">
                                 <Star className="text-primary" />
-                                Califica tu Experiencia
+                                Rate Your Experience
                             </CardTitle>
                             <CardDescription>
-                                Tus comentarios nos ayudan a mejorar nuestro servicio. Por favor, dinos cómo lo hicimos.
+                                Your feedback helps us improve our service. Please let us know how we did.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="waiter">¿Qué mesero te atendió?</Label>
+                                <Label htmlFor="waiter">Which waiter served you?</Label>
                                 <Select onValueChange={setWaiterId} value={waiterId} required>
                                     <SelectTrigger id="waiter">
-                                        <SelectValue placeholder="Selecciona un mesero" />
+                                        <SelectValue placeholder="Select a waiter" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {waiters.map(waiter => (
@@ -83,7 +84,7 @@ function ContenidoPaginaEncuesta() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="rating">Calificación: {rating} / 5</Label>
+                                <Label htmlFor="rating">Rating: {rating} / 5</Label>
                                 <div className="flex items-center gap-4 pt-2">
                                     <Star className="text-muted-foreground" />
                                     <Slider
@@ -98,10 +99,10 @@ function ContenidoPaginaEncuesta() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="comment">Comentarios (Opcional)</Label>
+                                <Label htmlFor="comment">Comments (Optional)</Label>
                                 <Textarea
                                     id="comment"
-                                    placeholder="Cuéntanos más sobre tu experiencia..."
+                                    placeholder="Tell us more about your experience..."
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
@@ -110,7 +111,7 @@ function ContenidoPaginaEncuesta() {
                         <CardFooter>
                             <Button type="submit" className="w-full" disabled={!waiterId}>
                                 <Send className="mr-2" />
-                                Enviar Comentarios
+                                Send Feedback
                             </Button>
                         </CardFooter>
                     </form>
@@ -120,10 +121,12 @@ function ContenidoPaginaEncuesta() {
     );
 }
 
-export default function PaginaEncuesta() {
+export default function SurveyPage() {
     return (
-        <RutaProtegida allowedRoles={['customer', 'admin']}>
-            <ContenidoPaginaEncuesta />
-        </RutaProtegida>
+        <ProtectedRoute allowedRoles={['customer', 'admin']}>
+            <SurveyProvider>
+              <SurveyPageContent />
+            </SurveyProvider>
+        </ProtectedRoute>
     );
 }

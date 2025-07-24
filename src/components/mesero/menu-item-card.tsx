@@ -1,4 +1,3 @@
-
 'use client';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -64,7 +63,7 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
               <Button 
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-bold" 
                   onClick={hasExtras ? () => setIsDialogOpen(true) : handleSimpleAdd}>
-                  Añadir
+                  Add
               </Button>
           </CardFooter>
       </Card>
@@ -72,12 +71,12 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="bg-card border-border text-foreground">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-headline">Añadir Extras a {item.name}</DialogTitle>
+              <DialogTitle className="text-2xl font-headline">Add Extras to {item.name}</DialogTitle>
               <DialogDescription>
-                Selecciona los extras que deseas añadir al platillo.
+                Select the extras you want to add to the dish.
               </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="max-h-[40vh] p-1 -mx-2">
+            <ScrollArea className="max-h-[40vh] p-1 -mx-2 no-scrollbar">
               <div className="space-y-3 p-4">
                 {item.extras?.map(extra => (
                   <div key={extra.id} className="flex items-center space-x-3 rounded-md border border-input p-3 hover:bg-muted/50 transition-colors">
@@ -97,9 +96,9 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
             </ScrollArea>
             <DialogFooter className="border-t pt-4">
               <DialogClose asChild>
-                <Button variant="ghost">Cancelar</Button>
+                <Button variant="ghost">Cancel</Button>
               </DialogClose>
-              <Button onClick={handleConfirm} className="bg-purple-600 hover:bg-purple-700">Confirmar</Button>
+              <Button onClick={handleConfirm} className="bg-purple-600 hover:bg-purple-700">Confirm</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
