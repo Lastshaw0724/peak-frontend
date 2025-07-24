@@ -81,15 +81,15 @@ export function OrderSummary() {
 
   const handleSubmit = () => {
     if (!activeTable) {
-        toast({ title: 'Error', description: 'No table is assigned to this order.', variant: 'destructive' });
+        toast({ title: 'Error', description: 'No hay ninguna mesa asignada a este pedido.', variant: 'destructive' });
         return;
     }
     if (!customerName.trim()) {
-        toast({ title: 'Required Field', description: 'Please enter the customer name.', variant: 'destructive' });
+        toast({ title: 'Campo Requerido', description: 'Por favor, introduce el nombre del cliente.', variant: 'destructive' });
         return;
     }
     if (!user) {
-        toast({ title: 'Authentication Error', description: 'Could not identify the waiter.', variant: 'destructive' });
+        toast({ title: 'Error de Autenticación', description: 'No se pudo identificar al mesero.', variant: 'destructive' });
         return;
     }
 
@@ -112,10 +112,10 @@ export function OrderSummary() {
   return (
     <div className="flex flex-col h-full bg-card border-l">
       <CardHeader>
-        <CardTitle className="font-headline text-3xl">Current Order</CardTitle>
+        <CardTitle className="font-headline text-3xl">Orden Actual</CardTitle>
         {activeTable && (
             <CardDescription className="font-semibold text-lg text-primary !mt-2">
-                Table: {activeTable.name}
+                Mesa: {activeTable.name}
             </CardDescription>
         )}
       </CardHeader>
@@ -123,8 +123,8 @@ export function OrderSummary() {
         <CardContent>
           {currentOrder.length === 0 ? (
             <div className="text-center text-muted-foreground py-16">
-              <p>No items in the order.</p>
-              <p className="text-sm">Add items from the menu.</p>
+              <p>No hay artículos en la orden.</p>
+              <p className="text-sm">Añade artículos desde la cartilla.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -168,13 +168,13 @@ export function OrderSummary() {
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Label htmlFor="discount-select" className="text-muted-foreground flex-shrink-0">Discount:</Label>
+                    <Label htmlFor="discount-select" className="text-muted-foreground flex-shrink-0">Descuento:</Label>
                     <Select onValueChange={handleDiscountChange} defaultValue="none">
                         <SelectTrigger id="discount-select" className="h-9">
-                            <SelectValue placeholder="Apply discount" />
+                            <SelectValue placeholder="Aplicar descuento" />
                         </SelectTrigger>
                         <SelectContent>
-                             <SelectItem value="none">None</SelectItem>
+                             <SelectItem value="none">Ninguno</SelectItem>
                             {availableDiscounts.map(d => (
                                 <SelectItem key={d.id} value={d.code}>{d.name} ({d.value})</SelectItem>
                             ))}
@@ -196,57 +196,57 @@ export function OrderSummary() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Button variant="destructive" onClick={handleClearOrder}>
-                <Trash2 className="mr-2 h-4 w-4" /> Cancel
+                <Trash2 className="mr-2 h-4 w-4" /> Cancelar
               </Button>
               <Button onClick={() => setIsCheckoutOpen(true)} className="bg-purple-600 text-accent-foreground hover:bg-purple-700">
-                <Send className="mr-2 h-4 w-4" /> Submit Order
+                <Send className="mr-2 h-4 w-4" /> Enviar Pedido
               </Button>
             </div>
           </CardFooter>
           <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Finalize Order</DialogTitle>
-                    <DialogDescription>Fill in the details to send the order to the kitchen.</DialogDescription>
+                    <DialogTitle>Finalizar Pedido</DialogTitle>
+                    <DialogDescription>Completa los detalles para enviar el pedido a la cocina.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-6 py-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Customer Name</Label>
-                        <Input id="name" placeholder="Customer's name" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                        <Label htmlFor="name">Nombre del Cliente</Label>
+                        <Input id="name" placeholder="Nombre del cliente" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Payment Method</Label>
+                        <Label>Método de Pago</Label>
                         <RadioGroup defaultValue="cash" value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as 'cash' | 'card')} className="flex gap-4 pt-1">
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="cash" id="r1" />
-                                <Label htmlFor="r1">Cash</Label>
+                                <Label htmlFor="r1">Efectivo</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="card" id="r2" />
-                                <Label htmlFor="r2">Card</Label>
+                                <Label htmlFor="r2">Tarjeta</Label>
                             </div>
                         </RadioGroup>
                     </div>
                     <div className="space-y-2">
-                        <Label>Invoice Options</Label>
+                        <Label>Opciones de Factura</Label>
                         <RadioGroup defaultValue="none" value={invoiceOption} onValueChange={(v) => setInvoiceOption(v as InvoiceOption)} className="space-y-1 pt-1">
                              <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="none" id="f0" />
-                                <Label htmlFor="f0" className="font-normal flex items-center gap-2"><Ban className="h-4 w-4 text-muted-foreground"/>Not Required</Label>
+                                <Label htmlFor="f0" className="font-normal flex items-center gap-2"><Ban className="h-4 w-4 text-muted-foreground"/>No Requerida</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="print" id="f1" />
-                                <Label htmlFor="f1" className="font-normal flex items-center gap-2"><Printer className="h-4 w-4 text-muted-foreground"/>Print at Counter</Label>
+                                <Label htmlFor="f1" className="font-normal flex items-center gap-2"><Printer className="h-4 w-4 text-muted-foreground"/>Imprimir en Caja</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="email" id="f2" />
-                                <Label htmlFor="f2" className="font-normal flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>Send by Email</Label>
+                                <Label htmlFor="f2" className="font-normal flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>Enviar por Correo</Label>
                             </div>
                         </RadioGroup>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" onClick={handleSubmit}>Submit Order</Button>
+                    <Button type="submit" onClick={handleSubmit}>Enviar Pedido</Button>
                 </DialogFooter>
             </DialogContent>
           </Dialog>

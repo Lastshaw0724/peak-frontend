@@ -28,29 +28,29 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
+              <Image src={logoUrl} alt="Logo del Restaurante" width={160} height={80} className="object-contain h-20 w-auto" />
             ) : (
               <Logo className="w-32 h-auto" />
             )}
           </div>
-          <CardTitle className="font-headline text-3xl">Welcome Back</CardTitle>
-          <CardDescription>Enter your credentials to access your account.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Bienvenido de Vuelta</CardTitle>
+          <CardDescription>Ingresa tus credenciales para acceder a tu cuenta.</CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="m@ejemplo.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
                 type="password"
@@ -61,17 +61,17 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Sign In</Button>
+            <Button type="submit" className="w-full">Iniciar Sesión</Button>
             <div className="text-center text-sm text-muted-foreground">
               <p>
-                Don't have an account?{' '}
+                ¿No tienes una cuenta?{' '}
                 <Link href="/registro" className="underline hover:text-primary">
-                  Sign up
+                  Regístrate
                 </Link>
               </p>
                <p>
                 <Link href="/recuperar-clave" className="underline hover:text-primary text-xs">
-                  Forgot your password?
+                  ¿Olvidaste tu contraseña?
                 </Link>
               </p>
             </div>

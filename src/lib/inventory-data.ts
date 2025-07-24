@@ -1,10 +1,10 @@
 import type { InventoryItem } from './types';
 
 export const initialInventoryData: InventoryItem[] = [
-  { id: 'inv-1', name: 'Fresh Tomatoes', category: 'Vegetables', stock: 75, maxStock: 100, supplier: 'Local Provider' },
-  { id: 'inv-2', name: 'Mozzarella Cheese', category: 'Dairy', stock: 40, maxStock: 50, supplier: 'Italian Importer' },
-  { id: 'inv-3', name: 'Flour Type 00', category: 'Dry Goods', stock: 18, maxStock: 120, supplier: 'Sun Mills' },
-  { id: 'inv-4', name: 'Chicken Breast', category: 'Meats', stock: 25, maxStock: 60, supplier: 'Poultry Farm' },
-  { id: 'inv-5', name: 'Extra Virgin Olive Oil', category: 'Oils', stock: 15, maxStock: 40, supplier: 'Italian Importer' },
-  { id: 'inv-6', name: 'Red Wine (Bottle)', category: 'Beverages', stock: 85, maxStock: 100, supplier: 'Mendoza Vineyards' },
+  { id: 'inv-1', name: 'Tomates Frescos', category: 'Vegetales', stock: 75, maxStock: 100, supplier: 'Proveedor Local' },
+  { id: 'inv-2', name: 'Queso Mozzarella', category: 'Lácteos', stock: 40, maxStock: 50, supplier: 'Importadora Italiana' },
+  { id: 'inv-3', name: 'Harina Tipo 00', category: 'Secos', stock: 18, maxStock: 120, supplier: 'Molinos del Sol' },
+  { id: 'inv-4', name: 'Pechuga de Pollo', category: 'Carnes', stock: 25, maxStock: 60, supplier: 'Granja Avícola' },
+  { id: 'inv-5', name: 'Aceite de Oliva Extra Virgen', category: 'Aceites', stock: 15, maxStock: 40, supplier: 'Importadora Italiana' },
+  { id: 'inv-6', name: 'Vino Tinto (Botella)', category: 'Bebidas', stock: 85, maxStock: 100, supplier: 'Viñedos Mendoza' },
 ];

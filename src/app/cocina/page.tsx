@@ -7,7 +7,7 @@ import { OrderProvider } from '@/components/providers/order-provider';
 function KitchenPageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <AppHeader title="Kitchen Display" />
+      <AppHeader title="Pantalla de Cocina" />
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <KitchenDisplay />
       </main>

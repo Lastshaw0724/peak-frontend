@@ -32,10 +32,10 @@ export function WaiterOrderCard({ order }: { order: Order }) {
   const { toast } = useToast();
 
   const statusConfig: Record<string, { label: string, className: string }> = {
-    new: { label: 'New', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
-    preparing: { label: 'Preparing', className: 'bg-primary/20 text-primary/80 border-primary/30' },
-    ready: { label: 'Ready', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
-    delivered: { label: 'Delivered', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+    new: { label: 'Nuevo', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
+    preparing: { label: 'Preparando', className: 'bg-primary/20 text-primary/80 border-primary/30' },
+    ready: { label: 'Listo', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    delivered: { label: 'Entregado', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
   };
 
   const cardBorderColor: Record<string, string> = {
@@ -52,8 +52,8 @@ export function WaiterOrderCard({ order }: { order: Order }) {
     if (user && user.id !== order.waiterId) {
       toast({
         variant: 'destructive',
-        title: 'Action not allowed',
-        description: 'You can only modify your own orders.',
+        title: 'Acción no permitida',
+        description: 'Solo puedes modificar tus propios pedidos.',
       });
       return;
     }
@@ -65,7 +65,7 @@ export function WaiterOrderCard({ order }: { order: Order }) {
             setActiveTable(tableForOrder);
             router.push('/mesero/pos');
         } else {
-            toast({ title: 'Error', description: 'Could not find the table associated with the order.', variant: 'destructive' });
+            toast({ title: 'Error', description: 'No se pudo encontrar la mesa asociada al pedido.', variant: 'destructive' });
         }
     }
   };
@@ -77,9 +77,9 @@ export function WaiterOrderCard({ order }: { order: Order }) {
       <CardHeader className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="font-headline text-lg">Order #{order.id.slice(-6)}</CardTitle>
+            <CardTitle className="font-headline text-lg">Pedido #{order.id.slice(-6)}</CardTitle>
             <CardDescription className="text-sm font-semibold pt-1">{order.tableName} - {order.customerName}</CardDescription>
-            <CardDescription className="text-xs pt-1">{new Date(order.timestamp).toLocaleTimeString()} by {order.waiterName}</CardDescription>
+            <CardDescription className="text-xs pt-1">{new Date(order.timestamp).toLocaleTimeString()} por {order.waiterName}</CardDescription>
           </div>
           <div className="flex flex-col items-end gap-1">
             {currentStatus &&
@@ -118,26 +118,26 @@ export function WaiterOrderCard({ order }: { order: Order }) {
                 <>
                     <Button variant="outline" className="w-full border-zinc-600 hover:bg-zinc-700" onClick={handleModify} disabled={!isMyOrder}>
                         <Pencil className="mr-2 h-4 w-4" />
-                        Modify
+                        Modificar
                     </Button>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="destructive" className="w-full" disabled={!isMyOrder}>
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Cancel
+                                Cancelar
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure you want to cancel the order?</AlertDialogTitle>
+                                <AlertDialogTitle>¿Seguro que quieres cancelar el pedido?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This action cannot be undone. Order #{order.id.slice(-6)} for table {order.tableName} will be permanently deleted.
+                                    Esta acción no se puede deshacer. El pedido #{order.id.slice(-6)} para la mesa {order.tableName} será eliminado permanentemente.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>No, keep order</AlertDialogCancel>
+                                <AlertDialogCancel>No, mantener pedido</AlertDialogCancel>
                                 <AlertDialogAction onClick={() => deleteOrder(order.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                    Yes, cancel
+                                    Sí, cancelar
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
@@ -147,7 +147,7 @@ export function WaiterOrderCard({ order }: { order: Order }) {
             {order.status === 'ready' && (
                 <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => updateOrderStatus(order.id, 'delivered')}>
                     <CheckCheck className="mr-2 h-4 w-4" />
-                    Mark as Delivered
+                    Marcar como Entregado
                 </Button>
             )}
         </CardFooter>

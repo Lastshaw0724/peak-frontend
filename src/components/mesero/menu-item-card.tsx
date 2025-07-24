@@ -63,7 +63,7 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
               <Button 
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-bold" 
                   onClick={hasExtras ? () => setIsDialogOpen(true) : handleSimpleAdd}>
-                  Add
+                  Añadir
               </Button>
           </CardFooter>
       </Card>
@@ -71,9 +71,9 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="bg-card border-border text-foreground">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-headline">Add Extras to {item.name}</DialogTitle>
+              <DialogTitle className="text-2xl font-headline">Añadir Extras a {item.name}</DialogTitle>
               <DialogDescription>
-                Select the extras you want to add to the dish.
+                Selecciona los extras que deseas añadir al platillo.
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[40vh] p-1 -mx-2 no-scrollbar">
@@ -96,9 +96,9 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
             </ScrollArea>
             <DialogFooter className="border-t pt-4">
               <DialogClose asChild>
-                <Button variant="ghost">Cancel</Button>
+                <Button variant="ghost">Cancelar</Button>
               </DialogClose>
-              <Button onClick={handleConfirm} className="bg-purple-600 hover:bg-purple-700">Confirm</Button>
+              <Button onClick={handleConfirm} className="bg-purple-600 hover:bg-purple-700">Confirmar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

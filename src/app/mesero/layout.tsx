@@ -29,12 +29,12 @@ function WaiterLayoutContent({ children }: { children: React.ReactNode }) {
         relevantSurveys.forEach(survey => {
         if (!notifiedSurveyIdsRef.current.has(survey.id)) {
             const title = user.role === 'admin'
-                ? `Feedback for ${survey.waiterName}`
-                : `New Feedback Received!`;
+                ? `Feedback para ${survey.waiterName}`
+                : `¡Nuevo Feedback Recibido!`;
             
             toast({
             title: title,
-            description: `${survey.customerName} gave a ${survey.rating}/5 rating. "${survey.comment || 'No comment.'}"`,
+            description: `${survey.customerName} dio una calificación de ${survey.rating}/5. "${survey.comment || 'Sin comentario.'}"`,
             duration: 10000,
             });
             

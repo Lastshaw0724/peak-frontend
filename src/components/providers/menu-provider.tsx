@@ -64,8 +64,8 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     saveMenu([...menu, newProduct]);
 
     toast({
-      title: "Product Added!",
-      description: `Product "${newProduct.name}" has been added to the menu.`,
+      title: "¡Producto Añadido!",
+      description: `El producto "${newProduct.name}" ha sido añadido al menú.`,
     });
   };
 
@@ -89,8 +89,8 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     saveMenu(updatedMenu);
     
     toast({
-        title: "Product Updated",
-        description: `Product "${productData.name}" has been updated.`,
+        title: "Producto Actualizado",
+        description: `El producto "${productData.name}" ha sido actualizado.`,
     });
   };
 
@@ -100,8 +100,8 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     saveMenu(updatedMenu);
     
     toast({
-        title: "Product Deleted",
-        description: `Product "${productToDelete?.name}" has been deleted.`,
+        title: "Producto Eliminado",
+        description: `El producto "${productToDelete?.name}" ha sido eliminado.`,
         variant: "destructive",
     });
   };

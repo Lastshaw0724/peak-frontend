@@ -15,7 +15,7 @@ export function DashboardHeader() {
                     <SheetTrigger asChild>
                         <Button variant="outline" size="icon">
                             <Menu className="h-6 w-6" />
-                            <span className="sr-only">Toggle navigation menu</span>
+                            <span className="sr-only">Menú de navegación</span>
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="p-0 w-72">
@@ -25,7 +25,7 @@ export function DashboardHeader() {
             </div>
             <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-muted-foreground hidden sm:inline-block">{user?.name}</span>
-                 <Button variant="ghost" size="icon" onClick={logout} aria-label="Logout">
+                 <Button variant="ghost" size="icon" onClick={logout} aria-label="Cerrar sesión">
                     <LogOut className="h-5 w-5" />
                 </Button>
             </div>

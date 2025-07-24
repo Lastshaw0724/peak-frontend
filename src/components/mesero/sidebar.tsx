@@ -20,9 +20,9 @@ const getInitials = (name: string) => {
 
 const navItems = [
     { href: '/qr', label: 'QR', icon: QrCode },
-    { href: '/mesero/pos', label: 'Menu', icon: BookOpen },
-    { href: '/mesero/asignar-mesa', label: 'Assign Table', icon: MapPin },
-    { href: '/mesero/pedidos-activos', label: 'Active Orders', icon: History },
+    { href: '/mesero/pos', label: 'Cartilla', icon: BookOpen },
+    { href: '/mesero/asignar-mesa', label: 'Asignar Mesa', icon: MapPin },
+    { href: '/mesero/pedidos-activos', label: 'Pedidos en Curso', icon: History },
 ];
 
 export function WaiterNavContent() {
@@ -61,7 +61,7 @@ export function WaiterNavContent() {
                         <Link href={item.href}>
                             <item.icon className="mr-4 h-5 w-5" />
                             {item.label}
-                            {item.label === 'Active Orders' && hasReadyOrders && (
+                            {item.label === 'Pedidos en Curso' && hasReadyOrders && (
                                 <span className="ml-auto h-3 w-3 rounded-full bg-green-400 animate-pulse"></span>
                             )}
                         </Link>
@@ -71,7 +71,7 @@ export function WaiterNavContent() {
             <div className="p-4 mt-auto border-t border-zinc-700 md:hidden">
                  <Button onClick={logout} variant="ghost" className="w-full justify-start gap-2 hover:bg-zinc-800 text-base h-12 text-zinc-300">
                     <LogOut />
-                    Logout
+                    Cerrar Sesión
                  </Button>
             </div>
         </div>

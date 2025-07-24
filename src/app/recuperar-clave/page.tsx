@@ -20,8 +20,8 @@ export default function ForgotPasswordPage() {
         e.preventDefault();
         // In a real app, this would trigger a password reset email flow.
         toast({
-            title: "Recovery Email Sent",
-            description: "If an account exists with that email, you will receive password recovery instructions."
+            title: "Correo de Recuperación Enviado",
+            description: "Si existe una cuenta con ese correo, recibirás instrucciones para recuperar tu contraseña."
         });
         router.push('/ingresar');
     };
@@ -32,32 +32,32 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
+              <Image src={logoUrl} alt="Logo del Restaurante" width={160} height={80} className="object-contain h-20 w-auto" />
             ) : (
               <Logo className="w-32 h-auto" />
             )}
           </div>
-          <CardTitle className="font-headline text-3xl">Forgot Your Password?</CardTitle>
-          <CardDescription>Enter your email to receive a recovery link.</CardDescription>
+          <CardTitle className="font-headline text-3xl">¿Olvidaste tu Contraseña?</CardTitle>
+          <CardDescription>Ingresa tu correo para recibir un enlace de recuperación.</CardDescription>
         </CardHeader>
         <form onSubmit={handleReset}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="m@ejemplo.com"
                 required
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Send Link</Button>
+            <Button type="submit" className="w-full">Enviar Enlace</Button>
             <div className="text-center text-sm text-muted-foreground">
-              Remembered your password?{' '}
+              ¿Recordaste tu contraseña?{' '}
               <Link href="/ingresar" className="underline hover:text-primary">
-                Sign in
+                Inicia sesión
               </Link>
             </div>
           </CardFooter>

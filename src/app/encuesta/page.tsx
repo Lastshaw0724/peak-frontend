@@ -32,8 +32,8 @@ function SurveyPageContent() {
         if (!waiterId || !user) {
             toast({
                 variant: 'destructive',
-                title: 'Incomplete Form',
-                description: 'Please select the waiter who served you.',
+                title: 'Formulario Incompleto',
+                description: 'Por favor, selecciona al mesero que te atendió.',
             });
             return;
         }
@@ -54,25 +54,25 @@ function SurveyPageContent() {
 
     return (
         <div className="bg-background min-h-screen">
-            <AppHeader title="Satisfaction Survey" />
+            <AppHeader title="Encuesta de Satisfacción" />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-center">
                 <Card className="w-full max-w-2xl shadow-xl">
                     <form onSubmit={handleSubmit}>
                         <CardHeader>
                             <CardTitle className="font-headline text-3xl flex items-center gap-3">
                                 <Star className="text-primary" />
-                                Rate Your Experience
+                                Califica tu Experiencia
                             </CardTitle>
                             <CardDescription>
-                                Your feedback helps us improve our service. Please let us know how we did.
+                                Tus comentarios nos ayudan a mejorar nuestro servicio. Por favor, cuéntanos cómo lo hicimos.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="waiter">Which waiter served you?</Label>
+                                <Label htmlFor="waiter">¿Qué mesero te atendió?</Label>
                                 <Select onValueChange={setWaiterId} value={waiterId} required>
                                     <SelectTrigger id="waiter">
-                                        <SelectValue placeholder="Select a waiter" />
+                                        <SelectValue placeholder="Selecciona un mesero" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {waiters.map(waiter => (
@@ -84,7 +84,7 @@ function SurveyPageContent() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="rating">Rating: {rating} / 5</Label>
+                                <Label htmlFor="rating">Calificación: {rating} / 5</Label>
                                 <div className="flex items-center gap-4 pt-2">
                                     <Star className="text-muted-foreground" />
                                     <Slider
@@ -99,10 +99,10 @@ function SurveyPageContent() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="comment">Comments (Optional)</Label>
+                                <Label htmlFor="comment">Comentarios (Opcional)</Label>
                                 <Textarea
                                     id="comment"
-                                    placeholder="Tell us more about your experience..."
+                                    placeholder="Cuéntanos más sobre tu experiencia..."
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
@@ -111,7 +111,7 @@ function SurveyPageContent() {
                         <CardFooter>
                             <Button type="submit" className="w-full" disabled={!waiterId}>
                                 <Send className="mr-2" />
-                                Send Feedback
+                                Enviar Comentarios
                             </Button>
                         </CardFooter>
                     </form>

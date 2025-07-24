@@ -64,8 +64,8 @@ const defaultPreferences: Preferences = {
   darkMode: true,
   publicMenu: false,
   restaurantName: 'GustoGo',
-  websiteUrl: 'https://example.com',
-  address: '123 Main Street, Anytown, USA',
+  websiteUrl: 'https://ejemplo.com',
+  address: '123 Calle Principal, Ciudad, País',
   phone: '+1 (555) 123-4567',
   taxRate: 7,
   taxIncluded: true,
@@ -108,7 +108,7 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
     setPreferences(newPrefs);
     localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(newPrefs));
     applyTheme(newPrefs);
-    toast({ title: "Preferences Saved", description: "Your changes have been saved successfully." });
+    toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados correctamente." });
   };
   
   const value: PreferencesContextType = {

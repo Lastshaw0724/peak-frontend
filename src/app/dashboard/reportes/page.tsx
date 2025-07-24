@@ -13,16 +13,16 @@ export default function ReportsPage() {
             <CardHeader className="flex flex-row items-center gap-4">
                 <AreaChart className="h-8 w-8 text-primary" />
                 <div>
-                    <CardTitle className="text-2xl font-headline">Reports</CardTitle>
-                    <CardDescription>Analyze your restaurant's performance.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">Reportes</CardTitle>
+                    <CardDescription>Analiza el rendimiento de tu restaurante.</CardDescription>
                 </div>
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="product-availability" className="w-full">
                     <TabsList className="grid w-full grid-cols-3 h-auto">
-                        <TabsTrigger value="product-availability" className="whitespace-normal">Product Availability</TabsTrigger>
-                        <TabsTrigger value="product-sales" className="whitespace-normal">Product Sales</TabsTrigger>
-                        <TabsTrigger value="inventory-stock" className="whitespace-normal">Inventory Stock</TabsTrigger>
+                        <TabsTrigger value="product-availability" className="whitespace-normal">Disponibilidad de Productos</TabsTrigger>
+                        <TabsTrigger value="product-sales" className="whitespace-normal">Ventas de Productos</TabsTrigger>
+                        <TabsTrigger value="inventory-stock" className="whitespace-normal">Stock de Inventario</TabsTrigger>
                     </TabsList>
                     <TabsContent value="product-availability" className="mt-6">
                         <InventoryReport />

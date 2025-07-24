@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { PreferencesProvider } from '@/components/providers/preferences-provider';
 
 export const metadata: Metadata = {
-  title: 'GustoGo | Restaurant System',
-  description: 'Streamlining restaurant operations from order to kitchen.',
+  title: 'GustoGo | Sistema para Restaurantes',
+  description: 'Optimizando las operaciones del restaurante desde el pedido hasta la cocina.',
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

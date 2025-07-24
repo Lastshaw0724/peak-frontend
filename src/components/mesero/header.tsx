@@ -15,7 +15,7 @@ export function WaiterHeader() {
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="hover:bg-zinc-800">
                             <Menu className="h-6 w-6 text-white" />
-                            <span className="sr-only">Toggle navigation menu</span>
+                            <span className="sr-only">Menú de navegación</span>
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="p-0 w-72 bg-[#1C1C1C] border-r-0">
@@ -25,7 +25,7 @@ export function WaiterHeader() {
             </div>
              <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-zinc-300 hidden sm:inline-block">{user?.name}</span>
-                 <Button variant="ghost" size="icon" onClick={logout} aria-label="Logout" className="hover:bg-zinc-800">
+                 <Button variant="ghost" size="icon" onClick={logout} aria-label="Cerrar sesión" className="hover:bg-zinc-800">
                     <LogOut className="h-5 w-5 text-zinc-300" />
                 </Button>
             </div>

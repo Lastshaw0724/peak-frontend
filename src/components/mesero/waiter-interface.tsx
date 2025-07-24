@@ -14,11 +14,11 @@ export function WaiterInterface() {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-zinc-400 p-4">
         <MapPin className="w-24 h-24 mb-4 text-primary" />
-        <h2 className="text-3xl font-headline mb-2 text-white">No active table</h2>
-        <p className="mb-6 max-w-sm">Please go to the tables section and assign one to start taking a new order.</p>
+        <h2 className="text-3xl font-headline mb-2 text-white">No hay una mesa activa</h2>
+        <p className="mb-6 max-w-sm">Por favor, ve a la sección de mesas y asigna una para poder comenzar a tomar un nuevo pedido.</p>
         <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white">
           <Link href="/mesero/asignar-mesa">
-            Go to Assign Table
+            Ir a Asignar Mesa
           </Link>
         </Button>
       </div>

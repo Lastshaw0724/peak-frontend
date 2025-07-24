@@ -131,7 +131,7 @@ export default function PreferencesPage() {
     }, [submittedOrders]);
 
     const chartConfig = {
-      count: { label: "Sales", color: "hsl(var(--primary))" },
+      count: { label: "Ventas", color: "hsl(var(--primary))" },
     } satisfies ChartConfig;
 
     if (isLoading) {
@@ -154,34 +154,34 @@ export default function PreferencesPage() {
             <CardHeader className="flex flex-row items-center gap-4">
                 <Settings className="h-8 w-8 text-primary" />
                  <div>
-                    <CardTitle className="text-2xl font-headline">System Preferences</CardTitle>
-                    <CardDescription>Configure general settings and notifications for your restaurant.</CardDescription>
+                    <CardTitle className="text-2xl font-headline">Preferencias del Sistema</CardTitle>
+                    <CardDescription>Configura los ajustes generales y notificaciones de tu restaurante.</CardDescription>
                 </div>
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="general" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto sm:h-10">
                         <TabsTrigger value="general">General</TabsTrigger>
-                        <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                        <TabsTrigger value="taxes">Taxes</TabsTrigger>
+                        <TabsTrigger value="appearance">Apariencia</TabsTrigger>
+                        <TabsTrigger value="taxes">Impuestos</TabsTrigger>
                         <TabsTrigger value="stock">Stock</TabsTrigger>
                     </TabsList>
                     <TabsContent value="general" className="mt-6">
                         <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
-                                <Label htmlFor="restaurantName">Restaurant Name</Label>
+                                <Label htmlFor="restaurantName">Nombre del Restaurante</Label>
                                 <Input id="restaurantName" value={localPrefs.restaurantName} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="websiteUrl">Website / Link</Label>
-                                <Input id="websiteUrl" type="url" placeholder="https://example.com" value={localPrefs.websiteUrl} onChange={handleChange} />
+                                <Label htmlFor="websiteUrl">Sitio Web / Enlace</Label>
+                                <Input id="websiteUrl" type="url" placeholder="https://ejemplo.com" value={localPrefs.websiteUrl} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="address">Address</Label>
+                                <Label htmlFor="address">Dirección</Label>
                                 <Input id="address" value={localPrefs.address} onChange={handleChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="phone">Contact Phone</Label>
+                                <Label htmlFor="phone">Teléfono de Contacto</Label>
                                 <Input id="phone" type="tel" value={localPrefs.phone} onChange={handleChange} />
                             </div>
                         </div>
@@ -190,72 +190,72 @@ export default function PreferencesPage() {
                        <div className="space-y-6 max-w-2xl">
                             <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="darkMode" className="text-base">Dark Mode</Label>
+                                    <Label htmlFor="darkMode" className="text-base">Modo Oscuro</Label>
                                     <p className="text-sm text-muted-foreground">
-                                        Enable the dark theme across the application.
+                                        Habilita el tema oscuro en toda la aplicación.
                                     </p>
                                 </div>
                                 <Switch id="darkMode" checked={localPrefs.darkMode} onCheckedChange={(checked) => handleSwitchChange('darkMode', checked)} />
                             </div>
                              <div className="flex items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="publicMenu" className="text-base">Public Menu</Label>
+                                    <Label htmlFor="publicMenu" className="text-base">Menú Público</Label>
                                      <p className="text-sm text-muted-foreground">
-                                        Allow anyone to view the menu without logging in.
+                                        Permite que cualquiera vea el menú sin iniciar sesión.
                                     </p>
                                 </div>
                                 <Switch id="publicMenu" checked={localPrefs.publicMenu} onCheckedChange={(checked) => handleSwitchChange('publicMenu', checked)} />
                             </div>
                             <div className="rounded-lg border p-4 space-y-4">
-                                <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Restaurant Logo</h3>
+                                <h3 className="text-base font-semibold flex items-center gap-2"><ImageIcon className="text-primary"/>Logo del Restaurante</h3>
                                  <RadioGroup defaultValue="upload" value={logoInputMethod} onValueChange={(v) => setLogoInputMethod(v as 'upload' | 'url')} className="flex gap-4">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="upload" id="r_upload" />
-                                        <Label htmlFor="r_upload">Upload File</Label>
+                                        <Label htmlFor="r_upload">Subir Archivo</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="url" id="r_url" />
-                                        <Label htmlFor="r_url">Use URL</Label>
+                                        <Label htmlFor="r_url">Usar URL</Label>
                                     </div>
                                 </RadioGroup>
 
                                 {logoInputMethod === 'upload' ? (
                                     <div className="space-y-2">
-                                        <Label htmlFor="logoUpload">Upload Logo</Label>
+                                        <Label htmlFor="logoUpload">Subir Logo</Label>
                                         <Input id="logoUpload" type="file" accept="image/*" onChange={handleLogoUpload} className="file:text-foreground" />
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
-                                        <Label htmlFor="logoUrlInput">Logo URL</Label>
-                                        <Input id="logoUrlInput" type="url" placeholder="https://example.com/logo.png" value={(localPrefs.logoUrl || '').startsWith('data:') ? '' : localPrefs.logoUrl || ''} onChange={handleLogoUrlChange} />
+                                        <Label htmlFor="logoUrlInput">URL del Logo</Label>
+                                        <Input id="logoUrlInput" type="url" placeholder="https://ejemplo.com/logo.png" value={(localPrefs.logoUrl || '').startsWith('data:') ? '' : localPrefs.logoUrl || ''} onChange={handleLogoUrlChange} />
                                     </div>
                                 )}
                                 
                                 {localPrefs.logoUrl && (
                                      <div className="mt-4 space-y-3">
-                                         <Label>Preview</Label>
+                                         <Label>Vista Previa</Label>
                                         <div className="flex items-center justify-center p-4 bg-muted rounded-md">
-                                            <Image src={localPrefs.logoUrl} alt="Logo Preview" width={150} height={150} className="object-contain" />
+                                            <Image src={localPrefs.logoUrl} alt="Vista previa del logo" width={150} height={150} className="object-contain" />
                                         </div>
                                          <Button variant="destructive" size="sm" onClick={handleDeleteLogo} className="w-full">
                                             <Trash2 className="mr-2"/>
-                                            Delete Logo
+                                            Eliminar Logo
                                         </Button>
                                     </div>
                                 )}
                             </div>
                              <div className="rounded-lg border p-4 space-y-4">
-                                <h3 className="text-base font-semibold flex items-center gap-2"><Palette className="text-primary" />Theme Colors</h3>
+                                <h3 className="text-base font-semibold flex items-center gap-2"><Palette className="text-primary" />Colores del Tema</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="primaryColor">Primary Color</Label>
+                                        <Label htmlFor="primaryColor">Color Primario</Label>
                                         <div className="flex items-center gap-2">
                                             <Input id="primaryColor" type="color" value={localPrefs.primaryColor} onChange={handleChange} className="w-16 p-1"/>
                                             <span className="font-mono text-sm">{localPrefs.primaryColor}</span>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="accentColor">Accent Color</Label>
+                                        <Label htmlFor="accentColor">Color de Acento</Label>
                                          <div className="flex items-center gap-2">
                                             <Input id="accentColor" type="color" value={localPrefs.accentColor} onChange={handleChange} className="w-16 p-1"/>
                                              <span className="font-mono text-sm">{localPrefs.accentColor}</span>
@@ -268,12 +268,12 @@ export default function PreferencesPage() {
                     <TabsContent value="taxes" className="mt-6">
                        <div className="space-y-6 max-w-2xl">
                             <div className="space-y-2">
-                                <Label htmlFor="taxRate">General Tax Rate (%)</Label>
+                                <Label htmlFor="taxRate">Tasa General de Impuestos (%)</Label>
                                 <Input id="taxRate" type="number" value={localPrefs.taxRate} onChange={handleChange} />
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Switch id="taxIncluded" checked={localPrefs.taxIncluded} onCheckedChange={(checked) => handleSwitchChange('taxIncluded', checked)}/>
-                                <Label htmlFor="taxIncluded">Do menu prices already include taxes?</Label>
+                                <Label htmlFor="taxIncluded">¿Los precios del menú ya incluyen impuestos?</Label>
                             </div>
                         </div>
                     </TabsContent>
@@ -281,20 +281,20 @@ export default function PreferencesPage() {
                        <div className="space-y-6 max-w-2xl">
                            <h3 className="text-xl font-semibold flex items-center gap-2">
                                 <Bell className="h-5 w-5 text-primary" />
-                                Stock Notifications
+                                Notificaciones de Stock
                            </h3>
                             <div className="space-y-2 p-4 border rounded-lg">
-                                <Label htmlFor="lowStockThreshold">Alert when stock is less than:</Label>
+                                <Label htmlFor="lowStockThreshold">Alertar cuando el stock sea menor que:</Label>
                                 <Input 
                                     id="lowStockThreshold" 
                                     type="number"
                                     value={localPrefs.lowStockThreshold}
                                     onChange={handleChange}
                                     className="max-w-[100px]"
-                                    placeholder="E.g., 20"
+                                    placeholder="Ej: 20"
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    You will receive a notification when an item falls below this number of units.
+                                    Recibirás una notificación cuando un insumo caiga por debajo de este número de unidades.
                                 </p>
                             </div>
                         </div>
@@ -303,7 +303,7 @@ export default function PreferencesPage() {
                 <div className="mt-8 flex justify-end">
                     <Button onClick={handleSaveChanges} disabled={isLoading}>
                         <Save className="mr-2"/>
-                        Save Changes
+                        Guardar Cambios
                     </Button>
                 </div>
             </CardContent>

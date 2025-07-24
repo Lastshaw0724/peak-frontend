@@ -44,7 +44,7 @@ export function AppHeader({ title }: { title: string }) {
           <div className="flex items-center">
             <Link href="/">
               {logoUrl ? (
-                <Image src={logoUrl} alt="Restaurant Logo" width={144} height={48} className="object-contain h-12 w-auto" />
+                <Image src={logoUrl} alt="Logo del Restaurante" width={144} height={48} className="object-contain h-12 w-auto" />
               ) : (
                 <Logo className="w-36 h-auto" />
               )}
@@ -74,56 +74,56 @@ export function AppHeader({ title }: { title: string }) {
                     {user.role === 'admin' && (
                          <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                             <LayoutDashboard className="mr-2 h-4 w-4" />
-                            <span>Dashboard</span>
+                            <span>Panel</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'waiter' && (
                          <DropdownMenuItem onClick={() => navigate('/mesero')}>
                             <NotebookPen className="mr-2 h-4 w-4" />
-                            <span>Waiter View</span>
+                            <span>Vista Mesero</span>
                         </DropdownMenuItem>
                     )}
                     {user.role === 'cashier' && (
                          <DropdownMenuItem onClick={() => navigate('/dashboard/pedidos')}>
                             <History className="mr-2 h-4 w-4" />
-                            <span>Order History</span>
+                            <span>Historial Pedidos</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'cook' && (
                          <DropdownMenuItem onClick={() => navigate('/cocina')}>
                             <ChefHat className="mr-2 h-4 w-4" />
-                            <span>Kitchen View</span>
+                            <span>Vista Cocina</span>
                         </DropdownMenuItem>
                     )}
                     {(user.role === 'customer' || user.role === 'admin' || user.role === 'waiter') && (
                          <DropdownMenuItem onClick={() => navigate('/menu')}>
                             <BookOpen className="mr-2 h-4 w-4" />
-                            <span>Customer Menu</span>
+                            <span>Menú Cliente</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'customer' && (
                         <DropdownMenuItem onClick={() => navigate('/encuesta')}>
                             <Star className="mr-2 h-4 w-4" />
-                            <span>Rate Service</span>
+                            <span>Calificar Servicio</span>
                         </DropdownMenuItem>
                     )}
                     {(user.role === 'admin' || user.role === 'waiter') && (
                          <DropdownMenuItem onClick={() => navigate('/qr')}>
                             <QrCode className="mr-2 h-4 w-4" />
-                            <span>QR Code</span>
+                            <span>Código QR</span>
                         </DropdownMenuItem>
                     )}
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
+                    <span>Cerrar Sesión</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
                 <Button asChild>
-                    <Link href="/ingresar">Login</Link>
+                    <Link href="/ingresar">Ingresar</Link>
                 </Button>
             )}
           </div>

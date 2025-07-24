@@ -19,7 +19,7 @@ const ACTIVE_TABLE_SESSION_KEY = 'gustogo-active-table';
 
 const initialTables: Table[] = Array.from({ length: 12 }, (_, i) => ({
     id: `t${i + 1}`,
-    name: `Table #${i + 1}`,
+    name: `Mesa #${i + 1}`,
     status: 'available',
 }));
 

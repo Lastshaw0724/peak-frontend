@@ -43,7 +43,7 @@ const getIngredientStatus = (productName: string, inventory: any[], lowStockThre
     );
 
     if (matchedInventoryItems.length === 0) {
-        return { status: 'unknown', message: 'Untracked Ingredients' };
+        return { status: 'unknown', message: 'Insumos no rastreados' };
     }
 
     let overallStatus = 'available'; // available, low, out
@@ -63,13 +63,13 @@ const getIngredientStatus = (productName: string, inventory: any[], lowStockThre
     });
 
     if (overallStatus === 'out') {
-        return { status: 'out', message: `Out of Stock: ${outOfStockItems.join(', ')}` };
+        return { status: 'out', message: `Agotado: ${outOfStockItems.join(', ')}` };
     }
     if (overallStatus === 'low') {
-        return { status: 'low', message: `Low Stock: ${lowStockItems.join(', ')}` };
+        return { status: 'low', message: `Bajo stock: ${lowStockItems.join(', ')}` };
     }
 
-    return { status: 'available', message: 'Available' };
+    return { status: 'available', message: 'Disponible' };
 };
 
 
@@ -86,29 +86,29 @@ export function InventoryReport() {
     }, [menu, inventory, lowStockThreshold]);
 
     const statusConfig = {
-        available: { icon: CheckCircle2, className: 'text-green-500' },
-        low: { icon: AlertCircle, className: 'text-yellow-500' },
-        out: { icon: XCircle, className: 'text-red-500' },
-        unknown: { icon: AlertCircle, className: 'text-muted-foreground' },
+        available: { label: 'Disponible', icon: CheckCircle2, className: 'text-green-500' },
+        low: { label: 'Bajo', icon: AlertCircle, className: 'text-yellow-500' },
+        out: { label: 'Agotado', icon: XCircle, className: 'text-red-500' },
+        unknown: { label: 'Desconocido', icon: AlertCircle, className: 'text-muted-foreground' },
     };
 
 
     return (
         <div>
             <CardHeader className="p-0 mb-4">
-                <CardTitle className="text-xl font-headline">Product Availability by Ingredients</CardTitle>
-                <CardDescription>Review the status of ingredients required for each menu product.</CardDescription>
+                <CardTitle className="text-xl font-headline">Disponibilidad de Productos por Insumos</CardTitle>
+                <CardDescription>Revisa el estado de los insumos necesarios para cada producto del menú.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
                 <div className="relative w-full overflow-auto no-scrollbar">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Product</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead className="text-right">Price</TableHead>
-                                <TableHead>Ingredient Status</TableHead>
-                                <TableHead>Details</TableHead>
+                                <TableHead>Producto</TableHead>
+                                <TableHead>Categoría</TableHead>
+                                <TableHead className="text-right">Precio</TableHead>
+                                <TableHead>Estado de Insumos</TableHead>
+                                <TableHead>Detalles</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -122,7 +122,7 @@ export function InventoryReport() {
                                         <TableCell>
                                             <div className={cn("flex items-center gap-2 font-semibold", currentStatus.className)}>
                                                 <currentStatus.icon className="h-5 w-5" />
-                                                <span>{item.inventoryStatus.status.charAt(0).toUpperCase() + item.inventoryStatus.status.slice(1)}</span>
+                                                <span>{currentStatus.label}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-sm text-muted-foreground">{item.inventoryStatus.message}</TableCell>

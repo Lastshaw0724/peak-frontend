@@ -82,9 +82,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(foundUser);
         sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(foundUser));
         router.push(roleRedirects[foundUser.role]);
-        toast({ title: 'Login Successful', description: `Welcome back, ${foundUser.name}!` });
+        toast({ title: 'Inicio de Sesión Exitoso', description: `¡Bienvenido de vuelta, ${foundUser.name}!` });
     } else {
-        toast({ variant: 'destructive', title: 'Login Failed', description: 'Invalid email or password.' });
+        toast({ variant: 'destructive', title: 'Fallo en el Inicio de Sesión', description: 'Email o contraseña inválidos.' });
     }
   };
 
@@ -92,13 +92,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     sessionStorage.removeItem(USER_SESSION_KEY);
     router.push('/ingresar');
-    toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+    toast({ title: 'Sesión Cerrada', description: 'Has cerrado sesión exitosamente.' });
   };
 
   const register = (name: string, email: string, password: string) => {
     const existingUser = users.find(u => u.email === email);
     if (existingUser) {
-        toast({ variant: 'destructive', title: 'Registration Failed', description: 'A user with this email already exists.' });
+        toast({ variant: 'destructive', title: 'Fallo en el Registro', description: 'Ya existe un usuario con este email.' });
         return;
     }
     
@@ -114,13 +114,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     saveUsers(updatedUsers);
     
     router.push('/ingresar');
-    toast({ title: 'Registration Successful', description: `Welcome, ${name}! You can now log in.` });
+    toast({ title: 'Registro Exitoso', description: `¡Bienvenido, ${name}! Ahora puedes iniciar sesión.` });
   };
 
   const addUser = (data: { name: string; email: string; password: string; role: UserRole }) => {
     const existingUser = users.find(u => u.email === data.email);
     if (existingUser) {
-        toast({ variant: 'destructive', title: 'Creation Failed', description: 'A user with this email already exists.' });
+        toast({ variant: 'destructive', title: 'Fallo en la Creación', description: 'Ya existe un usuario con este email.' });
         return;
     }
 
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const updatedUsers = [...users, newUser];
     saveUsers(updatedUsers);
-    toast({ title: 'User Created', description: `User ${data.name} has been created.` });
+    toast({ title: 'Usuario Creado', description: `El usuario ${data.name} ha sido creado.` });
   };
 
   const updateUserRole = (userId: string, newRole: UserRole) => {
@@ -144,19 +144,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(updatedUser));
     }
 
-    toast({ title: 'Role Updated', description: "The user's role has been updated." });
+    toast({ title: 'Rol Actualizado', description: "El rol del usuario ha sido actualizado." });
   };
 
   const deleteUser = (userId: string) => {
     const updatedUsers = users.filter((u) => u.id !== userId);
     saveUsers(updatedUsers);
-    toast({ title: 'User Deleted', description: 'The user has been successfully removed.' });
+    toast({ title: 'Usuario Eliminado', description: 'El usuario ha sido eliminado exitosamente.' });
   };
 
   const updateUserPassword = (userId: string, newPassword: string) => {
     const updatedUsers = users.map(u => u.id === userId ? { ...u, password: newPassword } : u);
     saveUsers(updatedUsers);
-    toast({ title: 'Password Updated', description: "The user's password has been changed." });
+    toast({ title: 'Contraseña Actualizada', description: "La contraseña del usuario ha sido cambiada." });
   };
 
   const contextValue = {

@@ -55,8 +55,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     };
     saveInventory([...inventory, newItem]);
     toast({
-        title: "Item Added",
-        description: `Item "${newItem.name}" has been added to inventory.`,
+        title: "Insumo Añadido",
+        description: `El insumo "${newItem.name}" ha sido añadido al inventario.`,
     });
   };
 
@@ -66,8 +66,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     );
     saveInventory(updatedInventory);
      toast({
-        title: "Item Updated",
-        description: `Item "${data.name}" has been updated.`,
+        title: "Insumo Actualizado",
+        description: `El insumo "${data.name}" ha sido actualizado.`,
     });
   };
 
@@ -76,8 +76,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     const updatedInventory = inventory.filter(item => item.id !== id);
     saveInventory(updatedInventory);
      toast({
-        title: "Item Deleted",
-        description: `Item "${itemToDelete?.name}" has been deleted.`,
+        title: "Insumo Eliminado",
+        description: `El insumo "${itemToDelete?.name}" ha sido eliminado.`,
         variant: "destructive",
     });
   };

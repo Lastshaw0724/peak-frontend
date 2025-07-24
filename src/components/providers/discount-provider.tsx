@@ -57,8 +57,8 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
     };
     saveDiscounts([...discounts, newDiscount]);
     toast({
-        title: "Discount Created",
-        description: `The discount "${newDiscount.name}" has been added.`
+        title: "Descuento Creado",
+        description: `El descuento "${newDiscount.name}" ha sido añadido.`
     });
   };
 
@@ -71,8 +71,8 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
     const updatedDiscounts = discounts.filter(d => d.id !== id);
     saveDiscounts(updatedDiscounts);
     toast({
-        title: "Discount Deleted",
-        description: "The discount has been deleted successfully.",
+        title: "Descuento Eliminado",
+        description: "El descuento ha sido eliminado correctamente.",
         variant: "destructive",
     });
   };

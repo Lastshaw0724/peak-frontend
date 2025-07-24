@@ -27,11 +27,11 @@ export function KitchenOrderCard({ order }: { order: Order }) {
   };
 
   const statusConfig = {
-    new: { label: 'New', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
-    preparing: { label: 'Preparing', className: 'bg-primary/20 text-primary/80 border-primary/30' },
-    ready: { label: 'Ready', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
-    delivered: { label: 'Delivered', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-    paid: { label: 'Paid', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+    new: { label: 'Nuevo', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
+    preparing: { label: 'Preparando', className: 'bg-primary/20 text-primary/80 border-primary/30' },
+    ready: { label: 'Listo', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    delivered: { label: 'Entregado', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+    paid: { label: 'Pagado', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
   };
 
   const currentStatus = statusConfig[order.status];
@@ -48,7 +48,7 @@ export function KitchenOrderCard({ order }: { order: Order }) {
       <CardHeader>
         <div className="flex justify-between items-start">
             <div>
-                 <CardTitle className="font-headline text-xl">Order #{order.id.slice(-6)}</CardTitle>
+                 <CardTitle className="font-headline text-xl">Pedido #{order.id.slice(-6)}</CardTitle>
                  <CardDescription className="font-semibold pt-1">{order.tableName}</CardDescription>
             </div>
              <div className="text-right space-y-1">
@@ -88,18 +88,18 @@ export function KitchenOrderCard({ order }: { order: Order }) {
         <CardFooter className="flex justify-end gap-2">
           {order.status === 'new' && (
             <>
-              <Button onClick={() => setIsDialogOpen(true)}>Start Preparing</Button>
+              <Button onClick={() => setIsDialogOpen(true)}>Comenzar a Preparar</Button>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Set Preparation Time</DialogTitle>
+                        <DialogTitle>Establecer Tiempo de Preparación</DialogTitle>
                         <DialogDescription>
-                            Enter the estimated time in minutes to prepare order #{order.id.slice(-6)}.
+                            Ingresa el tiempo estimado en minutos para preparar el pedido #{order.id.slice(-6)}.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="prep-time">Preparation Time (minutes)</Label>
+                            <Label htmlFor="prep-time">Tiempo de Preparación (minutos)</Label>
                             <Input
                                 id="prep-time"
                                 type="number"
@@ -111,15 +111,15 @@ export function KitchenOrderCard({ order }: { order: Order }) {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={handleStartPreparing}>Confirm & Start</Button>
+                        <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                        <Button onClick={handleStartPreparing}>Confirmar e Iniciar</Button>
                     </DialogFooter>
                 </DialogContent>
               </Dialog>
             </>
           )}
           {order.status === 'preparing' && (
-            <Button className="bg-green-600 hover:bg-green-700" onClick={() => updateOrderStatus(order.id, 'ready')}>Mark as Ready</Button>
+            <Button className="bg-green-600 hover:bg-green-700" onClick={() => updateOrderStatus(order.id, 'ready')}>Marcar como Listo</Button>
           )}
         </CardFooter>
       )}

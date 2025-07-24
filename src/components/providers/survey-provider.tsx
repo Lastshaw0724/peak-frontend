@@ -23,8 +23,8 @@ export const SurveyProvider = ({ children }: { children: ReactNode }) => {
     };
     setSurveys((prev) => [newSurvey, ...prev]);
     toast({
-      title: "Survey Submitted!",
-      description: "Thank you for your valuable feedback.",
+      title: "¡Encuesta Enviada!",
+      description: "Gracias por tus valiosos comentarios.",
     });
   };
 

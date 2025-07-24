@@ -29,35 +29,35 @@ export default function SignupPage() {
         <CardHeader className="text-center">
            <div className="mx-auto mb-4">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
+              <Image src={logoUrl} alt="Logo del Restaurante" width={160} height={80} className="object-contain h-20 w-auto" />
             ) : (
               <Logo className="w-32 h-auto" />
             )}
           </div>
-          <CardTitle className="font-headline text-3xl">Create an Account</CardTitle>
-          <CardDescription>Join GustoGo to view our menu and place orders.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Crear una Cuenta</CardTitle>
+          <CardDescription>Únete a GustoGo para ver nuestro menú y realizar pedidos.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSignup}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Nombre</Label>
               <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Label htmlFor="email">Correo Electrónico</Label>
+              <Input id="email" type="email" placeholder="m@ejemplo.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Sign Up</Button>
+            <Button type="submit" className="w-full">Registrarse</Button>
             <div className="text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
+              ¿Ya tienes una cuenta?{' '}
               <Link href="/ingresar" className="underline hover:text-primary">
-                Sign in
+                Inicia sesión
               </Link>
             </div>
           </CardFooter>

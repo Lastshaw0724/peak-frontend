@@ -148,7 +148,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     invoiceOption: InvoiceOption;
   }) => {
     if (currentOrder.length === 0) {
-      toast({ variant: "destructive", title: "Empty Order" });
+      toast({ variant: "destructive", title: "Pedido Vacío" });
       return;
     }
     
@@ -185,8 +185,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     saveCurrentOrder([]);
     saveCurrentOrderDetails(null);
     toast({
-      title: "Order Submitted!",
-      description: "The order has been sent to the kitchen.",
+      title: "¡Pedido Enviado!",
+      description: "El pedido ha sido enviado a la cocina.",
     });
   };
 
@@ -203,8 +203,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     );
     saveSubmittedOrders(updatedOrders);
     toast({
-      title: "Order Preparing",
-      description: `Order #${orderId.slice(-6)} has started. Estimated time: ${preparationTime} min.`,
+      title: "Pedido en preparación",
+      description: `El pedido #${orderId.slice(-6)} ha comenzado. Tiempo estimado: ${preparationTime} min.`,
     });
   };
 
@@ -217,8 +217,8 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const updatedOrders = submittedOrders.filter(order => order.id !== orderId);
     saveSubmittedOrders(updatedOrders);
     toast({
-        title: "Order Canceled",
-        description: `Order #${orderId.slice(-6)} has been removed.`,
+        title: "Pedido Cancelado",
+        description: `El pedido #${orderId.slice(-6)} ha sido eliminado.`,
         variant: 'destructive'
     });
   };
@@ -231,15 +231,15 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
         saveCurrentOrder(orderToEdit.items);
         saveCurrentOrderDetails({ customerName: orderToEdit.customerName });
         toast({
-            title: "Editing Order",
-            description: `Order #${orderId.slice(-6)} has been loaded.`,
+            title: "Modificando Pedido",
+            description: `Se ha cargado el pedido #${orderId.slice(-6)}.`,
         });
         return orderToEdit;
     }
     toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not load order for editing.",
+        description: "No se pudo cargar el pedido para modificar.",
     });
     return undefined;
   };

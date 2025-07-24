@@ -81,22 +81,22 @@ export default function DiscountsPage() {
                  <div className="flex items-center gap-4">
                     <Percent className="h-8 w-8 text-primary" />
                     <div>
-                        <CardTitle className="text-2xl font-headline">Discounts</CardTitle>
-                        <CardDescription>Create and manage promotions and discounts.</CardDescription>
+                        <CardTitle className="text-2xl font-headline">Descuentos</CardTitle>
+                        <CardDescription>Crea y gestiona promociones y descuentos.</CardDescription>
                     </div>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                          <Button className="w-full sm:w-auto">
                             <PlusCircle className="mr-2" />
-                            Create Discount
+                            Crear Descuento
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Create New Discount</DialogTitle>
+                            <DialogTitle>Crear Nuevo Descuento</DialogTitle>
                             <DialogDescription>
-                                Fill in the details to create a new promotion.
+                                Completa los detalles para crear una nueva promoción.
                             </DialogDescription>
                         </DialogHeader>
                         <Form {...form}>
@@ -106,9 +106,9 @@ export default function DiscountsPage() {
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Discount Name</FormLabel>
+                                            <FormLabel>Nombre del Descuento</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="E.g., Weekend Sale" {...field} />
+                                                <Input placeholder="Ej: Venta de Fin de Semana" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -119,9 +119,9 @@ export default function DiscountsPage() {
                                     name="code"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Code</FormLabel>
+                                            <FormLabel>Código</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="E.g., WEEKEND25" {...field} />
+                                                <Input placeholder="Ej: FINDE25" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -132,9 +132,9 @@ export default function DiscountsPage() {
                                     name="value"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Value (e.g. 15% or $10)</FormLabel>
+                                            <FormLabel>Valor (ej: 15% o $10)</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="15% or $10.00" {...field} />
+                                                <Input placeholder="15% o $10.00" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -145,9 +145,9 @@ export default function DiscountsPage() {
                                     name="expires"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Expiration Date (Optional)</FormLabel>
+                                            <FormLabel>Fecha de Expiración (Opcional)</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="dd/mm/yyyy or N/A" {...field} />
+                                                <Input placeholder="dd/mm/yyyy o N/A" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -155,9 +155,9 @@ export default function DiscountsPage() {
                                 />
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button type="button" variant="secondary">Cancel</Button>
+                                        <Button type="button" variant="secondary">Cancelar</Button>
                                     </DialogClose>
-                                    <Button type="submit">Save Discount</Button>
+                                    <Button type="submit">Guardar Descuento</Button>
                                 </DialogFooter>
                             </form>
                         </Form>
@@ -169,12 +169,12 @@ export default function DiscountsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Code</TableHead>
-                                <TableHead>Value</TableHead>
-                                <TableHead>Usage</TableHead>
-                                <TableHead>Expires</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Nombre</TableHead>
+                                <TableHead>Código</TableHead>
+                                <TableHead>Valor</TableHead>
+                                <TableHead>Uso</TableHead>
+                                <TableHead>Expira</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -190,26 +190,26 @@ export default function DiscountsPage() {
                                             <Switch
                                                 checked={discount.status}
                                                 onCheckedChange={(checked) => updateDiscountStatus(discount.id, checked)}
-                                                aria-label={`Activate discount ${discount.name}`}
+                                                aria-label={`Activar descuento ${discount.name}`}
                                             />
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button variant="destructive" size="icon" className="h-9 w-9">
                                                         <Trash2 className="h-4 w-4" />
-                                                        <span className="sr-only">Delete discount</span>
+                                                        <span className="sr-only">Eliminar descuento</span>
                                                     </Button>
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
-                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the "{discount.name}" discount.
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el descuento "{discount.name}".
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                                         <AlertDialogAction onClick={() => deleteDiscount(discount.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                            Yes, delete
+                                                            Sí, eliminar
                                                         </AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>

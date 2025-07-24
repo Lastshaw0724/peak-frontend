@@ -138,8 +138,8 @@ export default function InventoryPage() {
             if (item.stock < lowStockThreshold && !notifiedItemsRef.current.has(item.id)) {
                 toast({
                     variant: 'destructive',
-                    title: 'Low Stock Alert',
-                    description: `Item "${item.name}" is below the threshold (${item.stock} units remaining).`,
+                    title: 'Alerta de Stock Bajo',
+                    description: `El insumo "${item.name}" está por debajo del umbral (${item.stock} unidades restantes).`,
                     duration: 8000,
                 });
                 notifiedItemsRef.current.add(item.id);
@@ -153,19 +153,19 @@ export default function InventoryPage() {
                  <div className="flex items-center gap-4">
                     <Warehouse className="h-8 w-8 text-primary" />
                     <div>
-                        <CardTitle className="text-2xl font-headline">Inventory</CardTitle>
-                        <CardDescription>Monitor and manage your ingredient stock.</CardDescription>
+                        <CardTitle className="text-2xl font-headline">Inventario</CardTitle>
+                        <CardDescription>Monitorea y gestiona el stock de tus insumos.</CardDescription>
                     </div>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
                      <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                         <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Filter by category" />
+                            <SelectValue placeholder="Filtrar por categoría" />
                         </SelectTrigger>
                         <SelectContent>
                             {categories.map(category => (
                                  <SelectItem key={category} value={category}>
-                                    {category === 'all' ? 'All Categories' : category}
+                                    {category === 'all' ? 'Todas las Categorías' : category}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -173,25 +173,25 @@ export default function InventoryPage() {
 
                      <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Sort by" />
+                            <SelectValue placeholder="Ordenar por" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="default">Default</SelectItem>
-                            <SelectItem value="stock-asc">Stock Level (Low to High)</SelectItem>
-                            <SelectItem value="stock-desc">Stock Level (High to Low)</SelectItem>
+                            <SelectItem value="default">Por Defecto</SelectItem>
+                            <SelectItem value="stock-asc">Nivel de Stock (Bajo a Alto)</SelectItem>
+                            <SelectItem value="stock-desc">Nivel de Stock (Alto a Bajo)</SelectItem>
                         </SelectContent>
                     </Select>
 
                      <Button onClick={() => handleOpenDialog('add')} className="w-full sm:w-auto">
                         <PlusCircle className="mr-2" />
-                        Add Item
+                        Añadir Insumo
                     </Button>
                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
-                                <DialogTitle>{dialogMode === 'add' ? 'Add New Item' : 'Edit Item'}</DialogTitle>
+                                <DialogTitle>{dialogMode === 'add' ? 'Añadir Nuevo Insumo' : 'Editar Insumo'}</DialogTitle>
                                 <DialogDescription>
-                                    {dialogMode === 'add' ? 'Fill in the details to add a new item to the inventory.' : 'Modify the item details.'}
+                                    {dialogMode === 'add' ? 'Completa los detalles para añadir un nuevo insumo al inventario.' : 'Modifica los detalles del insumo.'}
                                 </DialogDescription>
                             </DialogHeader>
                             <Form {...form}>
@@ -201,9 +201,9 @@ export default function InventoryPage() {
                                         name="name"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Item Name</FormLabel>
+                                                <FormLabel>Nombre del Insumo</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="E.g., Fresh Tomatoes" {...field} />
+                                                    <Input placeholder="Ej: Tomates Frescos" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -214,9 +214,9 @@ export default function InventoryPage() {
                                         name="category"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Category</FormLabel>
+                                                <FormLabel>Categoría</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="E.g., Vegetables" {...field} />
+                                                    <Input placeholder="Ej: Vegetales" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -227,9 +227,9 @@ export default function InventoryPage() {
                                         name="supplier"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Supplier</FormLabel>
+                                                <FormLabel>Proveedor</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="E.g., Local Farm" {...field} />
+                                                    <Input placeholder="Ej: Granja Local" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -241,7 +241,7 @@ export default function InventoryPage() {
                                             name="stock"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Current Stock</FormLabel>
+                                                    <FormLabel>Stock Actual</FormLabel>
                                                     <FormControl>
                                                         <Input type="number" {...field} />
                                                     </FormControl>
@@ -254,7 +254,7 @@ export default function InventoryPage() {
                                             name="maxStock"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Max Stock</FormLabel>
+                                                    <FormLabel>Stock Máximo</FormLabel>
                                                     <FormControl>
                                                         <Input type="number" {...field} />
                                                     </FormControl>
@@ -265,9 +265,9 @@ export default function InventoryPage() {
                                     </div>
                                     <DialogFooter>
                                         <DialogClose asChild>
-                                            <Button type="button" variant="secondary" onClick={() => { form.reset(); setSelectedItem(null); }}>Cancel</Button>
+                                            <Button type="button" variant="secondary" onClick={() => { form.reset(); setSelectedItem(null); }}>Cancelar</Button>
                                         </DialogClose>
-                                        <Button type="submit">Save Changes</Button>
+                                        <Button type="submit">Guardar Cambios</Button>
                                     </DialogFooter>
                                 </form>
                             </Form>
@@ -280,11 +280,11 @@ export default function InventoryPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Item</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Supplier</TableHead>
-                                <TableHead className="w-[250px]">Stock Level</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Insumo</TableHead>
+                                <TableHead>Categoría</TableHead>
+                                <TableHead>Proveedor</TableHead>
+                                <TableHead className="w-[250px]">Nivel de Stock</TableHead>
+                                <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -309,26 +309,26 @@ export default function InventoryPage() {
                                     <TableCell className="text-right">
                                          <div className="flex justify-end items-center gap-2">
                                             <Button variant="outline" size="sm" onClick={() => handleOpenDialog('edit', item)}>
-                                                Adjust
+                                                Ajustar
                                             </Button>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button variant="destructive" size="icon" className="h-9 w-9">
                                                         <Trash2 className="h-4 w-4" />
-                                                        <span className="sr-only">Delete item</span>
+                                                        <span className="sr-only">Eliminar insumo</span>
                                                     </Button>
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
-                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the "{item.name}" item.
+                                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el insumo "{item.name}".
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                                         <AlertDialogAction onClick={() => deleteInventoryItem(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                                            Yes, delete
+                                                            Sí, eliminar
                                                         </AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>

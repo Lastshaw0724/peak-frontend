@@ -16,25 +16,25 @@ export function KitchenDisplay() {
       {submittedOrders.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[60vh] text-center text-muted-foreground">
           <ChefHat className="w-24 h-24 mb-4 text-primary/50" />
-          <h2 className="text-3xl font-headline">No Orders Yet</h2>
-          <p className="mt-2 text-lg">Waiting for new orders from the floor...</p>
+          <h2 className="text-3xl font-headline">Aún no hay Pedidos</h2>
+          <p className="mt-2 text-lg">Esperando nuevos pedidos desde el salón...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <section>
-            <h2 className="text-3xl font-headline text-destructive mb-4 pb-2 border-b-2 border-destructive">New Orders ({newOrders.length})</h2>
+            <h2 className="text-3xl font-headline text-destructive mb-4 pb-2 border-b-2 border-destructive">Nuevos ({newOrders.length})</h2>
             <div className="space-y-6">
               {newOrders.map(order => <KitchenOrderCard key={order.id} order={order} />)}
             </div>
           </section>
           <section>
-            <h2 className="text-3xl font-headline text-primary mb-4 pb-2 border-b-2 border-primary">Preparing ({preparingOrders.length})</h2>
+            <h2 className="text-3xl font-headline text-primary mb-4 pb-2 border-b-2 border-primary">Preparando ({preparingOrders.length})</h2>
             <div className="space-y-6">
               {preparingOrders.map(order => <KitchenOrderCard key={order.id} order={order} />)}
             </div>
           </section>
           <section>
-            <h2 className="text-3xl font-headline text-green-600 mb-4 pb-2 border-b-2 border-green-600">Ready ({readyOrders.length})</h2>
+            <h2 className="text-3xl font-headline text-green-600 mb-4 pb-2 border-b-2 border-green-600">Listos ({readyOrders.length})</h2>
             <div className="space-y-6 opacity-60">
               {readyOrders.map(order => <KitchenOrderCard key={order.id} order={order} />)}
             </div>
