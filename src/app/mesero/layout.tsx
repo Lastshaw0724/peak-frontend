@@ -1,3 +1,4 @@
+
 'use client';
 
 import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
@@ -7,6 +8,11 @@ import { usarEncuesta } from '@/hooks/usar-encuesta';
 import { usarAutenticacion } from '@/hooks/usar-autenticacion';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useRef } from 'react';
+import { ProveedorPedidos } from '@/components/proveedores/proveedor-pedidos';
+import { ProveedorMesas } from '@/components/proveedores/proveedor-mesas';
+import { ProveedorMenu } from '@/components/proveedores/proveedor-menu';
+import { ProveedorEncuestas } from '@/components/proveedores/proveedor-encuestas';
+import { ProveedorDescuentos } from '@/components/proveedores/proveedor-descuentos';
 
 function ContenidoLayoutMesero({ children }: { children: React.ReactNode }) {
     const { user } = usarAutenticacion();
@@ -55,7 +61,17 @@ function ContenidoLayoutMesero({ children }: { children: React.ReactNode }) {
 export default function LayoutMesero({ children }: { children: React.ReactNode }) {
     return (
         <RutaProtegida allowedRoles={['waiter', 'admin']}>
-            <ContenidoLayoutMesero>{children}</ContenidoLayoutMesero>
+            <ProveedorEncuestas>
+                <ProveedorMenu>
+                    <ProveedorMesas>
+                        <ProveedorDescuentos>
+                            <ProveedorPedidos>
+                                <ContenidoLayoutMesero>{children}</ContenidoLayoutMesero>
+                            </ProveedorPedidos>
+                        </ProveedorDescuentos>
+                    </ProveedorMesas>
+                </ProveedorMenu>
+            </ProveedorEncuestas>
         </RutaProtegida>
     );
 }
