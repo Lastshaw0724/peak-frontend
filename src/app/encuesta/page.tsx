@@ -1,10 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
-import { useSurvey } from '@/hooks/use-survey';
-import { AppHeader } from '@/components/header';
-import ProtectedRoute from '@/components/autenticacion/protected-route';
+import { usarAutenticacion } from '@/hooks/usar-autenticacion';
+import { usarEncuesta } from '@/hooks/usar-encuesta';
+import { CabeceraApp } from '@/components/cabecera';
+import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -14,9 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Star, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-function SurveyPageContent() {
-    const { user, users } = useAuth();
-    const { submitSurvey } = useSurvey();
+function ContenidoPaginaEncuesta() {
+    const { user, users } = usarAutenticacion();
+    const { submitSurvey } = usarEncuesta();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -31,8 +31,8 @@ function SurveyPageContent() {
         if (!waiterId || !user) {
             toast({
                 variant: 'destructive',
-                title: 'Incomplete Form',
-                description: 'Please select the waiter who served you.',
+                title: 'Formulario Incompleto',
+                description: 'Por favor, selecciona el mesero que te atendió.',
             });
             return;
         }
@@ -53,25 +53,25 @@ function SurveyPageContent() {
 
     return (
         <div className="bg-background min-h-screen">
-            <AppHeader title="Satisfaction Survey" />
+            <CabeceraApp title="Encuesta de Satisfacción" />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex justify-center">
                 <Card className="w-full max-w-2xl shadow-xl">
                     <form onSubmit={handleSubmit}>
                         <CardHeader>
                             <CardTitle className="font-headline text-3xl flex items-center gap-3">
                                 <Star className="text-primary" />
-                                Rate Your Experience
+                                Califica tu Experiencia
                             </CardTitle>
                             <CardDescription>
-                                Your feedback helps us improve our service. Please let us know how we did.
+                                Tus comentarios nos ayudan a mejorar nuestro servicio. Por favor, dinos cómo lo hicimos.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="waiter">Which waiter served you?</Label>
+                                <Label htmlFor="waiter">¿Qué mesero te atendió?</Label>
                                 <Select onValueChange={setWaiterId} value={waiterId} required>
                                     <SelectTrigger id="waiter">
-                                        <SelectValue placeholder="Select a waiter" />
+                                        <SelectValue placeholder="Selecciona un mesero" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {waiters.map(waiter => (
@@ -83,7 +83,7 @@ function SurveyPageContent() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="rating">Rating: {rating} / 5</Label>
+                                <Label htmlFor="rating">Calificación: {rating} / 5</Label>
                                 <div className="flex items-center gap-4 pt-2">
                                     <Star className="text-muted-foreground" />
                                     <Slider
@@ -98,10 +98,10 @@ function SurveyPageContent() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="comment">Comments (Optional)</Label>
+                                <Label htmlFor="comment">Comentarios (Opcional)</Label>
                                 <Textarea
                                     id="comment"
-                                    placeholder="Tell us more about your experience..."
+                                    placeholder="Cuéntanos más sobre tu experiencia..."
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
@@ -110,7 +110,7 @@ function SurveyPageContent() {
                         <CardFooter>
                             <Button type="submit" className="w-full" disabled={!waiterId}>
                                 <Send className="mr-2" />
-                                Submit Feedback
+                                Enviar Comentarios
                             </Button>
                         </CardFooter>
                     </form>
@@ -120,10 +120,10 @@ function SurveyPageContent() {
     );
 }
 
-export default function SurveyPage() {
+export default function PaginaEncuesta() {
     return (
-        <ProtectedRoute allowedRoles={['customer', 'admin']}>
-            <SurveyPageContent />
-        </ProtectedRoute>
+        <RutaProtegida allowedRoles={['customer', 'admin']}>
+            <ContenidoPaginaEncuesta />
+        </RutaProtegida>
     );
 }

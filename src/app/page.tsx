@@ -1,10 +1,10 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
+import { usarAutenticacion } from '@/hooks/usar-autenticacion';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const roleRedirects = {
+const redireccionesPorRol = {
   admin: '/dashboard',
   waiter: '/mesero',
   cook: '/cocina',
@@ -12,14 +12,14 @@ const roleRedirects = {
   cashier: '/dashboard/pedidos',
 };
 
-export default function Home() {
+export default function Inicio() {
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading } = usarAutenticacion();
 
   useEffect(() => {
     if (!isLoading) {
       if (user) {
-        router.replace(roleRedirects[user.role] || '/ingresar');
+        router.replace(redireccionesPorRol[user.role] || '/ingresar');
       } else {
         router.replace('/ingresar');
       }

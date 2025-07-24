@@ -1,5 +1,5 @@
-import { UserRoleManager } from '@/components/panel/user-role-manager';
+import { GestorRolesUsuario } from '@/components/panel/gestor-roles-usuario';
 
-export default function EmployeesPage() {
-    return <UserRoleManager />;
+export default function PaginaEmpleados() {
+    return <GestorRolesUsuario />;
 }

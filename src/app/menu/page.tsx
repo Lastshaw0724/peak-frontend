@@ -1,37 +1,37 @@
 
 'use client';
-import { AppHeader } from '@/components/header';
-import CustomerMenu from '@/components/menu/customer-menu';
-import ProtectedRoute from '@/components/autenticacion/protected-route';
-import { usePreferences } from '@/hooks/use-preferences';
+import { CabeceraApp } from '@/components/cabecera';
+import { MenuCliente } from '@/components/menu/menu-cliente';
+import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
+import { usarPreferencias } from '@/hooks/usar-preferencias';
 import { Skeleton } from '@/components/ui/skeleton';
 
-function CustomerMenuPageContent() {
+function ContenidoPaginaMenuCliente() {
     return (
         <div className="bg-background min-h-screen">
-            <AppHeader title="Our Menu" />
+            <CabeceraApp title="Nuestro Menú" />
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="text-center mb-12">
                      <h1 className="text-5xl md:text-6xl font-bold font-headline text-foreground">
-                        Savor the Flavor
+                        Saborea el Sabor
                     </h1>
                     <p className="mt-4 text-xl text-muted-foreground max-w-3xl mx-auto">
-                        A curated selection of authentic dishes, crafted with the freshest ingredients and a passion for flavor.
+                        Una selección curada de platos auténticos, elaborados con los ingredientes más frescos y pasión por el sabor.
                     </p>
                 </div>
-                <CustomerMenu />
+                <MenuCliente />
             </main>
         </div>
     );
 }
 
-export default function CustomerMenuPage() {
-    const { publicMenu, isLoading } = usePreferences();
+export default function PaginaMenuCliente() {
+    const { publicMenu, isLoading } = usarPreferencias();
 
     if (isLoading) {
         return (
              <div className="bg-background min-h-screen">
-                <AppHeader title="Our Menu" />
+                <CabeceraApp title="Nuestro Menú" />
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="text-center mb-12">
                         <Skeleton className="h-16 w-3/4 mx-auto" />
@@ -51,12 +51,12 @@ export default function CustomerMenuPage() {
     }
 
     if (publicMenu) {
-        return <CustomerMenuPageContent />;
+        return <ContenidoPaginaMenuCliente />;
     }
 
     return (
-        <ProtectedRoute allowedRoles={['customer', 'waiter', 'admin']}>
-            <CustomerMenuPageContent />
-        </ProtectedRoute>
+        <RutaProtegida allowedRoles={['customer', 'waiter', 'admin']}>
+            <ContenidoPaginaMenuCliente />
+        </RutaProtegida>
     );
 }

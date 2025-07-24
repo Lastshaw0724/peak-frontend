@@ -1,23 +1,23 @@
 'use client';
-import { KitchenDisplay } from '@/components/cocina/kitchen-display';
-import { AppHeader } from '@/components/header';
-import ProtectedRoute from '@/components/autenticacion/protected-route';
+import { PantallaCocina } from '@/components/cocina/pantalla-cocina';
+import { CabeceraApp } from '@/components/cabecera';
+import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
 
-function KitchenPageContent() {
+function PaginaCocinaContenido() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <AppHeader title="Kitchen Display" />
+      <CabeceraApp title="Pantalla de Cocina" />
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        <KitchenDisplay />
+        <PantallaCocina />
       </main>
     </div>
   );
 }
 
-export default function KitchenPage() {
+export default function PaginaCocina() {
     return (
-        <ProtectedRoute allowedRoles={['cook', 'admin']}>
-            <KitchenPageContent />
-        </ProtectedRoute>
+        <RutaProtegida allowedRoles={['cook', 'admin']}>
+            <PaginaCocinaContenido />
+        </RutaProtegida>
     )
 }

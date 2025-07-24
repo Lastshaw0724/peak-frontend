@@ -2,16 +2,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AppHeader } from '@/components/header';
+import { CabeceraApp } from '@/components/cabecera';
 import { Button } from '@/components/ui/button';
-import ProtectedRoute from '@/components/autenticacion/protected-route';
+import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
 import { ArrowLeft } from 'lucide-react';
 
 
-function QrCodePageContent() {
+function ContenidoPaginaCodigoQR() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <AppHeader title="Código QR del Menú" />
+      <CabeceraApp title="Código QR del Menú" />
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md text-center shadow-xl">
           <CardHeader>
@@ -24,7 +24,7 @@ function QrCodePageContent() {
             <div className="p-4 bg-white rounded-lg border">
                 <Image
                     src="https://placehold.co/300x300.png"
-                    alt="QR Code for menu"
+                    alt="Código QR del menú"
                     width={300}
                     height={300}
                     data-ai-hint="qr code"
@@ -44,10 +44,10 @@ function QrCodePageContent() {
   );
 }
 
-export default function QrCodePage() {
+export default function PaginaCodigoQR() {
     return (
-        <ProtectedRoute allowedRoles={['waiter', 'admin']}>
-            <QrCodePageContent />
-        </ProtectedRoute>
+        <RutaProtegida allowedRoles={['waiter', 'admin']}>
+            <ContenidoPaginaCodigoQR />
+        </RutaProtegida>
     );
 }

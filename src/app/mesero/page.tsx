@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function WaiterRedirectPage() {
+export default function PaginaRedireccionMesero() {
     const router = useRouter();
     
     useEffect(() => {

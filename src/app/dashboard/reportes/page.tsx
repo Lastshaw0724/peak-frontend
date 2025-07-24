@@ -2,13 +2,13 @@
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { InventoryReport } from '@/components/panel/inventory-report';
-import { ProductSalesReport } from "@/components/panel/product-sales-report";
-import { InventoryStockReport } from "@/components/panel/inventory-stock-report";
+import { ReporteInventario } from '@/components/panel/reporte-inventario';
+import { ReporteVentasProducto } from "@/components/panel/reporte-ventas-producto";
+import { ReporteStockInventario } from "@/components/panel/reporte-stock-inventario";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart } from "lucide-react";
 
-export default function ReportsPage() {
+export default function PaginaReportes() {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center gap-4">
@@ -26,13 +26,13 @@ export default function ReportsPage() {
                         <TabsTrigger value="inventory-stock" className="whitespace-normal">Stock de Insumos</TabsTrigger>
                     </TabsList>
                     <TabsContent value="product-availability" className="mt-6">
-                        <InventoryReport />
+                        <ReporteInventario />
                     </TabsContent>
                     <TabsContent value="product-sales" className="mt-6">
-                        <ProductSalesReport />
+                        <ReporteVentasProducto />
                     </TabsContent>
                     <TabsContent value="inventory-stock" className="mt-6">
-                        <InventoryStockReport />
+                        <ReporteStockInventario />
                     </TabsContent>
                 </Tabs>
             </CardContent>

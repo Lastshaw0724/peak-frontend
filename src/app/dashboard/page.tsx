@@ -2,11 +2,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/hooks/use-auth';
+import { usarAutenticacion } from '@/hooks/usar-autenticacion';
 
-export default function DashboardRedirectPage() {
+export default function PaginaRedireccionPanel() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user } = usarAutenticacion();
 
     useEffect(() => {
         if (user) {

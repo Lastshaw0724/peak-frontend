@@ -9,20 +9,20 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { usePreferences } from '@/hooks/use-preferences';
+import { usarPreferencias } from '@/hooks/usar-preferencias';
 import Image from 'next/image';
 
-export default function ForgotPasswordPage() {
+export default function PaginaRecuperarClave() {
     const { toast } = useToast();
     const router = useRouter();
-    const { logoUrl } = usePreferences();
+    const { logoUrl } = usarPreferencias();
 
     const handleReset = (e: React.FormEvent) => {
         e.preventDefault();
         // In a real app, this would trigger a password reset email flow.
         toast({
-            title: "Password Reset Email Sent",
-            description: "If an account with that email exists, you will receive reset instructions."
+            title: "Email de Recuperación Enviado",
+            description: "Si existe una cuenta con ese email, recibirás instrucciones para recuperar tu contraseña."
         });
         router.push('/ingresar');
     };
@@ -33,13 +33,13 @@ export default function ForgotPasswordPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Restaurant Logo" width={160} height={80} className="object-contain h-20 w-auto" />
+              <Image src={logoUrl} alt="Logo del Restaurante" width={160} height={80} className="object-contain h-20 w-auto" />
             ) : (
               <Logo className="w-32 h-auto" />
             )}
           </div>
-          <CardTitle className="font-headline text-3xl">Forgot Password</CardTitle>
-          <CardDescription>Enter your email to receive a reset link.</CardDescription>
+          <CardTitle className="font-headline text-3xl">¿Olvidaste tu Contraseña?</CardTitle>
+          <CardDescription>Ingresa tu email para recibir un enlace de recuperación.</CardDescription>
         </CardHeader>
         <form onSubmit={handleReset}>
           <CardContent className="space-y-4">
@@ -54,11 +54,11 @@ export default function ForgotPasswordPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Send Reset Link</Button>
+            <Button type="submit" className="w-full">Enviar Enlace</Button>
             <div className="text-center text-sm text-muted-foreground">
-              Remembered your password?{' '}
+              ¿Recordaste tu contraseña?{' '}
               <Link href="/ingresar" className="underline hover:text-primary">
-                Sign in
+                Iniciar sesión
               </Link>
             </div>
           </CardFooter>

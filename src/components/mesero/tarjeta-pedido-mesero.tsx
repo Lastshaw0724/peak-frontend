@@ -1,9 +1,9 @@
 
 'use client';
 
-import type { Order } from '@/lib/types';
-import { useOrder } from '@/hooks/use-order';
-import { useTable } from '@/hooks/use-table';
+import type { Pedido } from '@/lib/tipos';
+import { usarPedidos } from '@/hooks/usar-pedidos';
+import { usarMesas } from '@/hooks/usar-mesas';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,12 +23,12 @@ import {
 import { cn } from '@/lib/utils';
 import { CheckCheck, Pencil, Trash2, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
+import { usarAutenticacion } from '@/hooks/usar-autenticacion';
 
-export function WaiterOrderCard({ order }: { order: Order }) {
-  const { updateOrderStatus, deleteOrder, loadOrderForEdit } = useOrder();
-  const { tables, setActiveTable } = useTable();
-  const { user } = useAuth();
+export function TarjetaPedidoMesero({ order }: { order: Pedido }) {
+  const { updateOrderStatus, deleteOrder, loadOrderForEdit } = usarPedidos();
+  const { tables, setActiveTable } = usarMesas();
+  const { user } = usarAutenticacion();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -64,7 +64,7 @@ export function WaiterOrderCard({ order }: { order: Order }) {
         const tableForOrder = tables.find(t => t.id === orderData.tableId);
         if (tableForOrder) {
             setActiveTable(tableForOrder);
-            router.push('/waiter/pos');
+            router.push('/mesero/pos');
         } else {
             toast({ title: 'Error', description: 'No se pudo encontrar la mesa asociada al pedido.', variant: 'destructive' });
         }
@@ -78,7 +78,7 @@ export function WaiterOrderCard({ order }: { order: Order }) {
       <CardHeader className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="font-headline text-lg">Orden #{order.id.slice(-6)}</CardTitle>
+            <CardTitle className="font-headline text-lg">Pedido #{order.id.slice(-6)}</CardTitle>
             <CardDescription className="text-sm font-semibold pt-1">{order.tableName} - {order.customerName}</CardDescription>
             <CardDescription className="text-xs pt-1">{new Date(order.timestamp).toLocaleTimeString()} por {order.waiterName}</CardDescription>
           </div>
