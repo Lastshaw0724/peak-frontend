@@ -1,15 +1,9 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { ProveedorPedidos } from '@/components/proveedores/proveedor-pedidos';
 import { ProveedorAutenticacion } from '@/components/proveedores/proveedor-autenticacion';
 import { Toaster } from "@/components/ui/toaster"
-import { ProveedorEncuestas } from '@/components/proveedores/proveedor-encuestas';
-import { ProveedorMesas } from '@/components/proveedores/proveedor-mesas';
-import { ProveedorMenu } from '@/components/proveedores/proveedor-menu';
-import { ProveedorDescuentos } from '@/components/proveedores/proveedor-descuentos';
 import { ProveedorPreferencias } from '@/components/proveedores/proveedor-preferencias';
-import { ProveedorInventario } from '@/components/proveedores/proveedor-inventario';
 
 export const metadata: Metadata = {
   title: 'GustoGo | Sistema para Restaurantes',
@@ -31,20 +25,8 @@ export default function LayoutPrincipal({
       <body className="font-body antialiased min-h-screen">
         <ProveedorAutenticacion>
           <ProveedorPreferencias>
-            <ProveedorEncuestas>
-              <ProveedorMesas>
-                <ProveedorMenu>
-                  <ProveedorDescuentos>
-                    <ProveedorInventario>
-                      <ProveedorPedidos>
-                        {children}
-                        <Toaster />
-                      </ProveedorPedidos>
-                    </ProveedorInventario>
-                  </ProveedorDescuentos>
-                </ProveedorMenu>
-              </ProveedorMesas>
-            </ProveedorEncuestas>
+              {children}
+              <Toaster />
           </ProveedorPreferencias>
         </ProveedorAutenticacion>
       </body>

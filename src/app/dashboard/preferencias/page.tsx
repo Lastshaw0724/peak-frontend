@@ -9,9 +9,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, Save, Bell, Palette, Image as ImageIcon, Trash2 } from 'lucide-react';
-import { useOrder } from '@/hooks/use-order';
-import type { OrderItem } from '@/lib/types';
-import { usePreferences } from '@/hooks/use-preferences';
+import { usarPedidos } from '@/hooks/usar-pedidos';
+import type { ArticuloPedido } from '@/lib/tipos';
+import { usarPreferencias } from '@/hooks/usar-preferencias';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartConfig } from '@/components/ui/chart';
 import Image from 'next/image';
@@ -47,8 +47,8 @@ function hexToHsl(hex: string): string {
 
 
 export default function PreferencesPage() {
-    const { submittedOrders } = useOrder();
-    const prefsContext = usePreferences();
+    const { submittedOrders } = usarPedidos();
+    const prefsContext = usarPreferencias();
     const { savePreferences, isLoading, ...initialPrefs } = prefsContext;
 
     // Local state to hold form changes before saving
@@ -120,7 +120,7 @@ export default function PreferencesPage() {
         if (!submittedOrders || submittedOrders.length === 0) return [];
         const productCounts: { [key: string]: { name: string, count: number } } = {};
         submittedOrders.forEach(order => {
-            order.items.forEach((item: OrderItem) => {
+            order.items.forEach((item: ArticuloPedido) => {
                 if (productCounts[item.id]) {
                     productCounts[item.id].count += item.quantity;
                 } else {

@@ -4,6 +4,12 @@
 import { RutaProtegida } from '@/components/autenticacion/ruta-protegida';
 import { BarraLateral } from '@/components/panel/barra-lateral';
 import { CabeceraPanel } from '@/components/panel/cabecera';
+import { ProveedorEncuestas } from '@/components/proveedores/proveedor-encuestas';
+import { ProveedorMesas } from '@/components/proveedores/proveedor-mesas';
+import { ProveedorMenu } from '@/components/proveedores/proveedor-menu';
+import { ProveedorDescuentos } from '@/components/proveedores/proveedor-descuentos';
+import { ProveedorInventario } from '@/components/proveedores/proveedor-inventario';
+import { ProveedorPedidos } from '@/components/proveedores/proveedor-pedidos';
 
 function LayoutPanelContenido({ children }: { children: React.ReactNode }) {
     return (
@@ -22,7 +28,19 @@ function LayoutPanelContenido({ children }: { children: React.ReactNode }) {
 export default function LayoutPanel({ children }: { children: React.ReactNode }) {
     return (
         <RutaProtegida allowedRoles={['admin', 'cashier']}>
-            <LayoutPanelContenido>{children}</LayoutPanelContenido>
+            <ProveedorEncuestas>
+              <ProveedorMesas>
+                <ProveedorMenu>
+                  <ProveedorDescuentos>
+                    <ProveedorInventario>
+                      <ProveedorPedidos>
+                         <LayoutPanelContenido>{children}</LayoutPanelContenido>
+                      </ProveedorPedidos>
+                    </ProveedorInventario>
+                  </ProveedorDescuentos>
+                </ProveedorMenu>
+              </ProveedorMesas>
+            </ProveedorEncuestas>
         </RutaProtegida>
     );
 }
