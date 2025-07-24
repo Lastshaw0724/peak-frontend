@@ -2,7 +2,7 @@
 'use client';
 import { AppHeader } from '@/components/header';
 import CustomerMenu from '@/components/menu/customer-menu';
-import ProtectedRoute from '@/components/auth/protected-route';
+import ProtectedRoute from '@/components/autenticacion/protected-route';
 import { usePreferences } from '@/hooks/use-preferences';
 import { Skeleton } from '@/components/ui/skeleton';
 

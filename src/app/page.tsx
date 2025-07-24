@@ -6,10 +6,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const roleRedirects = {
   admin: '/dashboard',
-  waiter: '/waiter',
-  cook: '/kitchen',
+  waiter: '/mesero',
+  cook: '/cocina',
   customer: '/menu',
-  cashier: '/dashboard/orders',
+  cashier: '/dashboard/pedidos',
 };
 
 export default function Home() {
@@ -19,9 +19,9 @@ export default function Home() {
   useEffect(() => {
     if (!isLoading) {
       if (user) {
-        router.replace(roleRedirects[user.role] || '/login');
+        router.replace(roleRedirects[user.role] || '/ingresar');
       } else {
-        router.replace('/login');
+        router.replace('/ingresar');
       }
     }
   }, [user, isLoading, router]);

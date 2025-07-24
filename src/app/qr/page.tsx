@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AppHeader } from '@/components/header';
 import { Button } from '@/components/ui/button';
-import ProtectedRoute from '@/components/auth/protected-route';
+import ProtectedRoute from '@/components/autenticacion/protected-route';
 import { ArrowLeft } from 'lucide-react';
 
 
@@ -32,7 +32,7 @@ function QrCodePageContent() {
                 />
             </div>
             <Button asChild className="w-full max-w-xs mt-2">
-                <Link href="/waiter">
+                <Link href="/mesero">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Regresar a la Interfaz
                 </Link>

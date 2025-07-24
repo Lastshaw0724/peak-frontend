@@ -25,10 +25,10 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const roleRedirects: Record<UserRole, string> = {
   admin: '/dashboard',
-  waiter: '/waiter',
-  cook: '/kitchen',
+  waiter: '/mesero',
+  cook: '/cocina',
   customer: '/menu',
-  cashier: '/dashboard/orders',
+  cashier: '/dashboard/pedidos',
 };
 
 const USER_SESSION_KEY = 'gustogo-user-session';
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem(USER_SESSION_KEY);
-    router.push('/login');
+    router.push('/ingresar');
     toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
   };
 
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const updatedUsers = [...users, newUser];
     saveUsers(updatedUsers);
     
-    router.push('/login');
+    router.push('/ingresar');
     toast({ title: 'Registration Successful', description: `Welcome, ${name}! You can now log in.` });
   };
 

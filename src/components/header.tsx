@@ -79,19 +79,19 @@ export function AppHeader({ title }: { title: string }) {
                         </DropdownMenuItem>
                     )}
                      {user.role === 'waiter' && (
-                         <DropdownMenuItem onClick={() => navigate('/waiter')}>
+                         <DropdownMenuItem onClick={() => navigate('/mesero')}>
                             <NotebookPen className="mr-2 h-4 w-4" />
                             <span>Waiter View</span>
                         </DropdownMenuItem>
                     )}
                     {user.role === 'cashier' && (
-                         <DropdownMenuItem onClick={() => navigate('/dashboard/orders')}>
+                         <DropdownMenuItem onClick={() => navigate('/dashboard/pedidos')}>
                             <History className="mr-2 h-4 w-4" />
                             <span>Historial Pedidos</span>
                         </DropdownMenuItem>
                     )}
                      {user.role === 'cook' && (
-                         <DropdownMenuItem onClick={() => navigate('/kitchen')}>
+                         <DropdownMenuItem onClick={() => navigate('/cocina')}>
                             <ChefHat className="mr-2 h-4 w-4" />
                             <span>Kitchen View</span>
                         </DropdownMenuItem>
@@ -103,7 +103,7 @@ export function AppHeader({ title }: { title: string }) {
                         </DropdownMenuItem>
                     )}
                      {user.role === 'customer' && (
-                        <DropdownMenuItem onClick={() => navigate('/survey')}>
+                        <DropdownMenuItem onClick={() => navigate('/encuesta')}>
                             <Star className="mr-2 h-4 w-4" />
                             <span>Rate Service</span>
                         </DropdownMenuItem>
@@ -124,7 +124,7 @@ export function AppHeader({ title }: { title: string }) {
               </DropdownMenu>
             ) : (
                 <Button asChild>
-                    <Link href="/login">Login</Link>
+                    <Link href="/ingresar">Login</Link>
                 </Button>
             )}
           </div>

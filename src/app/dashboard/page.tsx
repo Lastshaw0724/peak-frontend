@@ -11,9 +11,9 @@ export default function DashboardRedirectPage() {
     useEffect(() => {
         if (user) {
             if (user.role === 'cashier') {
-                router.replace('/dashboard/orders');
+                router.replace('/dashboard/pedidos');
             } else { // default for admin
-                router.replace('/dashboard/employees');
+                router.replace('/dashboard/empleados');
             }
         }
     }, [user, router]);

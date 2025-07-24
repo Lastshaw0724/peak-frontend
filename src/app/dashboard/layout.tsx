@@ -1,9 +1,9 @@
 
 'use client';
 
-import ProtectedRoute from '@/components/auth/protected-route';
-import { Sidebar } from '@/components/dashboard/sidebar';
-import { DashboardHeader } from '@/components/dashboard/header';
+import ProtectedRoute from '@/components/autenticacion/protected-route';
+import { Sidebar } from '@/components/panel/sidebar';
+import { DashboardHeader } from '@/components/panel/header';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return (
