@@ -15,45 +15,23 @@ interface InventoryContextType {
 
 export const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
 
-const INVENTORY_STORAGE_KEY = 'gustogo-inventory';
-
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadInventory = useCallback(() => {
-    try {
-        const storedInventory = localStorage.getItem(INVENTORY_STORAGE_KEY);
-        if (storedInventory) {
-            setInventory(JSON.parse(storedInventory));
-        } else {
-            setInventory(initialInventoryData);
-            localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(initialInventoryData));
-        }
-    } catch (error) {
-        console.error("Failed to load inventory", error);
-        setInventory(initialInventoryData);
-    }
-  }, []);
-
-  const saveInventory = useCallback((updatedInventory: InventoryItem[]) => {
-      setInventory(updatedInventory);
-      localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(updatedInventory));
-  }, []);
-
   useEffect(() => {
     setIsLoading(true);
-    loadInventory();
+    setInventory(initialInventoryData);
     setIsLoading(false);
-  }, [loadInventory]);
+  }, []);
 
   const addInventoryItem = (itemData: Omit<InventoryItem, 'id'>) => {
     const newItem: InventoryItem = {
       id: `inv-${Date.now()}`,
       ...itemData
     };
-    saveInventory([...inventory, newItem]);
+    setInventory([...inventory, newItem]);
     toast({
         title: "Insumo Añadido",
         description: `El insumo "${newItem.name}" ha sido añadido al inventario.`,
@@ -64,7 +42,7 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     const updatedInventory = inventory.map(item => 
         item.id === id ? { id, ...data } : item
     );
-    saveInventory(updatedInventory);
+    setInventory(updatedInventory);
      toast({
         title: "Insumo Actualizado",
         description: `El insumo "${data.name}" ha sido actualizado.`,
@@ -74,7 +52,7 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
   const deleteInventoryItem = (id: string) => {
     const itemToDelete = inventory.find(item => item.id === id);
     const updatedInventory = inventory.filter(item => item.id !== id);
-    saveInventory(updatedInventory);
+    setInventory(updatedInventory);
      toast({
         title: "Insumo Eliminado",
         description: `El insumo "${itemToDelete?.name}" ha sido eliminado.`,

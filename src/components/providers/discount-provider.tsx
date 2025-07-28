@@ -15,38 +15,16 @@ interface DiscountContextType {
 
 export const DiscountContext = createContext<DiscountContextType | undefined>(undefined);
 
-const DISCOUNTS_STORAGE_KEY = 'gustogo-discounts';
-
 export const DiscountProvider = ({ children }: { children: ReactNode }) => {
   const [discounts, setDiscounts] = useState<Discount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadDiscounts = useCallback(() => {
-    try {
-        const storedDiscounts = localStorage.getItem(DISCOUNTS_STORAGE_KEY);
-        if (storedDiscounts) {
-            setDiscounts(JSON.parse(storedDiscounts));
-        } else {
-            setDiscounts(initialDiscountsData);
-            localStorage.setItem(DISCOUNTS_STORAGE_KEY, JSON.stringify(initialDiscountsData));
-        }
-    } catch(error) {
-        console.error("Failed to load discounts", error);
-        setDiscounts(initialDiscountsData);
-    }
-  }, []);
-
-  const saveDiscounts = useCallback((updatedDiscounts: Discount[]) => {
-      setDiscounts(updatedDiscounts);
-      localStorage.setItem(DISCOUNTS_STORAGE_KEY, JSON.stringify(updatedDiscounts));
-  }, []);
-
   useEffect(() => {
     setIsLoading(true);
-    loadDiscounts();
+    setDiscounts(initialDiscountsData);
     setIsLoading(false);
-  }, [loadDiscounts]);
+  }, []);
 
   const addDiscount = (discountData: Omit<Discount, 'id' | 'status' | 'used'>) => {
     const newDiscount: Discount = {
@@ -55,7 +33,7 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
         status: true,
         used: 0,
     };
-    saveDiscounts([...discounts, newDiscount]);
+    setDiscounts([...discounts, newDiscount]);
     toast({
         title: "Descuento Creado",
         description: `El descuento "${newDiscount.name}" ha sido añadido.`
@@ -64,12 +42,12 @@ export const DiscountProvider = ({ children }: { children: ReactNode }) => {
 
   const updateDiscountStatus = (id: string, status: boolean) => {
     const updatedDiscounts = discounts.map(d => d.id === id ? { ...d, status } : d);
-    saveDiscounts(updatedDiscounts);
+    setDiscounts(updatedDiscounts);
   };
   
   const deleteDiscount = (id: string) => {
     const updatedDiscounts = discounts.filter(d => d.id !== id);
-    saveDiscounts(updatedDiscounts);
+    setDiscounts(updatedDiscounts);
     toast({
         title: "Descuento Eliminado",
         description: "El descuento ha sido eliminado correctamente.",

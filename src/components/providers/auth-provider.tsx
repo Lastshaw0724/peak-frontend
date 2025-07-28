@@ -30,10 +30,6 @@ const roleRedirects: Record<UserRole, string> = {
   cashier: '/dashboard/pedidos',
 };
 
-const USER_SESSION_KEY = 'gustogo-user-session';
-const ALL_USERS_KEY = 'gustogo-all-users';
-
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -41,46 +37,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const { toast } = useToast();
 
-  const loadUsers = useCallback(() => {
-    try {
-        const storedUsers = localStorage.getItem(ALL_USERS_KEY);
-        if (storedUsers) {
-            setUsers(JSON.parse(storedUsers));
-        } else {
-            setUsers(mockUsers);
-            localStorage.setItem(ALL_USERS_KEY, JSON.stringify(mockUsers));
-        }
-    } catch (error) {
-        console.error("Failed to load users from local storage", error);
-        setUsers(mockUsers);
-    }
-  }, []);
-
-  const saveUsers = useCallback((updatedUsers: User[]) => {
-    setUsers(updatedUsers);
-    localStorage.setItem(ALL_USERS_KEY, JSON.stringify(updatedUsers));
-  }, []);
-  
-
   useEffect(() => {
     setIsLoading(true);
-    loadUsers();
-    try {
-        const storedUser = sessionStorage.getItem(USER_SESSION_KEY);
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-    } catch (error) {
-        console.error("Failed to load user session from session storage", error);
-    }
+    setUsers(mockUsers);
     setIsLoading(false);
-  }, [loadUsers]);
+  }, []);
 
   const login = (email: string, password: string) => {
     const foundUser = users.find((u) => u.email === email && u.password === password);
     if (foundUser) {
         setUser(foundUser);
-        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(foundUser));
         router.push(roleRedirects[foundUser.role]);
         toast({ title: 'Inicio de Sesión Exitoso', description: `¡Bienvenido de vuelta, ${foundUser.name}!` });
     } else {
@@ -90,7 +56,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    sessionStorage.removeItem(USER_SESSION_KEY);
     router.push('/ingresar');
     toast({ title: 'Sesión Cerrada', description: 'Has cerrado sesión exitosamente.' });
   };
@@ -110,8 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role: 'customer' 
     };
     
-    const updatedUsers = [...users, newUser];
-    saveUsers(updatedUsers);
+    setUsers([...users, newUser]);
     
     router.push('/ingresar');
     toast({ title: 'Registro Exitoso', description: `¡Bienvenido, ${name}! Ahora puedes iniciar sesión.` });
@@ -129,19 +93,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...data
     };
 
-    const updatedUsers = [...users, newUser];
-    saveUsers(updatedUsers);
+    setUsers([...users, newUser]);
     toast({ title: 'Usuario Creado', description: `El usuario ${data.name} ha sido creado.` });
   };
 
   const updateUserRole = (userId: string, newRole: UserRole) => {
     const updatedUsers = users.map((u) => u.id === userId ? { ...u, role: newRole } : u);
-    saveUsers(updatedUsers);
+    setUsers(updatedUsers);
 
     if (user && user.id === userId) {
-        const updatedUser = { ...user, role: newRole };
-        setUser(updatedUser);
-        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(updatedUser));
+        setUser({ ...user, role: newRole });
     }
 
     toast({ title: 'Rol Actualizado', description: "El rol del usuario ha sido actualizado." });
@@ -149,13 +110,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteUser = (userId: string) => {
     const updatedUsers = users.filter((u) => u.id !== userId);
-    saveUsers(updatedUsers);
+    setUsers(updatedUsers);
     toast({ title: 'Usuario Eliminado', description: 'El usuario ha sido eliminado exitosamente.' });
   };
 
   const updateUserPassword = (userId: string, newPassword: string) => {
     const updatedUsers = users.map(u => u.id === userId ? { ...u, password: newPassword } : u);
-    saveUsers(updatedUsers);
+    setUsers(updatedUsers);
     toast({ title: 'Contraseña Actualizada', description: "La contraseña del usuario ha sido cambiada." });
   };
 

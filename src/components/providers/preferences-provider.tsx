@@ -57,8 +57,6 @@ interface PreferencesContextType extends Preferences, SetterFunctions {
 
 export const PreferencesContext = createContext<PreferencesContextType | undefined>(undefined);
 
-const PREFERENCES_STORAGE_KEY = 'gustogo-preferences';
-
 const defaultPreferences: Preferences = {
   lowStockThreshold: 20,
   darkMode: true,
@@ -80,33 +78,22 @@ export const PreferencesProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   const applyTheme = useCallback((prefs: Preferences) => {
-    document.documentElement.classList.toggle('dark', prefs.darkMode);
-    document.documentElement.style.setProperty('--primary', hexToHsl(prefs.primaryColor));
-    document.documentElement.style.setProperty('--accent', hexToHsl(prefs.accentColor));
-  }, []);
-
-  const loadPreferences = useCallback(() => {
-    try {
-        const storedPrefs = localStorage.getItem(PREFERENCES_STORAGE_KEY);
-        const loadedPrefs = storedPrefs ? { ...defaultPreferences, ...JSON.parse(storedPrefs) } : defaultPreferences;
-        setPreferences(loadedPrefs);
-        applyTheme(loadedPrefs);
-    } catch(error) {
-        console.error("Failed to load preferences", error);
-        setPreferences(defaultPreferences);
-        applyTheme(defaultPreferences);
+    if (typeof window !== 'undefined') {
+        document.documentElement.classList.toggle('dark', prefs.darkMode);
+        document.documentElement.style.setProperty('--primary', hexToHsl(prefs.primaryColor));
+        document.documentElement.style.setProperty('--accent', hexToHsl(prefs.accentColor));
     }
-  }, [applyTheme]);
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    loadPreferences();
+    setPreferences(defaultPreferences);
+    applyTheme(defaultPreferences);
     setIsLoading(false);
-  }, [loadPreferences]);
+  }, [applyTheme]);
 
   const savePreferences = (newPrefs: Preferences) => {
     setPreferences(newPrefs);
-    localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(newPrefs));
     applyTheme(newPrefs);
     toast({ title: "Preferencias Guardadas", description: "Tus cambios han sido guardados correctamente." });
   };

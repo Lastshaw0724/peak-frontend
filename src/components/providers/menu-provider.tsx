@@ -15,38 +15,16 @@ interface MenuContextType {
 
 export const MenuContext = createContext<MenuContextType | undefined>(undefined);
 
-const MENU_STORAGE_KEY = 'gustogo-menu';
-
 export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadMenu = useCallback(() => {
-    try {
-        const storedMenu = localStorage.getItem(MENU_STORAGE_KEY);
-        if (storedMenu) {
-            setMenu(JSON.parse(storedMenu));
-        } else {
-            setMenu(initialMenuData);
-            localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(initialMenuData));
-        }
-    } catch (error) {
-        console.error("Failed to load menu", error);
-        setMenu(initialMenuData);
-    }
-  }, []);
-
-  const saveMenu = useCallback((updatedMenu: MenuItem[]) => {
-      setMenu(updatedMenu);
-      localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(updatedMenu));
-  }, []);
-
   useEffect(() => {
     setIsLoading(true);
-    loadMenu();
+    setMenu(initialMenuData);
     setIsLoading(false);
-  }, [loadMenu]);
+  }, []);
 
   const addProduct = (productData: Omit<MenuItem, 'id'>) => {
     const dataFromForm = productData as Omit<MenuItem, 'id'> & { extras?: ({ name: string, price: number })[] };
@@ -61,7 +39,7 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
       })),
     };
 
-    saveMenu([...menu, newProduct]);
+    setMenu([...menu, newProduct]);
 
     toast({
       title: "¡Producto Añadido!",
@@ -86,7 +64,7 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
       return item;
     });
     
-    saveMenu(updatedMenu);
+    setMenu(updatedMenu);
     
     toast({
         title: "Producto Actualizado",
@@ -97,7 +75,7 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const deleteProduct = (id: string) => {
     const productToDelete = menu.find(item => item.id === id);
     const updatedMenu = menu.filter(item => item.id !== id);
-    saveMenu(updatedMenu);
+    setMenu(updatedMenu);
     
     toast({
         title: "Producto Eliminado",

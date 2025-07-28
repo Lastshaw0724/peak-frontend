@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import type { OrderItem, Order, MenuItem, OrderStatus, Discount, Extra, InvoiceOption } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,64 +35,12 @@ interface OrderContextType {
 
 export const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
-const CURRENT_ORDER_KEY = 'gustogo-current-order';
-const SUBMITTED_ORDERS_KEY = 'gustogo-submitted-orders';
-const CURRENT_ORDER_DETAILS_KEY = 'gustogo-current-order-details';
-
 export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const [currentOrder, setCurrentOrder] = useState<OrderItem[]>([]);
   const [submittedOrders, setSubmittedOrders] = useState<Order[]>([]);
   const [currentOrderDetails, setCurrentOrderDetails] = useState<CurrentOrderDetails>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // No data to load initially
   const { toast } = useToast();
-
-  const loadOrders = useCallback(() => {
-    try {
-        const storedCurrentOrder = sessionStorage.getItem(CURRENT_ORDER_KEY);
-        if (storedCurrentOrder) setCurrentOrder(JSON.parse(storedCurrentOrder));
-
-        const storedSubmittedOrders = localStorage.getItem(SUBMITTED_ORDERS_KEY);
-        if (storedSubmittedOrders) {
-            const parsedOrders = JSON.parse(storedSubmittedOrders).map((order: Order) => ({
-                ...order,
-                timestamp: new Date(order.timestamp),
-            }));
-            setSubmittedOrders(parsedOrders);
-        }
-        
-        const storedDetails = sessionStorage.getItem(CURRENT_ORDER_DETAILS_KEY);
-        if (storedDetails) setCurrentOrderDetails(JSON.parse(storedDetails));
-
-    } catch (error) {
-        console.error("Failed to load orders from storage", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
-    loadOrders();
-    setIsLoading(false);
-  }, [loadOrders]);
-
-
-  const saveCurrentOrder = (order: OrderItem[]) => {
-      setCurrentOrder(order);
-      sessionStorage.setItem(CURRENT_ORDER_KEY, JSON.stringify(order));
-  };
-
-  const saveSubmittedOrders = (orders: Order[]) => {
-      setSubmittedOrders(orders);
-      localStorage.setItem(SUBMITTED_ORDERS_KEY, JSON.stringify(orders));
-  };
-  
-  const saveCurrentOrderDetails = (details: CurrentOrderDetails) => {
-      setCurrentOrderDetails(details);
-      if (details) {
-        sessionStorage.setItem(CURRENT_ORDER_DETAILS_KEY, JSON.stringify(details));
-      } else {
-        sessionStorage.removeItem(CURRENT_ORDER_DETAILS_KEY);
-      }
-  }
 
   const addItemToOrder = (item: MenuItem, quantity: number, selectedExtras: Extra[]) => {
     const extrasKey = selectedExtras.map(e => e.id).sort().join('-');
@@ -118,12 +66,12 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       };
       newOrder = [...currentOrder, newOrderItem];
     }
-    saveCurrentOrder(newOrder);
+    setCurrentOrder(newOrder);
   };
 
   const removeItemFromOrder = (orderItemId: string) => {
       const newOrder = currentOrder.filter((item) => item.orderItemId !== orderItemId);
-      saveCurrentOrder(newOrder);
+      setCurrentOrder(newOrder);
   };
 
   const updateItemQuantity = (orderItemId: string, quantity: number) => {
@@ -133,7 +81,7 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       const newOrder = currentOrder.map((item) =>
           item.orderItemId === orderItemId ? { ...item, quantity } : item
       );
-      saveCurrentOrder(newOrder);
+      setCurrentOrder(newOrder);
     }
   };
   
@@ -181,9 +129,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
       ...restDetails
     };
 
-    saveSubmittedOrders([newOrder, ...submittedOrders]);
-    saveCurrentOrder([]);
-    saveCurrentOrderDetails(null);
+    setSubmittedOrders([newOrder, ...submittedOrders]);
+    setCurrentOrder([]);
+    setCurrentOrderDetails(null);
     toast({
       title: "¡Pedido Enviado!",
       description: "El pedido ha sido enviado a la cocina.",
@@ -194,14 +142,14 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const updatedOrders = submittedOrders.map((order) =>
       order.id === orderId ? { ...order, status } : order
     );
-    saveSubmittedOrders(updatedOrders);
+    setSubmittedOrders(updatedOrders);
   };
 
   const startPreparingOrder = (orderId: string, preparationTime: number) => {
     const updatedOrders = submittedOrders.map((order) =>
       order.id === orderId ? { ...order, status: 'preparing', preparationTime } : order
     );
-    saveSubmittedOrders(updatedOrders);
+    setSubmittedOrders(updatedOrders);
     toast({
       title: "Pedido en preparación",
       description: `El pedido #${orderId.slice(-6)} ha comenzado. Tiempo estimado: ${preparationTime} min.`,
@@ -209,13 +157,13 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const clearCurrentOrder = () => {
-    saveCurrentOrder([]);
-    saveCurrentOrderDetails(null);
+    setCurrentOrder([]);
+    setCurrentOrderDetails(null);
   };
 
   const deleteOrder = (orderId: string) => {
     const updatedOrders = submittedOrders.filter(order => order.id !== orderId);
-    saveSubmittedOrders(updatedOrders);
+    setSubmittedOrders(updatedOrders);
     toast({
         title: "Pedido Cancelado",
         description: `El pedido #${orderId.slice(-6)} ha sido eliminado.`,
@@ -227,9 +175,9 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
     const orderToEdit = submittedOrders.find(o => o.id === orderId);
     if (orderToEdit) {
         const remainingOrders = submittedOrders.filter(o => o.id !== orderId);
-        saveSubmittedOrders(remainingOrders);
-        saveCurrentOrder(orderToEdit.items);
-        saveCurrentOrderDetails({ customerName: orderToEdit.customerName });
+        setSubmittedOrders(remainingOrders);
+        setCurrentOrder(orderToEdit.items);
+        setCurrentOrderDetails({ customerName: orderToEdit.customerName });
         toast({
             title: "Modificando Pedido",
             description: `Se ha cargado el pedido #${orderId.slice(-6)}.`,
